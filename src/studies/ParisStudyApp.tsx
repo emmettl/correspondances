@@ -504,9 +504,18 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     () => (geography ? parisReferences(geography) : undefined),
     [geography],
   )
+  const countableTrains = useMemo(() => {
+    const stationTrainIds = selectedStation
+      ? new Set(stations.find((station) => station.name === selectedStation.name)?.trainIds ?? [])
+      : undefined
+    return network?.trains.filter((train) =>
+      (!stationTrainIds || stationTrainIds.has(train.id)) &&
+      (!selectedRoute || (train.route === selectedRoute.name && train.category === selectedRoute.category)),
+    ) ?? []
+  }, [network, selectedRoute, selectedStation, stations])
   const activeTrainCount = useMemo(
-    () => network?.trains.filter((train) => time >= train.start && time <= train.end).length ?? 0,
-    [network, time],
+    () => countableTrains.filter((train) => train.realtime?.status !== 'cancelled' && time >= train.start && time <= train.end).length,
+    [countableTrains, time],
   )
 
   const moveCamera = useCallback((action: MapCameraAction) => {
