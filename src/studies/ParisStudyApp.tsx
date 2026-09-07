@@ -125,16 +125,14 @@ function supportsWebGL(): boolean {
   }
 }
 
-function searchChoices(
+function searchNetworkChoices(
   query: string,
   snapshot: NetworkSnapshot,
   stations: readonly StationIndexEntry[],
   routes: readonly NetworkRouteIndexEntry[],
-  aircraft: readonly AirSearchTrack[],
-  time: number,
-): readonly SearchChoice[] {
+): { readonly places: readonly SearchChoice[]; readonly trains: readonly SearchChoice[] } {
   const folded = foldSearchText(query.trim())
-  if (!folded) return []
+  if (!folded) return { places: [], trains: [] }
   const stationMatches = stations
     .filter((station) => foldSearchText(station.name).includes(folded))
     .slice(0, 5)
@@ -154,10 +152,10 @@ function searchChoices(
   const airportMatches = searchAirports(PARIS_AIRPORTS, query, 3).map(
     (value): SearchChoice => ({ kind: 'airport', value }),
   )
-  const airMatches = searchAirTracks(aircraft, query, time, 4).map(
-    (value): SearchChoice => ({ kind: 'air', value }),
-  )
-  return [...airportMatches, ...stationMatches, ...routeMatches, ...airMatches, ...trainMatches].slice(0, 8)
+  return {
+    places: [...airportMatches, ...stationMatches, ...routeMatches],
+    trains: trainMatches,
+  }
 }
 
 function stationForComplex(
@@ -417,10 +415,22 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     () => (network ? buildRouteIndex(network) : []),
     [network],
   )
-  const choices = useMemo(
-    () => (network ? searchChoices(query, network, stations, routes, air.aircraft, time) : []),
-    [network, query, routes, stations, air.aircraft, time],
+  // Timetable search is independent of playback. Only aircraft ranking needs
+  // the clock, and neither search needs to run while its results are closed.
+  const networkChoices = useMemo(
+    () => searchOpen && network
+      ? searchNetworkChoices(query, network, stations, routes)
+      : { places: [], trains: [] },
+    [searchOpen, network, query, routes, stations],
   )
+  const choices = useMemo(() => {
+    const airMatches = searchOpen && air.enabled && query.trim()
+      ? searchAirTracks(air.aircraft, query, time, 4).map(
+          (value): SearchChoice => ({ kind: 'air', value }),
+        )
+      : []
+    return [...networkChoices.places, ...airMatches, ...networkChoices.trains].slice(0, 8)
+  }, [networkChoices, searchOpen, air.enabled, query, air.aircraft, time])
   const boundary = useMemo(
     () => (geography ? parisBoundary(geography) : undefined),
     [geography],

@@ -27,7 +27,8 @@
     "test:e2e:ci": "playwright test",
     "check:boundary": "node scripts/check-boundary.mjs",
     "check:bundle": "node scripts/check-paris-proof.mjs && node scripts/check-paris-air.mjs",
-    "data:paris:air": "node scripts/ingest-paris-air.mjs"
+    "data:paris:air": "node scripts/ingest-paris-air.mjs",
+    "profile:frames": "node scripts/profile-paris-frames.mjs"
   },
   "dependencies": {
     "@motionstudies/core": "0.1.0-alpha.2",

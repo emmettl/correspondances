@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import openingNetwork from '../fixtures/idfm/correspondances-morning.json' with { type: 'json' }
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/')
@@ -293,4 +294,39 @@ test('iPhone chrome remains inside the viewport and reduces to the timeline', as
   await expect(page.locator('.correspondances-experience')).toHaveAttribute('data-limited-chrome', 'true')
   await expect(page.locator('.paris-masthead')).not.toBeVisible()
   await expect(page.locator('.paris-transport')).toBeVisible()
+})
+
+test('clock updates reuse timetable search with results open and closed', async ({ page }) => {
+  await page.getByRole('button', { name: 'Pause', exact: true }).click()
+  const train = openingNetwork.trains[0]!
+  const searchText = `${train.shortName} ${train.route} ${train.headsign}`.trim().toLocaleLowerCase('de-CH')
+  await page.evaluate((searchText) => {
+    const browser = globalThis as unknown as { timetableSearchCount: number }
+    browser.timetableSearchCount = 0
+    const normalize = String.prototype.normalize
+    String.prototype.normalize = function (form) {
+      if (String(this) === searchText) browser.timetableSearchCount++
+      return normalize.call(this, form)
+    }
+  }, searchText)
+  const search = page.getByRole('searchbox')
+  await search.fill('RER A')
+  await expect(page.getByRole('option', { name: /^RER A \d+ MISSIONS PLANIFIÉES$/ })).toBeVisible()
+  const count = () => page.evaluate(() =>
+    (globalThis as unknown as { timetableSearchCount: number }).timetableSearchCount,
+  )
+  expect(await count()).toBeGreaterThan(0)
+  const clock = page.getByRole('slider', { name: 'Heure' })
+  const searchesBeforeClock = await count()
+  await clock.fill('28920')
+  await expect(clock).toHaveValue('28920')
+  expect(await count()).toBe(searchesBeforeClock)
+  await page.getByRole('option', { name: /^RER A \d+ MISSIONS PLANIFIÉES$/ }).click()
+  await expect(search).toHaveAttribute('aria-expanded', 'false')
+  const searchesAfterSelection = await count()
+  await clock.fill('28980')
+  await expect(clock).toHaveValue('28980')
+  expect(await count()).toBe(searchesAfterSelection)
+  await search.focus()
+  await expect(page.getByRole('option', { name: /^RER A \d+ MISSIONS PLANIFIÉES$/ })).toBeVisible()
 })
