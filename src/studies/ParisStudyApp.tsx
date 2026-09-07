@@ -890,7 +890,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
               routeColorMix={1}
               airSnapshot={heart.mix === 0 ? air.snapshot : undefined}
               airCategorySelected={airCategorySelected}
-              airports={air.enabled && heart.mix === 0 ? PARIS_AIRPORTS : undefined}
+              airports={PARIS_AIRPORTS}
               selectedAirTrack={selectedAirTrack}
               selectedAirport={selectedAirport}
               onSelectAirTrack={selectAirTrack}

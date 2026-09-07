@@ -51,7 +51,7 @@ They add 464 morning journeys and 2,269 across the day, preserving the outer bra
 
 ## AIR
 
-**AIR** adds observed aircraft from the same 4 September 2026 service day. It loads on demand, supports callsign and airport search (CDG, Orly and Le Bourget), aircraft follow and isolation, and shares both the morning and progressive 24-hour clocks. Positions are historical observations; airport associations are labelled as inferred. See the [AIR data and regeneration guide](docs/AIR.md).
+CDG, Orly and Le Bourget appear as geographic landmarks in Région, including when AIR is off. **AIR** adds observed aircraft from the same 4 September 2026 service day. It loads on demand, supports callsign and airport search, aircraft follow and isolation, and shares both the morning and progressive 24-hour clocks. Positions are historical observations; airport associations are labelled as inferred. See the [AIR data and regeneration guide](docs/AIR.md).
 
 ## Development
 

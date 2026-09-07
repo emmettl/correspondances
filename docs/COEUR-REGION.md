@@ -15,7 +15,7 @@ The Seine and périphérique undergo the same transformation as the railway. The
 - **CŒUR / RÉGION** changes the composition over 1.6 seconds. A new request reverses from the current position. Reduced motion resolves directly.
 - **Révéler les arcs · Métro 2 et 6** adds the existing optional pair without changing view, playback state or time. Loading and retry remain independent. The eight-line geographic opening remains the default.
 - Rail search and route isolation retain the selected composition. Reset returns to Région. The correspondence director focuses its geographic hub in the transformed space.
-- AIR stays geographically meaningful: it is visible in Région, and choosing an aircraft or airport returns there. Its enabled state and historical data remain available while viewing Cœur.
+- CDG, Orly and Le Bourget remain visible as geographic landmarks in Région even with AIR off. AIR stays geographically meaningful: it is visible in Région, and choosing an aircraft or airport returns there. Its enabled state and historical data remain available while viewing Cœur.
 
 ## Renderer contract
 
