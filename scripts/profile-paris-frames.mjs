@@ -36,9 +36,9 @@ try {
   const cdp = await page.context().newCDPSession(page)
   await cdp.send('Performance.enable')
   const scenarios = []
-  async function sample(name) {
+  async function sample(name, settleMilliseconds = 2500) {
     // Exclude lazy loading, camera settling, and initial shader compilation.
-    await page.waitForTimeout(2500)
+    await page.waitForTimeout(settleMilliseconds)
     const before = await cdp.send('Performance.getMetrics')
     const intervals = await page.evaluate((duration) => new Promise((resolve) => {
       const samples = []
@@ -88,7 +88,10 @@ try {
   await sample('selected-search-closed')
   await page.getByRole('button', { name: 'Effacer' }).click()
   await page.getByRole('button', { name: 'Basculer entre le centre et la région' }).click()
+  await sample('to-centre', 0)
   await sample('centre')
+  await page.getByRole('button', { name: 'Basculer entre le centre et la région' }).click()
+  await sample('to-region', 0)
   const environment = await page.evaluate(() => {
     const canvas = document.querySelector('.scene canvas')
     const gl = canvas.getContext('webgl2')

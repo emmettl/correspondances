@@ -449,6 +449,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   )
 
   const moveCamera = useCallback((action: MapCameraAction) => {
+    if (action === 'reset') setScaleView('region')
     setCameraCommand((current) => ({ id: (current?.id ?? 0) + 1, action }))
   }, [])
 
@@ -514,6 +515,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
 
   const toggleScaleView = useCallback(() => {
     if (!network) return
+    clearSelection()
     if (scaleView === 'centre') {
       setScaleView('region')
       moveCamera('reset')
@@ -529,9 +531,9 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       id: (current?.id ?? 0) + 1,
       action: 'focus-location',
       focus,
-      distanceScale: 0.16,
+      distanceScale: 0.2,
     }))
-  }, [moveCamera, network, scaleView, stations])
+  }, [clearSelection, moveCamera, network, scaleView, stations])
 
   const selectStation = useCallback((station: StationIndexEntry) => {
     clearAirSelection()
@@ -712,7 +714,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
             </section>
           ) : network ? (
             <NationalNetworkScene
-              boundary={scaleView === 'region' ? boundary : undefined}
+              boundary={boundary}
               lakes={water}
               referencePaths={references}
               snapshot={network}
@@ -739,8 +741,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
               selectedAirTrack={selectedAirTrack}
               selectedAirport={selectedAirport}
               onSelectAirTrack={selectAirTrack}
-              trafficOverviewEmphasis={scaleView === 'region' ? 1 : 0}
-              stationLabelTierLimit={scaleView === 'region' ? 2 : 3}
+              trafficOverviewEmphasis={1}
+              stationLabelTierLimit={3}
               stationLabelSettleSeconds={0.42}
             />
           ) : null}
@@ -878,7 +880,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       <aside className="paris-map-tools" aria-label="Contrôles de la carte">
         <button type="button" aria-label="Zoom avant" onClick={() => moveCamera('zoom-in')}>+</button>
         <button type="button" aria-label="Zoom arrière" onClick={() => moveCamera('zoom-out')}>−</button>
-        <button type="button" aria-label="Réinitialiser la carte" onClick={() => moveCamera('reset')}>↺</button>
+        <button type="button" aria-label="Réinitialiser la carte" onClick={() => { clearSelection(); moveCamera('reset') }}>↺</button>
         <button type="button" data-tooltip={trainLabelMode === 'off' ? 'Afficher automatiquement les libellés des véhicules selon le zoom' : 'Masquer les libellés des véhicules'} aria-label={`Libellés ${trainLabelMode}`} onClick={() => setTrainLabelMode((value) => value === 'off' ? 'auto' : 'off')}>L·{trainLabelMode === 'off' ? '0' : 'A'}</button>
       </aside>
 

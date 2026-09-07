@@ -330,3 +330,34 @@ test('clock updates reuse timetable search with results open and closed', async 
   await search.focus()
   await expect(page.getByRole('option', { name: /^RER A \d+ MISSIONS PLANIFIÉES$/ })).toBeVisible()
 })
+
+test('returning to the region reuses map buffers and resets the scale control', async ({ page }) => {
+  await page.getByRole('button', { name: 'Pause', exact: true }).click()
+  const scale = page.getByRole('button', { name: 'Basculer entre le centre et la région' })
+  await scale.click()
+  await page.waitForTimeout(2200)
+  await page.evaluate(() => {
+    const browser = globalThis as unknown as {
+      mapBuffersCreated: number
+      WebGL2RenderingContext: { prototype: { createBuffer(): unknown } }
+    }
+    browser.mapBuffersCreated = 0
+    const prototype = browser.WebGL2RenderingContext.prototype
+    const create = prototype.createBuffer
+    prototype.createBuffer = function () {
+      browser.mapBuffersCreated++
+      return create.call(this)
+    }
+  })
+  await scale.click()
+  await page.waitForTimeout(2200)
+  expect(await page.evaluate(() =>
+    (globalThis as unknown as { mapBuffersCreated: number }).mapBuffersCreated,
+  )).toBe(0)
+  await expect(scale).toHaveAttribute('aria-pressed', 'false')
+  await scale.click()
+  await page.getByRole('button', { name: 'Réinitialiser la carte' }).click()
+  await expect(scale).toHaveAttribute('aria-pressed', 'false')
+  await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
+  await expect(page.getByRole('button', { name: 'Lecture', exact: true })).toBeVisible()
+})

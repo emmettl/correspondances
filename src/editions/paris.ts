@@ -60,7 +60,7 @@ export const PARIS_EDITION: ParisEdition = {
   languageStorageKey: 'correspondances-language',
   defaultNetworkTime: 8 * 3600,
   mapFraming: {
-    homeDistanceScale: 0.9,
+    homeDistanceScale: 1.12,
     minimumDistanceScale: 0.018,
   },
   theme: CORRESPONDANCES_THEME,

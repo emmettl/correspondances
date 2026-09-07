@@ -26,11 +26,11 @@ Validation: `npm run check:boundary`, `npm run typecheck`, `npm run lint`, `npm 
 
 Timetable search is cached independently of the playback clock, and closed search results do no search work. Aircraft ranking still follows the clock while results are open. This ports the applicable playback fix from All Change `c2f93fb`; its observed-rail projection and custom diagram fixes do not apply to this edition.
 
-To capture frame timings on Windows 11 Edge, run `npm run build` and `npm run preview -- --host 127.0.0.1 --port 4178` in one terminal, then `npm run profile:frames -- --channel msedge --output paris-frames.json` in another. The report includes GPU, canvas resolution, frame percentiles, missed-frame percentages and main-thread timings for opening, open search, selected/closed search and the centre view. Match `--width`, `--height`, `--dpr` and `--fps` to the affected display. Chrome is supported with `--channel chrome`; `--headless` is useful for smoke checks but does not establish desktop GPU performance.
+To capture frame timings on Windows 11 Edge, run `npm run build` and `npm run preview -- --host 127.0.0.1 --port 4178` in one terminal, then `npm run profile:frames -- --channel msedge --output paris-frames.json` in another. The report includes GPU, canvas resolution, frame percentiles, missed-frame percentages and main-thread timings for opening, open search, selected/closed search, the centre view and both scale transitions. Match `--width`, `--height`, `--dpr` and `--fps` to the affected display. Chrome is supported with `--channel chrome`; `--headless` is useful for smoke checks but does not establish desktop GPU performance.
 
 ## Next in the study
 
-The next unfinished [PAR 3 items](https://github.com/emmettl/motionstudies/blob/main/docs/PARIS.md#par-3--full-nervous-system) are to assess the eight-line regional composition and tune the Cœur/Région zoom transition so the centre and outer branches remain legible. Review phone and desktop density and frame timings before admitting the thirteen remaining Métro lines. Transilien, tram and operational rail variation remain later considerations.
+The eight-line density review and Cœur/Région transition tuning are recorded in [the density review](docs/DENSITY.md). Place names now lead the centre view, mission labels wait for closer zoom, and corridor emphasis follows the camera continuously. Next, choose one independently loaded Métro tranche from the pinned scope audit and repeat the visual, payload and frame checks before further expansion. Transilien, tram and operational rail variation remain later considerations.
 
 ## Hosting and data
 

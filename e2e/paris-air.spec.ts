@@ -70,3 +70,24 @@ test('AIR failure leaves the railway usable and supports retry', async ({ page }
   await expect(page.locator('.paris-air-note')).toContainText('avions observés')
   await expect(page.locator('.paris-air-note')).not.toContainText('indisponible')
 })
+
+
+test('scale and reset release aircraft follow without disabling AIR', async ({ page }) => {
+  await page.getByRole('button', { name: airToggle }).click()
+  await expect(page.getByRole('button', { name: airToggle })).toHaveAttribute('aria-busy', 'false')
+  const follow = async () => {
+    await page.getByRole('searchbox').fill(aircraft.callsign)
+    await page.getByRole('option', { name: /AIR · OBSERVÉ/ }).first().click()
+    await expect(page.locator('main')).toHaveAttribute('data-selected-air-track', /.+/)
+  }
+  await follow()
+  await page.getByRole('button', { name: 'Basculer entre le centre et la région' }).click()
+  await expect(page.locator('main')).not.toHaveAttribute('data-selected-air-track')
+  await expect(page.locator('main')).toHaveAttribute('data-scale-view', 'centre')
+  await follow()
+  await page.getByRole('button', { name: 'Réinitialiser la carte' }).click()
+  await expect(page.locator('main')).not.toHaveAttribute('data-selected-air-track')
+  await expect(page.locator('main')).toHaveAttribute('data-scale-view', 'region')
+  await expect(page.locator('main')).toHaveAttribute('data-air-enabled', 'true')
+  await expect(page.getByRole('button', { name: 'Pause', exact: true })).toBeVisible()
+})
