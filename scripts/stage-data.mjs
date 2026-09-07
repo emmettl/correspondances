@@ -12,3 +12,9 @@ for (const file of files) {
   await copyFile(`fixtures/idfm/${file}`, output)
 }
 console.log(`Staged ${files.size} edition artifacts.`)
+
+const airFiles = new Set(['correspondances-air-morning.json', 'correspondances-air-day-manifest.json'])
+const airManifest = JSON.parse(await readFile('fixtures/adsb/correspondances-air-day-manifest.json', 'utf8'))
+for (const { path } of airManifest.chunks) airFiles.add(path)
+for (const file of airFiles) await copyFile(`fixtures/adsb/${file}`, `public/data/${file}`)
+console.log(`Staged ${airFiles.size} optional Paris AIR artifacts.`)

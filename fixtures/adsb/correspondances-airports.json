@@ -1,0 +1,38 @@
+[
+  {
+    "id": "cdg",
+    "name": "Paris Charles de Gaulle",
+    "city": "Paris",
+    "mapLabel": "CDG",
+    "iata": "CDG",
+    "icao": "LFPG",
+    "longitude": 2.554117,
+    "latitude": 49.00896,
+    "approachRadiusKilometres": 12,
+    "maximumApproachAltitudeFeet": 6000
+  },
+  {
+    "id": "orly",
+    "name": "Paris Orly",
+    "city": "Paris",
+    "mapLabel": "ORY",
+    "iata": "ORY",
+    "icao": "LFPO",
+    "longitude": 2.358963,
+    "latitude": 48.729499,
+    "approachRadiusKilometres": 12,
+    "maximumApproachAltitudeFeet": 6000
+  },
+  {
+    "id": "le-bourget",
+    "name": "Paris Le Bourget",
+    "city": "Paris",
+    "mapLabel": "LBG",
+    "iata": "LBG",
+    "icao": "LFPB",
+    "longitude": 2.436539,
+    "latitude": 48.962276,
+    "approachRadiusKilometres": 12,
+    "maximumApproachAltitudeFeet": 6000
+  }
+]

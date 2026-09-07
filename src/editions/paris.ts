@@ -37,6 +37,10 @@ export interface ParisDataCatalog extends EditionDataCatalog {
     readonly geography: string
     readonly dayManifest: string
   }
+  readonly air: {
+    readonly morning: string
+    readonly dayManifest: string
+  }
   readonly layers: {
     readonly centralCrossMorning: string
     readonly centralCrossDayManifest: string
@@ -65,6 +69,10 @@ export const PARIS_EDITION: ParisEdition = {
       network: 'correspondances-morning.json',
       geography: 'correspondances-geography.json',
       dayManifest: 'correspondances-day-manifest.json',
+    },
+    air: {
+      morning: 'correspondances-air-morning.json',
+      dayManifest: 'correspondances-air-day-manifest.json',
     },
     layers: {
       centralCrossMorning: 'correspondances-central-cross-morning.json',

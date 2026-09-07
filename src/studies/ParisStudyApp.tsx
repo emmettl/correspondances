@@ -17,6 +17,11 @@ import {
   type NetworkTrain,
   type StationIndexEntry,
 } from '@motionstudies/core/domain/network'
+import { activeAirTracks, positionForAirTrack } from '@motionstudies/core/domain/air'
+import { airTrackSearchValue, searchAirTracks, type AirSearchTrack } from '@motionstudies/core/air-search'
+import { airportAirTrackIds, searchAirports, type StudyAirport } from '@motionstudies/core/domain/airport'
+import { PARIS_AIRPORTS } from '../editions/paris-airports.ts'
+import { useParisAir } from './use-paris-air.ts'
 import { mergeNetworkLayers } from '@motionstudies/core/domain/network-layers'
 import { motionStudyMark } from '../editions/catalogue.ts'
 import { editionDataUrl } from '../editions/data-url.ts'
@@ -51,6 +56,8 @@ const PLAYBACK_RATES = [
 ] as const
 
 type SearchChoice =
+  | { readonly kind: 'air'; readonly value: AirSearchTrack }
+  | { readonly kind: 'airport'; readonly value: StudyAirport }
   | { readonly kind: 'station'; readonly value: StationIndexEntry }
   | { readonly kind: 'route'; readonly value: NetworkRouteIndexEntry }
   | { readonly kind: 'train'; readonly value: NetworkTrain }
@@ -123,6 +130,8 @@ function searchChoices(
   snapshot: NetworkSnapshot,
   stations: readonly StationIndexEntry[],
   routes: readonly NetworkRouteIndexEntry[],
+  aircraft: readonly AirSearchTrack[],
+  time: number,
 ): readonly SearchChoice[] {
   const folded = foldSearchText(query.trim())
   if (!folded) return []
@@ -142,7 +151,13 @@ function searchChoices(
     )
     .slice(0, 5)
     .map((value): SearchChoice => ({ kind: 'train', value }))
-  return [...stationMatches, ...routeMatches, ...trainMatches].slice(0, 8)
+  const airportMatches = searchAirports(PARIS_AIRPORTS, query, 3).map(
+    (value): SearchChoice => ({ kind: 'airport', value }),
+  )
+  const airMatches = searchAirTracks(aircraft, query, time, 4).map(
+    (value): SearchChoice => ({ kind: 'air', value }),
+  )
+  return [...airportMatches, ...stationMatches, ...routeMatches, ...airMatches, ...trainMatches].slice(0, 8)
 }
 
 function stationForComplex(
@@ -241,6 +256,17 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const [isPlaying, setIsPlaying] = useState(true)
   const [playbackRate, setPlaybackRate] = useState(120)
   const [studyWindow, setStudyWindow] = useState<'morning' | 'day'>('morning')
+  const air = useParisAir(edition, studyWindow, time)
+  const { setEnabled: setAirEnabled } = air
+  const [selectedAirTrackId, setSelectedAirTrackId] = useState<string>()
+  const [selectedAirport, setSelectedAirport] = useState<StudyAirport>()
+  const [airCategorySelected, setAirCategorySelected] = useState(false)
+  const selectedAirTrack = useMemo(() => air.snapshot?.tracks.find((track) => track.id === selectedAirTrackId), [air.snapshot, selectedAirTrackId])
+  const selectedAirEntry = air.aircraft.find((track) => track.id === selectedAirTrackId)
+  const selectedAirPosition = selectedAirTrack ? positionForAirTrack(selectedAirTrack, time) : undefined
+  const activeAircraft = useMemo(() => air.snapshot ? activeAirTracks(air.snapshot, time) : [], [air.snapshot, time])
+  const airportTrackIds = useMemo(() => selectedAirport && air.snapshot ? airportAirTrackIds(air.snapshot.tracks, selectedAirport) : undefined, [selectedAirport, air.snapshot])
+  const activeAircraftCount = airportTrackIds ? activeAircraft.filter((track) => airportTrackIds.has(track.id)).length : activeAircraft.length
   const [scaleView, setScaleView] = useState<ParisScaleView>('region')
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -392,8 +418,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     [network],
   )
   const choices = useMemo(
-    () => (network ? searchChoices(query, network, stations, routes) : []),
-    [network, query, routes, stations],
+    () => (network ? searchChoices(query, network, stations, routes, air.aircraft, time) : []),
+    [network, query, routes, stations, air.aircraft, time],
   )
   const boundary = useMemo(
     () => (geography ? parisBoundary(geography) : undefined),
@@ -416,7 +442,14 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setCameraCommand((current) => ({ id: (current?.id ?? 0) + 1, action }))
   }, [])
 
+  const clearAirSelection = useCallback(() => {
+    setSelectedAirTrackId(undefined)
+    setSelectedAirport(undefined)
+    setAirCategorySelected(false)
+  }, [])
+
   const clearSelection = useCallback(() => {
+    clearAirSelection()
     setSelectedStation(undefined)
     setSelectedRoute(undefined)
     setSelectedTrain(undefined)
@@ -424,7 +457,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setActiveHubStudyIndex(-1)
     setQuery('')
     setSearchOpen(false)
-  }, [])
+  }, [clearAirSelection])
 
   const activateStudyWindow = useCallback((next: 'morning' | 'day') => {
     if (next === studyWindow) return
@@ -491,6 +524,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   }, [moveCamera, network, scaleView, stations])
 
   const selectStation = useCallback((station: StationIndexEntry) => {
+    clearAirSelection()
     setActiveHubStudyIndex(-1)
     setSelectedStation(station)
     setSelectedRoute(undefined)
@@ -503,9 +537,31 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       action: 'reveal-station',
       distanceScale: station.labelRank === 1 ? 0.22 : 0.32,
     }))
-  }, [])
+  }, [clearAirSelection])
+
+  const selectAirTrack = useCallback((id: string) => {
+    const track = air.aircraft.find((candidate) => candidate.id === id)
+    if (!track) return
+    clearSelection()
+    setSelectedAirTrackId(id)
+    setTime((current) => current >= track.start && current <= track.end ? current : Math.min(track.end, track.start + 10))
+    setQuery(airTrackSearchValue(track))
+    setIsPlaying(true)
+  }, [air.aircraft, clearSelection])
 
   const activateChoice = useCallback((choice: SearchChoice) => {
+    if (choice.kind === 'air') { selectAirTrack(choice.value.id); return }
+    if (choice.kind === 'airport') {
+      clearSelection()
+      setAirEnabled(true)
+      setSelectedAirport(choice.value)
+      setAirCategorySelected(true)
+      setQuery(`${choice.value.name} · ${choice.value.iata}`)
+      setScaleView('region')
+      setCameraCommand((current) => ({ id: (current?.id ?? 0) + 1, action: 'focus-location', focus: [choice.value.longitude, choice.value.latitude], distanceScale: 0.22 }))
+      return
+    }
+    clearAirSelection()
     setActiveHubStudyIndex(-1)
     setSelectedConnection(undefined)
     if (choice.kind === 'station') {
@@ -525,9 +581,10 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setSelectedRoute(undefined)
     setTime(Math.max(choice.value.start, Math.min(time, choice.value.end)))
     setQuery(`${choice.value.shortName} → ${choice.value.headsign}`)
-  }, [moveCamera, selectStation, time])
+  }, [moveCamera, selectStation, time, selectAirTrack, clearSelection, clearAirSelection, setAirEnabled])
 
   const selectRoute = useCallback((name: string) => {
+    clearAirSelection()
     setActiveHubStudyIndex(-1)
     const route = routes.find((candidate) => candidate.name === name)
     setSelectedRoute((current) => current?.id === route?.id ? undefined : route)
@@ -537,7 +594,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setQuery('')
     setSearchOpen(false)
     moveCamera('reset')
-  }, [moveCamera, routes])
+  }, [moveCamera, routes, clearAirSelection])
 
   const showNextConnection = useCallback(() => {
     if (!network) return
@@ -547,6 +604,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       nextConnection(network, time + 15, hubStudy.complexId) ??
       nextConnection(network, network.metadata.windowStart, hubStudy.complexId)
     if (!connection) return
+    clearAirSelection()
     setActiveHubStudyIndex(nextHubStudyIndex)
     setScaleView('centre')
     setSelectedConnection(connection)
@@ -563,7 +621,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       focus: [connection.complex.longitude, connection.complex.latitude],
       distanceScale: hubStudy.distanceScale,
     }))
-  }, [activeHubStudyIndex, network, time])
+  }, [activeHubStudyIndex, network, time, clearAirSelection])
 
   const onSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     event.stopPropagation()
@@ -600,7 +658,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [clearSelection, limitedChrome])
 
-  const hasSelection = Boolean(selectedStation || selectedRoute || selectedTrain || selectedConnection)
+  const hasSelection = Boolean(selectedStation || selectedRoute || selectedTrain || selectedConnection || selectedAirTrackId || selectedAirport || airCategorySelected)
   const comparisonTrains = selectedConnection
     ? [selectedConnection.incoming, selectedConnection.outgoing]
     : []
@@ -630,6 +688,9 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       className={`experience view-network correspondances-experience${hasSelection ? ' has-selection' : ''}${limitedChrome ? ' is-limited-chrome' : ''}`}
       data-limited-chrome={limitedChrome}
       data-scale-view={scaleView}
+      data-air-enabled={air.enabled}
+      data-selected-air-track={selectedAirTrackId}
+      data-selected-airport={selectedAirport?.id}
     >
       <div className="scene" aria-hidden={webglAvailable ? true : undefined}>
         <Suspense fallback={null}>
@@ -662,6 +723,12 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
               cameraFraming={edition.mapFraming}
               routeColors={CORRESPONDANCES_ROUTE_COLORS}
               routeColorMix={1}
+              airSnapshot={air.snapshot}
+              airCategorySelected={airCategorySelected}
+              airports={air.enabled ? PARIS_AIRPORTS : undefined}
+              selectedAirTrack={selectedAirTrack}
+              selectedAirport={selectedAirport}
+              onSelectAirTrack={selectAirTrack}
               trafficOverviewEmphasis={scaleView === 'region' ? 1 : 0}
               stationLabelTierLimit={scaleView === 'region' ? 2 : 3}
               stationLabelSettleSeconds={0.42}
@@ -693,11 +760,11 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         >
           <span className="search-mark" aria-hidden="true" />
           <label>
-            <span className="sr-only">Rechercher une station, ligne ou mission</span>
+            <span className="sr-only">Rechercher une station, ligne, mission, aéroport ou avion</span>
             <input
               type="search"
               value={query}
-              placeholder="Châtelet, RER A, ou QIWI90"
+              placeholder={air.enabled ? "CDG, Orly ou un indicatif" : "Châtelet, RER A ou CDG"}
               autoComplete="off"
               aria-controls="paris-search-results"
               aria-expanded={searchOpen && choices.length > 0}
@@ -720,12 +787,16 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         {searchOpen && query.trim() && (
           <div id="paris-search-results" className="paris-search-results" role="listbox">
             {choices.map((choice, index) => {
-              const label = choice.kind === 'station'
+              const label = choice.kind === 'airport' ? `${choice.value.name} · ${choice.value.iata}`
+                : choice.kind === 'air' ? airTrackSearchValue(choice.value)
+                : choice.kind === 'station'
                 ? choice.value.name
                 : choice.kind === 'route'
                   ? choice.value.name
                   : `${choice.value.shortName} → ${choice.value.headsign}`
-              const detail = choice.kind === 'station'
+              const detail = choice.kind === 'airport' ? 'AÉROPORT'
+                : choice.kind === 'air' ? 'AIR · OBSERVÉ'
+                : choice.kind === 'station'
                 ? 'STATION'
                 : choice.kind === 'route'
                   ? `${choice.value.trainIds.length} MISSIONS PLANIFIÉES`
@@ -751,9 +822,12 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       <section className="paris-status" aria-live="polite">
         {loadError || dayStudy.error ? <p>Étude indisponible.</p> : network ? (
           <>
-            <div><strong>{activeTrainCount}</strong><span>trains en mouvement</span></div>
-            <p>{selectedConnection?.complex.name ?? selectedStation?.name ?? selectedRoute?.name ?? (selectedTrain ? `${selectedTrain.shortName} → ${selectedTrain.headsign}` : scaleView === 'centre' ? 'Le cœur en détail' : 'Deux échelles, une ville')}</p>
-            <small>{selectedConnection
+            <div><strong>{selectedAirTrackId ? (selectedAirPosition ? 1 : 0) : selectedAirport || airCategorySelected ? activeAircraftCount : activeTrainCount}</strong><span>{selectedAirTrackId || selectedAirport || airCategorySelected ? 'avions observés' : 'trains en mouvement'}</span></div>
+            <p>{selectedAirEntry ? airTrackSearchValue(selectedAirEntry) : selectedAirport?.name ?? (airCategorySelected ? 'Le ciel parisien' : undefined) ?? selectedConnection?.complex.name ?? selectedStation?.name ?? selectedRoute?.name ?? (selectedTrain ? `${selectedTrain.shortName} → ${selectedTrain.headsign}` : scaleView === 'centre' ? 'Le cœur en détail' : 'Deux échelles, une ville')}</p>
+            <small>{selectedAirTrackId
+              ? selectedAirPosition ? `${Math.round(selectedAirPosition.altitudeFeet).toLocaleString('fr-FR')} ft · ${Math.round(selectedAirPosition.groundSpeedKnots)} kt · altitude comprimée` : 'Aucune position observée à cet instant'
+              : selectedAirport ? 'Présence dans l’enveloppe d’approche · liaison inférée'
+              : selectedConnection
               ? `${activeHubStudy?.description ?? 'correspondance planifiée'} · ${selectedConnection.incoming.route} → ${selectedConnection.outgoing.route} · ${Math.round((selectedConnection.departure - selectedConnection.arrival) / 60)} min disponibles · ${Math.round(selectedConnection.minimumTransferSeconds / 60)} min minimum publié`
               : selectedStation
               ? `${selectedStation.trainIds.length} passages planifiés dans l’étude`
@@ -768,12 +842,18 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
                       : `${plannedTripCount} missions planifiées · ${activeOptionalLayerCount ? `${activeOptionalLayerCount} couche${activeOptionalLayerCount > 1 ? 's' : ''} active${activeOptionalLayerCount > 1 ? 's' : ''} · ` : ''}pas de temps réel`}</small>
           </>
         ) : <p>Paris se dessine…</p>}
+        {air.enabled && <div className="paris-air-note" role="status">
+          <span>{air.error ? 'AIR indisponible · le rail reste actif' : air.loading ? 'AIR se charge…' : `AIR · ${activeAircraft.length} avions observés`}</span>
+          {air.error && <button type="button" onClick={air.retry}>Réessayer AIR</button>}
+          <span><a href="https://www.adsb.lol/docs/open-data/historical/" target="_blank" rel="noreferrer">ADSB.lol</a> · 04.09.2026 · <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noreferrer">ODbL</a></span>
+        </div>}
       </section>
 
       <nav className="paris-routes" aria-label="Lignes de l’étude">
         <button type="button" aria-label="Isoler Métro 1" aria-pressed={selectedRoute?.name === 'Métro 1'} onClick={() => selectRoute('Métro 1')}><i /> Métro 1 <small>le centre</small></button>
         <button type="button" aria-label="Isoler RER A" aria-pressed={selectedRoute?.name === 'RER A'} onClick={() => selectRoute('RER A')}><i /> RER A <small>la région</small></button>
         <button className="paris-layer-button" type="button" aria-label="Afficher les couches" aria-expanded={layerMenuOpen} onClick={() => setLayerMenuOpen((open) => !open)}><i /> Couches <small>{activeOptionalLayerCount ? `${activeOptionalLayerCount} active${activeOptionalLayerCount > 1 ? 's' : ''}` : 'réseau optionnel'}</small></button>
+        <button className="paris-air-toggle" type="button" aria-label="AIR — avions observés" aria-pressed={air.enabled} aria-busy={air.loading} onClick={() => { clearSelection(); setAirEnabled(!air.enabled) }}><i /> AIR <small>observé</small></button>
         <button className="paris-connection-button" type="button" aria-label="Prochaine correspondance" onClick={showNextConnection}><i /> {activeHubStudy?.title ?? 'Correspondance'} <small>{activeHubStudy ? selectedConnection?.complex.name : '3 hubs · données IDFM'}</small></button>
       </nav>
 
@@ -781,6 +861,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         <section className="paris-layer-menu" aria-label="Couches du réseau">
           <button type="button" aria-label="Couche nord–sud Métro 4, Métro 14 et RER B" aria-pressed={centralCrossEnabled} aria-busy={centralCrossLayerLoading} onClick={toggleCentralCross}><i className="central-cross" /> <span><strong>{centralCrossLayerLoading ? 'Chargement…' : 'Croisée nord–sud'}</strong><small>Métro 4 · Métro 14 · RER B</small></span></button>
           <button type="button" aria-label="Couche régionale RER C, RER D et RER E" aria-pressed={regionalRerEnabled} aria-busy={regionalRerLayerLoading} onClick={toggleRegionalRer}><i className="regional-rer" /> <span><strong>{regionalRerLayerLoading ? 'Chargement…' : 'Région étendue'}</strong><small>RER C · RER D · RER E</small></span></button>
+          {air.enabled && <button type="button" aria-label="Isoler les avions observés" aria-pressed={airCategorySelected} onClick={() => { const next = !airCategorySelected; clearSelection(); setAirCategorySelected(next); setLayerMenuOpen(false) }}><i className="air" /><span><strong>Isoler AIR</strong><small>Atténuer le réseau ferroviaire</small></span></button>}
         </section>
       )}
 

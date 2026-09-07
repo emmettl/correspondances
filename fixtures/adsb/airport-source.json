@@ -1,0 +1,53 @@
+{
+  "sourceUrl": "https://raw.githubusercontent.com/datasets/airport-codes/65bda4e72292b5dff346313429b9d5aaf218d357/data/airport-codes.csv",
+  "sourceSha256": "39173a0c3325b904d924b800eb229bccac8078aa8daf059b006da9d1ed5f5f5f",
+  "retrievedAt": "2026-09-07",
+  "records": [
+    {
+      "ident": "LFPB",
+      "type": "large_airport",
+      "name": "Paris-Le Bourget International Airport",
+      "elevation_ft": "218",
+      "continent": "EU",
+      "iso_country": "FR",
+      "iso_region": "FR-IDF",
+      "municipality": "Paris",
+      "icao_code": "LFPB",
+      "iata_code": "LBG",
+      "gps_code": "LFPB",
+      "local_code": "",
+      "coordinates": "48.962276, 2.436539"
+    },
+    {
+      "ident": "LFPG",
+      "type": "large_airport",
+      "name": "Charles de Gaulle International Airport",
+      "elevation_ft": "392",
+      "continent": "EU",
+      "iso_country": "FR",
+      "iso_region": "FR-IDF",
+      "municipality": "Paris (Roissy-en-France, Val-d'Oise)",
+      "icao_code": "LFPG",
+      "iata_code": "CDG",
+      "gps_code": "LFPG",
+      "local_code": "",
+      "coordinates": "49.00896, 2.554117"
+    },
+    {
+      "ident": "LFPO",
+      "type": "large_airport",
+      "name": "Paris-Orly Airport",
+      "elevation_ft": "291",
+      "continent": "EU",
+      "iso_country": "FR",
+      "iso_region": "FR-IDF",
+      "municipality": "Paris (Orly, Val-de-Marne)",
+      "icao_code": "LFPO",
+      "iata_code": "ORY",
+      "gps_code": "LFPO",
+      "local_code": "",
+      "coordinates": "48.729499, 2.358963"
+    }
+  ],
+  "associationModel": "Inferred presence within 12 km and at or below 6000 ft; not a confirmed origin or destination."
+}

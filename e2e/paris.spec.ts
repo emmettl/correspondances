@@ -25,6 +25,7 @@ test('opens all eight implemented lines without fetching full-day data', async (
   await page.getByRole('button', { name: 'Afficher les couches' }).click()
   await expect(page.getByRole('button', { name: 'Couche nord–sud Métro 4, Métro 14 et RER B' })).toHaveAttribute('aria-pressed', 'true')
   await expect(page.getByRole('button', { name: 'Couche régionale RER C, RER D et RER E' })).toHaveAttribute('aria-pressed', 'true')
+  expect(resources.some((url) => url.includes('correspondances-air-'))).toBe(false)
   expect(resources.some((url) => url.includes('swiss-rail-morning.json'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-rail-led'))).toBe(false)
   expect(resources.some((url) => url.includes('local-express-lexington'))).toBe(false)
@@ -46,7 +47,7 @@ test('can disable and restore the north–south layer', async ({ page }) => {
   await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
 
   const search = page.getByRole('searchbox', {
-    name: 'Rechercher une station, ligne ou mission',
+    name: 'Rechercher une station, ligne, mission, aéroport ou avion',
   })
   await search.fill('Métro 14')
   await expect(page.getByRole('option', { name: /Métro 14/ })).toBeVisible()
@@ -107,7 +108,7 @@ test('composes the extended RER layer with the cross and the full clock', async 
   await expect(page.locator('.paris-status')).toContainText('2 couches actives')
 
   const search = page.getByRole('searchbox', {
-    name: 'Rechercher une station, ligne ou mission',
+    name: 'Rechercher une station, ligne, mission, aéroport ou avion',
   })
   await search.fill('RER D')
   await expect(page.getByRole('option', {
@@ -223,7 +224,7 @@ test('the correspondence director cycles authored hubs using published transfer 
 
 test('accent-insensitive station search and mission-code search are selectable', async ({ page }) => {
   const search = page.getByRole('searchbox', {
-    name: 'Rechercher une station, ligne ou mission',
+    name: 'Rechercher une station, ligne, mission, aéroport ou avion',
   })
   await search.fill('chatelet')
   await expect(page.getByRole('option', { name: /Châtelet/ }).first()).toBeVisible()
@@ -238,7 +239,7 @@ test('accent-insensitive station search and mission-code search are selectable',
 
 test('typing in search does not activate global playback shortcuts', async ({ page }) => {
   const search = page.getByRole('searchbox', {
-    name: 'Rechercher une station, ligne ou mission',
+    name: 'Rechercher une station, ligne, mission, aéroport ou avion',
   })
   await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible()
   await search.pressSequentially('Gare de Lyon')
