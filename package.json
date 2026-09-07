@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Correspondances — a Motion Studies edition",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "data:paris:proof": "node scripts/ingest-idfm-correspondances-proof.mjs --archive /tmp/IDFM-gtfs.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z",
@@ -50,5 +50,6 @@
     "vite": "8.2.2",
     "vitest": "5.0.0",
     "@motionstudies/data": "0.1.0-alpha.2"
-  }
+  },
+  "packageManager": "npm@11.19.0"
 }
