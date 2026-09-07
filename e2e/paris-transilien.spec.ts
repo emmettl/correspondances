@@ -38,6 +38,9 @@ for (const [slug, label] of groups) {
 }
 
 test('all 30 rail lines compose across scales and the full day', async ({ page }, testInfo) => {
+  // Ten optional groups plus three full-day seeks are substantially slower
+  // with CI's software WebGL. Individual assertions retain their 15s limit.
+  test.setTimeout(180_000)
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   await page.goto('/')

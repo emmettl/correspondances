@@ -10,6 +10,10 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('AIR loads on demand, supports callsign follow and returns to rail', async ({ page }) => {
+  // Keep the selected fixture inside its observed interval while slow hosted
+  // rendering loads AIR and performs the follow assertions.
+  await page.getByRole('button', { name: 'Pause', exact: true }).click()
+  await page.getByRole('slider', { name: 'Heure' }).fill('28800')
   await page.getByRole('button', { name: airToggle }).click()
   await expect(page.getByRole('button', { name: airToggle })).toHaveAttribute('aria-busy', 'false')
   await expect(page.locator('.paris-air-note')).toContainText('avions observés')
