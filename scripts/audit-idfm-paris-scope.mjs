@@ -10,6 +10,7 @@ import {
 const SOURCE_URL = 'https://eu.ftp.opendatasoft.com/stif/GTFS/IDFM-gtfs.zip'
 const DATASET_URL =
   'https://prim.iledefrance-mobilites.fr/fr/jeux-de-donnees/offre-horaires-tc-gtfs-idfm'
+const TRANSILIEN_LINES = new Set(['H', 'J', 'K', 'L', 'N', 'P', 'R', 'U', 'V'])
 const RER_LINES = new Set(['A', 'B', 'C', 'D', 'E'])
 
 function argument(name, fallback) {
@@ -26,7 +27,7 @@ function requiredArgument(name) {
 function routeDisplayName(route) {
   return route.mode === 'metro'
     ? `Métro ${route.shortName}`
-    : `RER ${route.shortName}`
+    : `${route.mode === 'transilien' ? 'Transilien' : 'RER'} ${route.shortName}`
 }
 
 function summarizeRoutes(routeIds, routeRecords, routeMetrics) {
@@ -45,6 +46,7 @@ function summarizeRoutes(routeIds, routeRecords, routeMetrics) {
   }
 }
 
+const transilien = argument('scope') === 'transilien'
 const archive = resolve(requiredArgument('archive'))
 const output = resolve(
   argument('output', 'fixtures/idfm/correspondances-scope-audit.json'),
@@ -60,7 +62,9 @@ const services = await activeServices(archive, serviceDate)
 const routeRecords = new Map()
 for await (const row of rowsFromArchive(archive, 'routes.txt')) {
   const routeType = Number(row.route_type)
-  const mode = routeType === 1
+  const mode = transilien
+    ? (routeType === 2 && TRANSILIEN_LINES.has(row.route_short_name) ? 'transilien' : undefined)
+    : routeType === 1
     ? 'metro'
     : routeType === 2 && RER_LINES.has(row.route_short_name)
       ? 'rer'
@@ -137,7 +141,12 @@ const routes = [...routeRecords.values()]
 
 const idsByName = new Map(routes.map((route) => [route.name, route.id]))
 const layer = (...names) => names.map((name) => idsByName.get(name)).filter(Boolean)
-const layers = {
+const layers = transilien ? {
+  transilienNorth: layer('Transilien H', 'Transilien K'),
+  transilienSaintLazare: layer('Transilien J', 'Transilien L'),
+  transilienSouthwest: layer('Transilien N', 'Transilien U', 'Transilien V'),
+  transilienEast: layer('Transilien P', 'Transilien R'),
+} : {
   opening: layer('Métro 1', 'RER A'),
   centralCross: layer('Métro 4', 'Métro 14', 'RER B'),
   metroArcs: layer('Métro 2', 'Métro 6'),
@@ -182,7 +191,7 @@ const result = {
 await mkdir(dirname(output), { recursive: true })
 await writeFile(output, `${JSON.stringify(result, null, 2)}\n`)
 console.log(
-  `Audited ${result.totals.routeCount} Métro/RER lines: ${result.totals.tripCount} trips, ` +
+  `Audited ${result.totals.routeCount} ${transilien ? 'Transilien' : 'Métro/RER'} lines: ${result.totals.tripCount} trips, ` +
     `${result.totals.uniqueStopCount} unique stops in the study window.`,
 )
 for (const [name, summary] of Object.entries(result.candidateLayers)) {

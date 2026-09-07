@@ -22,7 +22,7 @@ import { airTrackSearchValue, searchAirTracks, type AirSearchTrack } from '@moti
 import { airportAirTrackIds, searchAirports, type StudyAirport } from '@motionstudies/core/domain/airport'
 import { PARIS_AIRPORTS } from '../editions/paris-airports.ts'
 import { useParisAir } from './use-paris-air.ts'
-import { useParisMetroLayer } from './use-paris-metro-layer.ts'
+import { useParisRailLayer } from './use-paris-rail-layer.ts'
 import { mergeNetworkLayers } from '@motionstudies/core/domain/network-layers'
 import { motionStudyMark } from '../editions/catalogue.ts'
 import { editionDataUrl } from '../editions/data-url.ts'
@@ -255,18 +255,26 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const [isPlaying, setIsPlaying] = useState(true)
   const [playbackRate, setPlaybackRate] = useState(120)
   const [studyWindow, setStudyWindow] = useState<'morning' | 'day'>('morning')
-  const metroArcs = useParisMetroLayer(edition.data.layers.metroArcsMorning, edition.data.layers.metroArcsDayManifest, studyWindow, time)
+  const metroArcs = useParisRailLayer(edition.data.layers.metroArcsMorning, edition.data.layers.metroArcsDayManifest, studyWindow, time)
   const { network: metroArcsLayer, toggle: toggleMetroArcsLayer } = metroArcs
-  const metroCrossings = useParisMetroLayer(edition.data.layers.metroCrossingsMorning, edition.data.layers.metroCrossingsDayManifest, studyWindow, time)
+  const metroCrossings = useParisRailLayer(edition.data.layers.metroCrossingsMorning, edition.data.layers.metroCrossingsDayManifest, studyWindow, time)
   const { network: metroCrossingsLayer, toggle: toggleMetroCrossingsLayer } = metroCrossings
-  const metroEast = useParisMetroLayer(edition.data.layers.metroEastMorning, edition.data.layers.metroEastDayManifest, studyWindow, time)
+  const metroEast = useParisRailLayer(edition.data.layers.metroEastMorning, edition.data.layers.metroEastDayManifest, studyWindow, time)
   const { network: metroEastLayer, toggle: toggleMetroEastLayer } = metroEast
-  const metroBoulevards = useParisMetroLayer(edition.data.layers.metroBoulevardsMorning, edition.data.layers.metroBoulevardsDayManifest, studyWindow, time)
+  const metroBoulevards = useParisRailLayer(edition.data.layers.metroBoulevardsMorning, edition.data.layers.metroBoulevardsDayManifest, studyWindow, time)
   const { network: metroBoulevardsLayer, toggle: toggleMetroBoulevardsLayer } = metroBoulevards
-  const metroWest = useParisMetroLayer(edition.data.layers.metroWestMorning, edition.data.layers.metroWestDayManifest, studyWindow, time)
+  const metroWest = useParisRailLayer(edition.data.layers.metroWestMorning, edition.data.layers.metroWestDayManifest, studyWindow, time)
   const { network: metroWestLayer, toggle: toggleMetroWestLayer } = metroWest
-  const metroLocal = useParisMetroLayer(edition.data.layers.metroLocalMorning, edition.data.layers.metroLocalDayManifest, studyWindow, time)
+  const metroLocal = useParisRailLayer(edition.data.layers.metroLocalMorning, edition.data.layers.metroLocalDayManifest, studyWindow, time)
   const { network: metroLocalLayer, toggle: toggleMetroLocalLayer } = metroLocal
+  const transilienNorth = useParisRailLayer(edition.data.layers.transilienNorthMorning, edition.data.layers.transilienNorthDayManifest, studyWindow, time)
+  const { network: transilienNorthLayer, toggle: toggleTransilienNorthLayer } = transilienNorth
+  const transilienSaintLazare = useParisRailLayer(edition.data.layers.transilienSaintLazareMorning, edition.data.layers.transilienSaintLazareDayManifest, studyWindow, time)
+  const { network: transilienSaintLazareLayer, toggle: toggleTransilienSaintLazareLayer } = transilienSaintLazare
+  const transilienSouthwest = useParisRailLayer(edition.data.layers.transilienSouthwestMorning, edition.data.layers.transilienSouthwestDayManifest, studyWindow, time)
+  const { network: transilienSouthwestLayer, toggle: toggleTransilienSouthwestLayer } = transilienSouthwest
+  const transilienEast = useParisRailLayer(edition.data.layers.transilienEastMorning, edition.data.layers.transilienEastDayManifest, studyWindow, time)
+  const { network: transilienEastLayer, toggle: toggleTransilienEastLayer } = transilienEast
   const air = useParisAir(edition, studyWindow, time)
   const { setEnabled: setAirEnabled } = air
   const [selectedAirTrackId, setSelectedAirTrackId] = useState<string>()
@@ -359,10 +367,26 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         metroLocalLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
       optionalLayers.push(metroLocalLayer)
     }
+    if (transilienNorthLayer?.metadata.windowStart === baseNetwork.metadata.windowStart &&
+        transilienNorthLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
+      optionalLayers.push(transilienNorthLayer)
+    }
+    if (transilienSaintLazareLayer?.metadata.windowStart === baseNetwork.metadata.windowStart &&
+        transilienSaintLazareLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
+      optionalLayers.push(transilienSaintLazareLayer)
+    }
+    if (transilienSouthwestLayer?.metadata.windowStart === baseNetwork.metadata.windowStart &&
+        transilienSouthwestLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
+      optionalLayers.push(transilienSouthwestLayer)
+    }
+    if (transilienEastLayer?.metadata.windowStart === baseNetwork.metadata.windowStart &&
+        transilienEastLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
+      optionalLayers.push(transilienEastLayer)
+    }
     return optionalLayers.length
       ? mergeNetworkLayers([baseNetwork, ...optionalLayers])
       : baseNetwork
-  }, [baseNetwork, centralCrossEnabled, centralCrossLayer, regionalRerEnabled, regionalRerLayer, metroArcsLayer, metroCrossingsLayer, metroEastLayer, metroBoulevardsLayer, metroWestLayer, metroLocalLayer])
+  }, [baseNetwork, centralCrossEnabled, centralCrossLayer, regionalRerEnabled, regionalRerLayer, metroArcsLayer, metroCrossingsLayer, metroEastLayer, metroBoulevardsLayer, metroWestLayer, metroLocalLayer, transilienNorthLayer, transilienSaintLazareLayer, transilienSouthwestLayer, transilienEastLayer])
   const centralCrossLayerLoading = studyWindow === 'day'
     ? centralCrossDayStudy.loading
     : centralCrossLoading
@@ -592,6 +616,34 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     moveCamera('reset')
   }, [clearSelection, moveCamera, toggleMetroLocalLayer])
 
+  const toggleTransilienNorth = useCallback(() => {
+    clearSelection()
+    setLayerMenuOpen(false)
+    toggleTransilienNorthLayer()
+    moveCamera('reset')
+  }, [clearSelection, moveCamera, toggleTransilienNorthLayer])
+
+  const toggleTransilienSaintLazare = useCallback(() => {
+    clearSelection()
+    setLayerMenuOpen(false)
+    toggleTransilienSaintLazareLayer()
+    moveCamera('reset')
+  }, [clearSelection, moveCamera, toggleTransilienSaintLazareLayer])
+
+  const toggleTransilienSouthwest = useCallback(() => {
+    clearSelection()
+    setLayerMenuOpen(false)
+    toggleTransilienSouthwestLayer()
+    moveCamera('reset')
+  }, [clearSelection, moveCamera, toggleTransilienSouthwestLayer])
+
+  const toggleTransilienEast = useCallback(() => {
+    clearSelection()
+    setLayerMenuOpen(false)
+    toggleTransilienEastLayer()
+    moveCamera('reset')
+  }, [clearSelection, moveCamera, toggleTransilienEastLayer])
+
   const toggleScaleView = useCallback(() => {
     if (!network) return
     clearSelection()
@@ -759,13 +811,13 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const activeHubStudy = activeHubStudyIndex >= 0
     ? PARIS_HUB_STUDIES[activeHubStudyIndex]
     : undefined
-  const activeOptionalLayerCount = Number(centralCrossEnabled) + Number(regionalRerEnabled) + Number(metroArcs.enabled) + Number(metroCrossings.enabled) + Number(metroEast.enabled) + Number(metroBoulevards.enabled) + Number(metroWest.enabled) + Number(metroLocal.enabled)
-  const optionalLayerLoading = centralCrossLayerLoading || regionalRerLayerLoading || metroArcs.loading || metroCrossings.loading || metroEast.loading || metroBoulevards.loading || metroWest.loading || metroLocal.loading
-  const optionalLayerError = centralCrossLayerError || regionalRerLayerError || metroArcs.error || metroCrossings.error || metroEast.error || metroBoulevards.error || metroWest.error || metroLocal.error
+  const activeOptionalLayerCount = Number(centralCrossEnabled) + Number(regionalRerEnabled) + Number(metroArcs.enabled) + Number(metroCrossings.enabled) + Number(metroEast.enabled) + Number(metroBoulevards.enabled) + Number(metroWest.enabled) + Number(metroLocal.enabled) + Number(transilienNorth.enabled) + Number(transilienSaintLazare.enabled) + Number(transilienSouthwest.enabled) + Number(transilienEast.enabled)
+  const optionalLayerLoading = centralCrossLayerLoading || regionalRerLayerLoading || metroArcs.loading || metroCrossings.loading || metroEast.loading || metroBoulevards.loading || metroWest.loading || metroLocal.loading || transilienNorth.loading || transilienSaintLazare.loading || transilienSouthwest.loading || transilienEast.loading
+  const optionalLayerError = centralCrossLayerError || regionalRerLayerError || metroArcs.error || metroCrossings.error || metroEast.error || metroBoulevards.error || metroWest.error || metroLocal.error || transilienNorth.error || transilienSaintLazare.error || transilienSouthwest.error || transilienEast.error
   const plannedTripCount = studyWindow === 'day'
     ? (dayStudy.manifest?.tripCount ?? 0) +
       (centralCrossEnabled ? (centralCrossDayStudy.manifest?.tripCount ?? 0) : 0) +
-      (regionalRerEnabled ? (regionalRerDayStudy.manifest?.tripCount ?? 0) : 0) + metroArcs.tripCount + metroCrossings.tripCount + metroEast.tripCount + metroBoulevards.tripCount + metroWest.tripCount + metroLocal.tripCount
+      (regionalRerEnabled ? (regionalRerDayStudy.manifest?.tripCount ?? 0) : 0) + metroArcs.tripCount + metroCrossings.tripCount + metroEast.tripCount + metroBoulevards.tripCount + metroWest.tripCount + metroLocal.tripCount + transilienNorth.tripCount + transilienSaintLazare.tripCount + transilienSouthwest.tripCount + transilienEast.tripCount
     : (network?.trains.length ?? 0)
   const activeNetworkLabel = [
     'Métro 1',
@@ -778,6 +830,10 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     ...(metroBoulevards.enabled ? ['Métro 8 · 9'] : []),
     ...(metroWest.enabled ? ['Métro 12 · 13'] : []),
     ...(metroLocal.enabled ? ['Métro 3bis · 7bis · 10'] : []),
+    ...(transilienNorth.enabled ? ['Transilien H · K'] : []),
+    ...(transilienSaintLazare.enabled ? ['Transilien J · L'] : []),
+    ...(transilienSouthwest.enabled ? ['Transilien N · U · V'] : []),
+    ...(transilienEast.enabled ? ['Transilien P · R'] : []),
   ].join(' · ')
 
   return (
@@ -791,6 +847,10 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       data-metro-boulevards-enabled={metroBoulevards.enabled}
       data-metro-west-enabled={metroWest.enabled}
       data-metro-local-enabled={metroLocal.enabled}
+      data-transilien-north-enabled={transilienNorth.enabled}
+      data-transilien-saint-lazare-enabled={transilienSaintLazare.enabled}
+      data-transilien-southwest-enabled={transilienSouthwest.enabled}
+      data-transilien-east-enabled={transilienEast.enabled}
       data-air-enabled={air.enabled}
       data-selected-air-track={selectedAirTrackId}
       data-selected-airport={selectedAirport?.id}
@@ -970,6 +1030,10 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           <button type="button" data-tooltip={metroBoulevards.error ? 'Réessayer cette couche' : metroBoulevards.enabled ? 'Masquer cette couche' : 'Ajouter cette couche'} aria-label="Couche grands boulevards Métro 8 et Métro 9" aria-pressed={metroBoulevards.enabled} aria-busy={metroBoulevards.loading} onClick={toggleMetroBoulevards}><i className="metro-boulevards" /><span><strong>{metroBoulevards.error ? 'Réessayer la couche' : metroBoulevards.loading ? 'Chargement…' : 'Grands boulevards'}</strong><small>Métro 8 · Métro 9</small></span></button>
           <button type="button" data-tooltip={metroWest.error ? 'Réessayer cette couche' : metroWest.enabled ? 'Masquer cette couche' : 'Ajouter cette couche'} aria-label="Couche axes de l’Ouest Métro 12 et Métro 13" aria-pressed={metroWest.enabled} aria-busy={metroWest.loading} onClick={toggleMetroWest}><i className="metro-west" /><span><strong>{metroWest.error ? 'Réessayer la couche' : metroWest.loading ? 'Chargement…' : 'Axes de l’Ouest'}</strong><small>Métro 12 · Métro 13</small></span></button>
           <button type="button" data-tooltip={metroLocal.error ? 'Réessayer cette couche' : metroLocal.enabled ? 'Masquer cette couche' : 'Ajouter cette couche'} aria-label="Couche boucles et liaisons Métro 3bis, Métro 7bis et Métro 10" aria-pressed={metroLocal.enabled} aria-busy={metroLocal.loading} onClick={toggleMetroLocal}><i className="metro-local" /><span><strong>{metroLocal.error ? 'Réessayer la couche' : metroLocal.loading ? 'Chargement…' : 'Boucles et liaisons'}</strong><small>Métro 3bis · Métro 7bis · Métro 10</small></span></button>
+          <button type="button" data-tooltip={transilienNorth.error ? 'Réessayer Transilien Nord' : transilienNorth.enabled ? 'Masquer Transilien Nord' : 'Ajouter Transilien Nord'} aria-label="Couche Transilien H, K" aria-pressed={transilienNorth.enabled} aria-busy={transilienNorth.loading} onClick={toggleTransilienNorth}><i className="transilien-north" /><span><strong>{transilienNorth.error ? 'Réessayer Transilien' : transilienNorth.loading ? 'Chargement…' : 'Nord'}</strong><small>Transilien H · K</small></span></button>
+          <button type="button" data-tooltip={transilienSaintLazare.error ? 'Réessayer Transilien Saint-Lazare' : transilienSaintLazare.enabled ? 'Masquer Transilien Saint-Lazare' : 'Ajouter Transilien Saint-Lazare'} aria-label="Couche Transilien J, L" aria-pressed={transilienSaintLazare.enabled} aria-busy={transilienSaintLazare.loading} onClick={toggleTransilienSaintLazare}><i className="transilien-saint-lazare" /><span><strong>{transilienSaintLazare.error ? 'Réessayer Transilien' : transilienSaintLazare.loading ? 'Chargement…' : 'Saint-Lazare'}</strong><small>Transilien J · L</small></span></button>
+          <button type="button" data-tooltip={transilienSouthwest.error ? 'Réessayer Transilien Sud-ouest' : transilienSouthwest.enabled ? 'Masquer Transilien Sud-ouest' : 'Ajouter Transilien Sud-ouest'} aria-label="Couche Transilien N, U, V" aria-pressed={transilienSouthwest.enabled} aria-busy={transilienSouthwest.loading} onClick={toggleTransilienSouthwest}><i className="transilien-southwest" /><span><strong>{transilienSouthwest.error ? 'Réessayer Transilien' : transilienSouthwest.loading ? 'Chargement…' : 'Sud-ouest'}</strong><small>Transilien N · U · V</small></span></button>
+          <button type="button" data-tooltip={transilienEast.error ? 'Réessayer Transilien Est et sud-est' : transilienEast.enabled ? 'Masquer Transilien Est et sud-est' : 'Ajouter Transilien Est et sud-est'} aria-label="Couche Transilien P, R" aria-pressed={transilienEast.enabled} aria-busy={transilienEast.loading} onClick={toggleTransilienEast}><i className="transilien-east" /><span><strong>{transilienEast.error ? 'Réessayer Transilien' : transilienEast.loading ? 'Chargement…' : 'Est et sud-est'}</strong><small>Transilien P · R</small></span></button>
           {air.enabled && <button type="button" data-tooltip={airCategorySelected ? 'Rétablir la visibilité du réseau ferroviaire' : 'Mettre les avions en évidence et atténuer les trains'} aria-label="Isoler les avions observés" aria-pressed={airCategorySelected} onClick={() => { const next = !airCategorySelected; clearSelection(); setAirCategorySelected(next); setLayerMenuOpen(false) }}><i className="air" /><span><strong>Isoler AIR</strong><small>Atténuer le réseau ferroviaire</small></span></button>}
         </section>
       )}

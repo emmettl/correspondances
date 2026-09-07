@@ -1,0 +1,145 @@
+{
+  "metadata": {
+    "publisher": "Île-de-France Mobilités",
+    "datasetUrl": "https://prim.iledefrance-mobilites.fr/fr/jeux-de-donnees/offre-horaires-tc-gtfs-idfm",
+    "sourceUrl": "https://eu.ftp.opendatasoft.com/stif/GTFS/IDFM-gtfs.zip",
+    "sourceSha256": "c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18",
+    "retrievedAt": "2026-09-06T11:41:37.000Z",
+    "serviceDate": "2026-09-04",
+    "windowStart": 0,
+    "windowEnd": 86400,
+    "method": "Active GTFS journeys intersecting the study window; counts only, no published runtime artifact."
+  },
+  "totals": {
+    "routeCount": 9,
+    "tripCount": 2269,
+    "callCount": 25961,
+    "uniqueStopCount": 236
+  },
+  "routes": [
+    {
+      "id": "IDFM:C01737",
+      "name": "Transilien H",
+      "mode": "transilien",
+      "sourceColor": "84653D",
+      "tripCount": 483,
+      "callCount": 5981,
+      "uniqueStopCount": 50
+    },
+    {
+      "id": "IDFM:C01739",
+      "name": "Transilien J",
+      "mode": "transilien",
+      "sourceColor": "CEC73D",
+      "tripCount": 431,
+      "callCount": 4937,
+      "uniqueStopCount": 54
+    },
+    {
+      "id": "IDFM:C01738",
+      "name": "Transilien K",
+      "mode": "transilien",
+      "sourceColor": "9B9842",
+      "tripCount": 36,
+      "callCount": 336,
+      "uniqueStopCount": 10
+    },
+    {
+      "id": "IDFM:C01740",
+      "name": "Transilien L",
+      "mode": "transilien",
+      "sourceColor": "C4A4CC",
+      "tripCount": 542,
+      "callCount": 6821,
+      "uniqueStopCount": 36
+    },
+    {
+      "id": "IDFM:C01736",
+      "name": "Transilien N",
+      "mode": "transilien",
+      "sourceColor": "00B297",
+      "tripCount": 224,
+      "callCount": 3235,
+      "uniqueStopCount": 35
+    },
+    {
+      "id": "IDFM:C01730",
+      "name": "Transilien P",
+      "mode": "transilien",
+      "sourceColor": "F58F53",
+      "tripCount": 241,
+      "callCount": 1760,
+      "uniqueStopCount": 32
+    },
+    {
+      "id": "IDFM:C01731",
+      "name": "Transilien R",
+      "mode": "transilien",
+      "sourceColor": "F49FB3",
+      "tripCount": 116,
+      "callCount": 1147,
+      "uniqueStopCount": 24
+    },
+    {
+      "id": "IDFM:C01741",
+      "name": "Transilien U",
+      "mode": "transilien",
+      "sourceColor": "B6134C",
+      "tripCount": 93,
+      "callCount": 1023,
+      "uniqueStopCount": 11
+    },
+    {
+      "id": "IDFM:C02711",
+      "name": "Transilien V",
+      "mode": "transilien",
+      "sourceColor": "9F9825",
+      "tripCount": 103,
+      "callCount": 721,
+      "uniqueStopCount": 7
+    }
+  ],
+  "candidateLayers": {
+    "transilienNorth": {
+      "routeIds": [
+        "IDFM:C01737",
+        "IDFM:C01738"
+      ],
+      "routeCount": 2,
+      "tripCount": 519,
+      "callCount": 6317,
+      "uniqueStopCount": 59
+    },
+    "transilienSaintLazare": {
+      "routeIds": [
+        "IDFM:C01739",
+        "IDFM:C01740"
+      ],
+      "routeCount": 2,
+      "tripCount": 973,
+      "callCount": 11758,
+      "uniqueStopCount": 84
+    },
+    "transilienSouthwest": {
+      "routeIds": [
+        "IDFM:C01736",
+        "IDFM:C01741",
+        "IDFM:C02711"
+      ],
+      "routeCount": 3,
+      "tripCount": 420,
+      "callCount": 4979,
+      "uniqueStopCount": 47
+    },
+    "transilienEast": {
+      "routeIds": [
+        "IDFM:C01730",
+        "IDFM:C01731"
+      ],
+      "routeCount": 2,
+      "tripCount": 357,
+      "callCount": 2907,
+      "uniqueStopCount": 56
+    }
+  }
+}

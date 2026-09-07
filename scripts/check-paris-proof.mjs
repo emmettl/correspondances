@@ -322,3 +322,7 @@ const remainingMetroGzip = (await Promise.all(['metro-boulevards', 'metro-west',
 const completeNetworkGzip = firstViewGzip + metroArcsGzip + metroCrossingsGzip + metroEastGzip + remainingMetroGzip
 if (completeNetworkGzip > 1024 * 1024) throw new Error('Paris complete 21-line opt-in composition exceeds 1024 KiB gzip')
 console.log(`Correspondances complete 21-line opt-in: ${(completeNetworkGzip / 1024).toFixed(1)} KiB gzip / 1024.0 KiB budget.`)
+
+const transilienGzip = (await Promise.all(['north', 'saint-lazare', 'southwest', 'east'].map(async (slug) => gzipSync(await readFile(`fixtures/idfm/correspondances-transilien-${slug}-morning.json`), { level: 9 }).byteLength))).reduce((sum, size) => sum + size, 0)
+if (completeNetworkGzip + transilienGzip > 1200 * 1024) throw new Error('Paris complete 30-line opt-in composition exceeds 1200 KiB gzip')
+console.log(`Correspondances complete 30-line opt-in: ${((completeNetworkGzip + transilienGzip) / 1024).toFixed(1)} KiB gzip / 1200.0 KiB budget.`)

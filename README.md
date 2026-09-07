@@ -34,6 +34,17 @@ All 16 Métro lines and RER A–E are available. The final seven lines are optio
 
 With all six optional Métro groups enabled, the study contains 2,503 morning journeys and 13,878 across the full day. Each group loads and retries independently. See the [complete-network review and regeneration guide](docs/METRO-COMPLETE.md).
 
+## Transilien
+
+Enable the four optional Transilien groups in **Couches** to add all nine conventional Transilien rail lines from the pinned service day:
+
+- **Nord** — H and K.
+- **Saint-Lazare** — J and L.
+- **Sud-ouest** — N, U and V.
+- **Est et sud-est** — P and R.
+
+They add 464 morning journeys and 2,269 across the day, preserving the outer branches and the U/V links between suburbs. Every group has independent loading, cancellation and retry, line/station/mission search, and progressive **24H** playback. With all Métro, RER and Transilien groups enabled, the study reaches 30 lines, 2,967 morning journeys and 16,147 full-day journeys. The default eight-line opening stays within its existing budget. See the [source, payload and density review](docs/TRANSILIEN.md).
+
 ## AIR
 
 **AIR** adds observed aircraft from the same 4 September 2026 service day. It loads on demand, supports callsign and airport search (CDG, Orly and Le Bourget), aircraft follow and isolation, and shares both the morning and progressive 24-hour clocks. Positions are historical observations; airport associations are labelled as inferred. See the [AIR data and regeneration guide](docs/AIR.md).
@@ -52,11 +63,11 @@ To capture frame timings on Windows 11 Edge, run `npm run build` and `npm run pr
 
 ## Next in the study
 
-The [density review](docs/DENSITY.md) and [station-label hierarchy](docs/STATION-LABELS.md) guide the two map scales. The [complete-network review](docs/METRO-COMPLETE.md) closes the Métro/RER coverage backlog for the pinned service day. Transilien, tram and operational rail variation are the next scope decisions, each requiring a separate source and density review.
+The [density review](docs/DENSITY.md) and [station-label hierarchy](docs/STATION-LABELS.md) guide the two map scales. The [complete-network review](docs/METRO-COMPLETE.md) closes the Métro/RER coverage backlog for the pinned service day. The [Transilien review](docs/TRANSILIEN.md) extends the region with nine optional rail lines. Tram and operational rail variation are the next scope decisions, each requiring a separate source and density review.
 
 ## Hosting and data
 
-GitHub Pages deployment is manual through **Deploy Pages**. The site is served at https://emmettl.github.io/correspondances/.
+GitHub Pages deploys automatically on every push to `main`, after the reusable **Check Correspondances** job passes its browser, build, source and payload checks. Pull requests run the same checks without deploying. **Deploy Pages** also retains a manual trigger. The site is served at https://emmettl.github.io/correspondances/.
 
 Data scripts preserve the explicit source dates and provenance from the original edition. CI uses the committed reviewed fixtures; refreshing source data is a separate deliberate operation.
 

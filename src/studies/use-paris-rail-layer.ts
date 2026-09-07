@@ -5,7 +5,7 @@ import { editionDataUrl } from '../editions/data-url.ts'
 
 const SOURCE_SHA256 = 'c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18'
 
-export function useParisMetroLayer(morningFile: string, dayManifestFile: string, window: 'morning' | 'day', time: number) {
+export function useParisRailLayer(morningFile: string, dayManifestFile: string, window: 'morning' | 'day', time: number) {
   const [requested, setEnabled] = useState(false)
   const [morning, setMorning] = useState<NetworkSnapshot>()
   const [morningError, setMorningError] = useState(false)
@@ -27,12 +27,12 @@ export function useParisMetroLayer(morningFile: string, dayManifestFile: string,
     const controller = new AbortController()
     void fetch(editionDataUrl(morningFile), { signal: controller.signal })
       .then(async (response) => {
-        if (!response.ok) throw new Error('Paris Métro layer unavailable')
+        if (!response.ok) throw new Error('Paris rail layer unavailable')
         const snapshot = await response.json() as NetworkSnapshot
         if (snapshot.metadata?.serviceDate !== '2026-09-04' ||
             snapshot.metadata?.sourceSha256 !== SOURCE_SHA256 ||
             snapshot.metadata?.windowStart !== 25_200 || snapshot.metadata?.windowEnd !== 32_400 ||
-            !Array.isArray(snapshot.trains)) throw new Error('Paris Métro layer do not match the study')
+            !Array.isArray(snapshot.trains)) throw new Error('Paris rail layer does not match the study')
         if (!controller.signal.aborted) setMorning(snapshot)
       })
       .catch(() => {

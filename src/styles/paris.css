@@ -753,3 +753,8 @@
 @media (max-width: 760px) {
   .paris-status .paris-air-note { font-size: 0.55rem; }
 }
+
+.paris-layer-menu i.transilien-north { background: #b99a72; }
+.paris-layer-menu i.transilien-saint-lazare { background: #d7b7df; }
+.paris-layer-menu i.transilien-southwest { background: #4bd2b9; }
+.paris-layer-menu i.transilien-east { background: #ffa575; }

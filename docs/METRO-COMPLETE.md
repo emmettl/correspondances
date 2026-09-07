@@ -89,4 +89,4 @@ These measurements apply to this local desktop. They establish no Windows Edge o
 
 ## Next scope
 
-The Métro/RER coverage backlog is complete for this pinned service day. Transilien, tram and operational rail variation are separate next scope decisions, requiring their own source, payload and density reviews. GitHub Pages deployment remains manual.
+The Métro/RER coverage backlog is complete for this pinned service day. The [Transilien review](TRANSILIEN.md) adds nine conventional rail lines in four independent optional groups. Tram and operational rail variation remain separate next scope decisions. GitHub Pages now deploys automatically after successful checks on each push to `main`.

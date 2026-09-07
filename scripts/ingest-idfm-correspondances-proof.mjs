@@ -79,6 +79,39 @@ const STUDIES = {
       ['IDFM:C01380', { name: 'Métro 10', category: 'metro', mode: 'subway' }],
     ],
   },
+  'transilien-north': {
+    output: 'fixtures/idfm/correspondances-transilien-north-morning.json',
+    label: 'Nord · H / K',
+    routes: [
+      ['IDFM:C01737', { name: 'Transilien H', category: 'regional', mode: 'rail' }],
+      ['IDFM:C01738', { name: 'Transilien K', category: 'regional', mode: 'rail' }],
+    ],
+  },
+  'transilien-saint-lazare': {
+    output: 'fixtures/idfm/correspondances-transilien-saint-lazare-morning.json',
+    label: 'Saint-Lazare · J / L',
+    routes: [
+      ['IDFM:C01739', { name: 'Transilien J', category: 'regional', mode: 'rail' }],
+      ['IDFM:C01740', { name: 'Transilien L', category: 'regional', mode: 'rail' }],
+    ],
+  },
+  'transilien-southwest': {
+    output: 'fixtures/idfm/correspondances-transilien-southwest-morning.json',
+    label: 'Sud-ouest · N / U / V',
+    routes: [
+      ['IDFM:C01736', { name: 'Transilien N', category: 'regional', mode: 'rail' }],
+      ['IDFM:C01741', { name: 'Transilien U', category: 'regional', mode: 'rail' }],
+      ['IDFM:C02711', { name: 'Transilien V', category: 'regional', mode: 'rail' }],
+    ],
+  },
+  'transilien-east': {
+    output: 'fixtures/idfm/correspondances-transilien-east-morning.json',
+    label: 'Est et sud-est · P / R',
+    routes: [
+      ['IDFM:C01730', { name: 'Transilien P', category: 'regional', mode: 'rail' }],
+      ['IDFM:C01731', { name: 'Transilien R', category: 'regional', mode: 'rail' }],
+    ],
+  },
   'regional-rer': {
     output: 'fixtures/idfm/correspondances-regional-rer-morning.json',
     label: 'RER C / RER D / RER E regional layer',
@@ -265,6 +298,9 @@ const edgeIndexByKey = new Map()
 function pathForSegment(fromStop, toStop, shapeId) {
   const shape = shapes.get(shapeId)
   if (!shape?.length) {
+    if (studyId.startsWith('transilien-')) {
+      throw new Error(`Transilien segment has no published shape: ${shapeId}`)
+    }
     return [
       [fromStop.longitude, fromStop.latitude],
       [toStop.longitude, toStop.latitude],
@@ -315,7 +351,7 @@ const compiledTrips = selectedTrips.map((trip) => {
     route: route.name,
     headsign: destination || trip.headsign,
     shortName:
-      route.category === 'regional-express'
+      route.mode === 'rail'
         ? trip.shortName || trip.headsign || route.shortName
         : route.shortName,
     category: route.category,

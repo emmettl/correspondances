@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test'
 
 for (const spec of [
+  { slug: 'transilien-north', label: 'Couche Transilien H, K', lines: ['Transilien H', 'Transilien K'], morningTrips: 1093, dayTrips: 5502 },
+  { slug: 'transilien-saint-lazare', label: 'Couche Transilien J, L', lines: ['Transilien J', 'Transilien L'], morningTrips: 1164, dayTrips: 5956 },
+  { slug: 'transilien-southwest', label: 'Couche Transilien N, U, V', lines: ['Transilien N', 'Transilien U', 'Transilien V'], morningTrips: 1068, dayTrips: 5403 },
+  { slug: 'transilien-east', label: 'Couche Transilien P, R', lines: ['Transilien P', 'Transilien R'], morningTrips: 1047, dayTrips: 5340 },
   { slug: 'metro-boulevards', label: 'Couche grands boulevards Métro 8 et Métro 9', lines: ["Métro 8", "Métro 9"], morningTrips: 1247, dayTrips: 6399 },
   { slug: 'metro-west', label: 'Couche axes de l’Ouest Métro 12 et Métro 13', lines: ["Métro 12", "Métro 13"], morningTrips: 1266, dayTrips: 6600 },
   { slug: 'metro-local', label: 'Couche boucles et liaisons Métro 3bis, Métro 7bis et Métro 10', lines: ["Métro 3bis", "Métro 7bis", "Métro 10"], morningTrips: 1144, dayTrips: 6283 },
@@ -175,9 +179,10 @@ test('all layer controls fit the viewport when AIR is enabled', async ({ page })
   await expect(page.getByRole('button', { name: 'AIR — avions observés' })).toHaveAttribute('aria-busy', 'false')
   await page.getByRole('button', { name: 'Afficher les couches' }).click()
   const controls = page.getByRole('region', { name: 'Couches du réseau' }).getByRole('button')
-  await expect(controls).toHaveCount(9)
+  await expect(controls).toHaveCount(13)
   const viewport = page.viewportSize()!
   for (const control of await controls.all()) {
+    await control.scrollIntoViewIfNeeded()
     const box = (await control.boundingBox())!
     expect(box.x).toBeGreaterThanOrEqual(0)
     expect(box.y).toBeGreaterThanOrEqual(0)

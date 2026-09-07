@@ -37,6 +37,15 @@ export const CORRESPONDANCES_ROUTE_COLORS: Readonly<Record<string, string>> = {
   'Métro 7': '#ff99bf',
   'Métro 4': '#d86bc7',
   'Métro 14': '#9b79ff',
+  'Transilien H': '#b99a72',
+  'Transilien K': '#c6c36d',
+  'Transilien J': '#e2dc64',
+  'Transilien L': '#d7b7df',
+  'Transilien N': '#4bd2b9',
+  'Transilien P': '#ffa575',
+  'Transilien R': '#ffb0c4',
+  'Transilien U': '#ec5488',
+  'Transilien V': '#c8c150',
   'RER A': '#ff4e70',
   'RER B': '#65b5ff',
   'RER C': '#ffd85e',
@@ -69,6 +78,14 @@ export interface ParisDataCatalog extends EditionDataCatalog {
     readonly metroBoulevardsDayManifest: string
     readonly metroWestMorning: string
     readonly metroWestDayManifest: string
+    readonly transilienNorthMorning: string
+    readonly transilienNorthDayManifest: string
+    readonly transilienSaintLazareMorning: string
+    readonly transilienSaintLazareDayManifest: string
+    readonly transilienSouthwestMorning: string
+    readonly transilienSouthwestDayManifest: string
+    readonly transilienEastMorning: string
+    readonly transilienEastDayManifest: string
     readonly metroLocalMorning: string
     readonly metroLocalDayManifest: string
   }
@@ -114,6 +131,14 @@ export const PARIS_EDITION: ParisEdition = {
       metroBoulevardsDayManifest: 'correspondances-metro-boulevards-day-manifest.json',
       metroWestMorning: 'correspondances-metro-west-morning.json',
       metroWestDayManifest: 'correspondances-metro-west-day-manifest.json',
+      transilienNorthMorning: 'correspondances-transilien-north-morning.json',
+      transilienNorthDayManifest: 'correspondances-transilien-north-day-manifest.json',
+      transilienSaintLazareMorning: 'correspondances-transilien-saint-lazare-morning.json',
+      transilienSaintLazareDayManifest: 'correspondances-transilien-saint-lazare-day-manifest.json',
+      transilienSouthwestMorning: 'correspondances-transilien-southwest-morning.json',
+      transilienSouthwestDayManifest: 'correspondances-transilien-southwest-day-manifest.json',
+      transilienEastMorning: 'correspondances-transilien-east-morning.json',
+      transilienEastDayManifest: 'correspondances-transilien-east-day-manifest.json',
       metroLocalMorning: 'correspondances-metro-local-morning.json',
       metroLocalDayManifest: 'correspondances-metro-local-day-manifest.json',
     },
