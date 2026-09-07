@@ -262,6 +262,8 @@ const baseViewGzip =
 // Both independently fetched morning layers are enabled on a fresh visit.
 // Count them in the opening budget even though the base can render first.
 const firstViewGzip = baseViewGzip + centralCrossGzipBytes + regionalRerGzipBytes
+const metroArcsGzip = gzipSync(await readFile('fixtures/idfm/correspondances-metro-arcs-morning.json'), { level: 9 }).byteLength
+if (firstViewGzip + metroArcsGzip > 680 * 1024) throw new Error('Paris ten-line opt-in composition exceeds 680 KiB gzip')
 if (
   javaScriptGzip > 340 * 1024 ||
   cssGzip > 15 * 1024 ||
@@ -305,3 +307,5 @@ console.log(
     `${(cssGzip / 1024).toFixed(1)} KiB CSS / ${(baseViewGzip / 1024).toFixed(1)} KiB base / ` +
     `${(firstViewGzip / 1024).toFixed(1)} KiB eight-line opening / 625.0 KiB budget.`,
 )
+
+console.log(`Correspondances ten-line opt-in: ${((firstViewGzip + metroArcsGzip) / 1024).toFixed(1)} KiB gzip / 680.0 KiB budget.`)

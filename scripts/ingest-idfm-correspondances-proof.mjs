@@ -30,6 +30,14 @@ const STUDIES = {
       ['IDFM:C01743', { name: 'RER B', category: 'regional-express', mode: 'rail' }],
     ],
   },
+  'metro-arcs': {
+    output: 'fixtures/idfm/correspondances-metro-arcs-morning.json',
+    label: 'Métro 2 / Métro 6 orbital arcs layer',
+    routes: [
+      ['IDFM:C01372', { name: 'Métro 2', category: 'metro', mode: 'subway' }],
+      ['IDFM:C01376', { name: 'Métro 6', category: 'metro', mode: 'subway' }],
+    ],
+  },
   'regional-rer': {
     output: 'fixtures/idfm/correspondances-regional-rer-morning.json',
     label: 'RER C / RER D / RER E regional layer',
@@ -111,6 +119,8 @@ const windowEnd = parseGtfsTime(argument('window-end', '09:00:00'))
 const focusTime = parseGtfsTime(argument('focus', '08:00:00'))
 const archiveBytes = await readFile(archive)
 const archiveSha256 = createHash('sha256').update(archiveBytes).digest('hex')
+const expectedSha256 = argument('source-sha256')
+if (expectedSha256 && archiveSha256 !== expectedSha256) throw new Error('Archive does not match --source-sha256')
 const services = await activeServices(archive, serviceDate)
 
 const routeRecords = new Map()
@@ -372,7 +382,7 @@ const result = {
     licenseUrl: LICENSE_URL,
     model: `Scheduled GTFS shape interpolation / ${study.label} / not realtime`,
     note: `A bounded ${ROUTES.size}-line layer using the full published patterns active in the study window. Route colours in the source feed are ${[...routeRecords.values()].map((route) => `${route.name} #${route.sourceColor}`).join(', ')}; the visual treatment remains locally authored. Dataset record: ${DATASET_URL}`,
-    modes: ['subway', 'rail'],
+    modes: [...new Set([...routeRecords.values()].map((route) => route.mode))],
     localRouteIds: [...ROUTES.keys()],
     interchangeStudy: {
       model: `Published GTFS transfer links within the ${study.label}. Minimum transfer time describes scheduled opportunity, not observed passenger movement.`,

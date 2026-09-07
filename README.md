@@ -12,6 +12,10 @@ Fresh visits open the eight implemented lines: Métro 1, 4 and 14, plus RER A–
 
 The opening budget counts both enabled layers: 625 KiB gzip in total, with a separate 425 KiB ceiling for the base application and geography. Full-day manifests and chunks remain on demand behind **24H**.
 
+## Arcs du Métro
+
+Enable **Arcs du Métro** in **Couches** to add Métro 2 and 6 around the centre. This optional pair brings the morning to ten lines and 1,225 scheduled journeys. Search either line to isolate it. The layer follows the same 24-hour clock with 1,495 journeys in twelve on-demand chunks; it can be disabled or retried independently. See the [layer review and regeneration guide](docs/METRO-ARCS.md).
+
 ## AIR
 
 **AIR** adds observed aircraft from the same 4 September 2026 service day. It loads on demand, supports callsign and airport search (CDG, Orly and Le Bourget), aircraft follow and isolation, and shares both the morning and progressive 24-hour clocks. Positions are historical observations; airport associations are labelled as inferred. See the [AIR data and regeneration guide](docs/AIR.md).
@@ -30,7 +34,7 @@ To capture frame timings on Windows 11 Edge, run `npm run build` and `npm run pr
 
 ## Next in the study
 
-The eight-line density review and Cœur/Région transition tuning are recorded in [the density review](docs/DENSITY.md). Place names now lead the centre view, mission labels wait for closer zoom, and corridor emphasis follows the camera continuously. Next, choose one independently loaded Métro tranche from the pinned scope audit and repeat the visual, payload and frame checks before further expansion. Transilien, tram and operational rail variation remain later considerations.
+The eight-line density review and Cœur/Région transition tuning are recorded in [the density review](docs/DENSITY.md). Place names now lead the centre view, mission labels wait for closer zoom, and corridor emphasis follows the camera continuously. The first additional tranche, Métro 2 and 6, is now available on demand; its [review](docs/METRO-ARCS.md) records the ten-line checks. Next, assess the remaining eleven Métro lines for a further bounded tranche. Transilien, tram and operational rail variation remain later considerations.
 
 ## Hosting and data
 

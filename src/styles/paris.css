@@ -356,6 +356,7 @@
   cursor: pointer;
 }
 
+.paris-layer-menu button:nth-child(even),
 .paris-layer-menu button:last-child {
   border-right: 0;
 }
@@ -379,6 +380,11 @@
 .paris-layer-menu i.regional-rer {
   background: linear-gradient(135deg, #ffd85e 0 32%, #55cf9b 33% 65%, #d86fcb 66%);
   box-shadow: 0 0 12px rgba(85, 207, 155, 0.72);
+}
+
+.paris-layer-menu i.metro-arcs {
+  background: linear-gradient(135deg, #659bff 0 49%, #9be78a 50%);
+  box-shadow: 0 0 12px rgba(155, 231, 138, 0.65);
 }
 
 .paris-layer-menu span {

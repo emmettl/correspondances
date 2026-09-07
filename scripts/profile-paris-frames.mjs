@@ -6,6 +6,7 @@ const { values } = parseArgs({ options: {
   url: { type: 'string', default: 'http://127.0.0.1:4178' },
   channel: { type: 'string' },
   headless: { type: 'boolean', default: false },
+  'metro-arcs': { type: 'boolean', default: false },
   width: { type: 'string', default: '1920' },
   height: { type: 'string', default: '1080' },
   dpr: { type: 'string', default: '1.5' },
@@ -33,6 +34,11 @@ try {
   await page.goto(values.url)
   await page.locator('.paris-status').filter({ hasText: '977 missions planifiées' }).waitFor()
   await page.locator('.scene canvas').waitFor()
+  if (values['metro-arcs']) {
+    await page.getByRole('button', { name: 'Afficher les couches' }).click()
+    await page.getByRole('button', { name: 'Couche arcs du Métro 2 et Métro 6' }).click()
+    await page.locator('.paris-status').filter({ hasText: '1225 missions planifiées' }).waitFor()
+  }
   const cdp = await page.context().newCDPSession(page)
   await cdp.send('Performance.enable')
   const scenarios = []
@@ -106,7 +112,7 @@ try {
     capturedAt: new Date().toISOString(),
     platform: process.platform,
     browserVersion: browser.version(),
-    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless },
+    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, metroArcs: values['metro-arcs'] },
     environment,
     scenarios,
   }, null, 2)

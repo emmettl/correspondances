@@ -229,6 +229,16 @@
       "callCount": 9562,
       "uniqueStopCount": 147
     },
+    "metroArcs": {
+      "routeIds": [
+        "IDFM:C01372",
+        "IDFM:C01376"
+      ],
+      "routeCount": 2,
+      "tripCount": 248,
+      "callCount": 6493,
+      "uniqueStopCount": 106
+    },
     "metroRemainder": {
       "routeIds": [
         "IDFM:C01372",

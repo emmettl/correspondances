@@ -30,4 +30,4 @@ Production Chrome 152 on an Apple M4 Max, 1920 × 1080 viewport at 1.5 DPR, reco
 
 ## Gate and next work
 
-Keep the eight-line composition as the baseline. The centre is readable without adding another runtime layer, and the outer branches retain their route colours and aggregate movement. The next expansion should select one independently loaded Métro tranche from the pinned scope audit and repeat this visual, payload and frame review. The full thirteen-line addition remains untested. Transilien, tram and operational rail variation remain later studies.
+Keep the eight-line composition as the baseline. The centre is readable without adding another runtime layer, and the outer branches retain their route colours and aggregate movement. The first expansion, [Métro 2 and 6](METRO-ARCS.md), now forms an optional ten-line study with separate payload, visual and frame checks. The remaining eleven Métro lines stay outside the runtime. Transilien, tram and operational rail variation remain later studies.
