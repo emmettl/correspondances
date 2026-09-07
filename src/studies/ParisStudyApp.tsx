@@ -777,11 +777,11 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
               onKeyDown={onSearchKeyDown}
             />
           </label>
-          {query && <button type="button" aria-label="Effacer" onClick={clearSelection}>×</button>}
+          {query && <button type="button" data-tooltip="Effacer la recherche et la sélection" aria-label="Effacer" onClick={clearSelection}>×</button>}
           <nav className="paris-time-switch" aria-label="Durée de l’étude">
-            <button type="button" aria-label="Étude du matin de deux heures" aria-pressed={studyWindow === 'morning'} onClick={() => activateStudyWindow('morning')}>2H</button>
-            <button type="button" aria-label="Étude de vingt-quatre heures" aria-pressed={studyWindow === 'day'} aria-busy={dayStudy.loading} onClick={() => activateStudyWindow('day')}>{dayStudy.loading ? '…' : '24H'}</button>
-            <button className="paris-scale-toggle" type="button" aria-label="Basculer entre le centre et la région" aria-pressed={scaleView === 'centre'} onClick={toggleScaleView}>{scaleView === 'centre' ? 'RÉGION' : 'CŒUR'}</button>
+            <button type="button" data-tooltip="Rejouer le matin de 07 h à 09 h" aria-label="Étude du matin de deux heures" aria-pressed={studyWindow === 'morning'} onClick={() => activateStudyWindow('morning')}>2H</button>
+            <button type="button" data-tooltip="Charger la journée complète et parcourir les 24 heures" aria-label="Étude de vingt-quatre heures" aria-pressed={studyWindow === 'day'} aria-busy={dayStudy.loading} onClick={() => activateStudyWindow('day')}>{dayStudy.loading ? '…' : '24H'}</button>
+            <button className="paris-scale-toggle" type="button" data-tooltip={scaleView === 'centre' ? 'Élargir la carte à la région parisienne' : 'Se rapprocher du centre de Paris'} aria-label="Basculer entre le centre et la région" aria-pressed={scaleView === 'centre'} onClick={toggleScaleView}>{scaleView === 'centre' ? 'RÉGION' : 'CŒUR'}</button>
           </nav>
         </form>
         {searchOpen && query.trim() && (
@@ -850,18 +850,18 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       </section>
 
       <nav className="paris-routes" aria-label="Lignes de l’étude">
-        <button type="button" aria-label="Isoler Métro 1" aria-pressed={selectedRoute?.name === 'Métro 1'} onClick={() => selectRoute('Métro 1')}><i /> Métro 1 <small>le centre</small></button>
-        <button type="button" aria-label="Isoler RER A" aria-pressed={selectedRoute?.name === 'RER A'} onClick={() => selectRoute('RER A')}><i /> RER A <small>la région</small></button>
-        <button className="paris-layer-button" type="button" aria-label="Afficher les couches" aria-expanded={layerMenuOpen} onClick={() => setLayerMenuOpen((open) => !open)}><i /> Couches <small>{activeOptionalLayerCount ? `${activeOptionalLayerCount} active${activeOptionalLayerCount > 1 ? 's' : ''}` : 'réseau optionnel'}</small></button>
-        <button className="paris-air-toggle" type="button" aria-label="AIR — avions observés" aria-pressed={air.enabled} aria-busy={air.loading} onClick={() => { clearSelection(); setAirEnabled(!air.enabled) }}><i /> AIR <small>observé</small></button>
-        <button className="paris-connection-button" type="button" aria-label="Prochaine correspondance" onClick={showNextConnection}><i /> {activeHubStudy?.title ?? 'Correspondance'} <small>{activeHubStudy ? selectedConnection?.complex.name : '3 hubs · données IDFM'}</small></button>
+        <button type="button" data-tooltip="Mettre en évidence le Métro 1 et ses missions" aria-label="Isoler Métro 1" aria-pressed={selectedRoute?.name === 'Métro 1'} onClick={() => selectRoute('Métro 1')}><i /> Métro 1 <small>le centre</small></button>
+        <button type="button" data-tooltip="Mettre en évidence le RER A et ses missions" aria-label="Isoler RER A" aria-pressed={selectedRoute?.name === 'RER A'} onClick={() => selectRoute('RER A')}><i /> RER A <small>la région</small></button>
+        <button className="paris-layer-button" type="button" data-tooltip={layerMenuOpen ? 'Fermer le choix des réseaux' : 'Choisir les réseaux ferroviaires et isoler AIR'} aria-label="Afficher les couches" aria-expanded={layerMenuOpen} onClick={() => setLayerMenuOpen((open) => !open)}><i /> Couches <small>{activeOptionalLayerCount ? `${activeOptionalLayerCount} active${activeOptionalLayerCount > 1 ? 's' : ''}` : 'réseau optionnel'}</small></button>
+        <button className="paris-air-toggle" type="button" data-tooltip={air.enabled ? 'Masquer les avions observés' : 'Afficher les avions observés sur la même horloge que les trains'} aria-label="AIR — avions observés" aria-pressed={air.enabled} aria-busy={air.loading} onClick={() => { clearSelection(); setAirEnabled(!air.enabled) }}><i /> AIR <small>observé</small></button>
+        <button className="paris-connection-button" type="button" data-tooltip="Passer au prochain pôle et explorer ses correspondances programmées" aria-label="Prochaine correspondance" onClick={showNextConnection}><i /> {activeHubStudy?.title ?? 'Correspondance'} <small>{activeHubStudy ? selectedConnection?.complex.name : '3 hubs · données IDFM'}</small></button>
       </nav>
 
       {layerMenuOpen && (
         <section className="paris-layer-menu" aria-label="Couches du réseau">
-          <button type="button" aria-label="Couche nord–sud Métro 4, Métro 14 et RER B" aria-pressed={centralCrossEnabled} aria-busy={centralCrossLayerLoading} onClick={toggleCentralCross}><i className="central-cross" /> <span><strong>{centralCrossLayerLoading ? 'Chargement…' : 'Croisée nord–sud'}</strong><small>Métro 4 · Métro 14 · RER B</small></span></button>
-          <button type="button" aria-label="Couche régionale RER C, RER D et RER E" aria-pressed={regionalRerEnabled} aria-busy={regionalRerLayerLoading} onClick={toggleRegionalRer}><i className="regional-rer" /> <span><strong>{regionalRerLayerLoading ? 'Chargement…' : 'Région étendue'}</strong><small>RER C · RER D · RER E</small></span></button>
-          {air.enabled && <button type="button" aria-label="Isoler les avions observés" aria-pressed={airCategorySelected} onClick={() => { const next = !airCategorySelected; clearSelection(); setAirCategorySelected(next); setLayerMenuOpen(false) }}><i className="air" /><span><strong>Isoler AIR</strong><small>Atténuer le réseau ferroviaire</small></span></button>}
+          <button type="button" data-tooltip={centralCrossEnabled ? 'Masquer les lignes Métro 4, Métro 14 et RER B' : 'Ajouter les lignes Métro 4, Métro 14 et RER B'} aria-label="Couche nord–sud Métro 4, Métro 14 et RER B" aria-pressed={centralCrossEnabled} aria-busy={centralCrossLayerLoading} onClick={toggleCentralCross}><i className="central-cross" /> <span><strong>{centralCrossLayerLoading ? 'Chargement…' : 'Croisée nord–sud'}</strong><small>Métro 4 · Métro 14 · RER B</small></span></button>
+          <button type="button" data-tooltip={regionalRerEnabled ? 'Masquer les lignes RER C, RER D et RER E' : 'Ajouter les lignes RER C, RER D et RER E'} aria-label="Couche régionale RER C, RER D et RER E" aria-pressed={regionalRerEnabled} aria-busy={regionalRerLayerLoading} onClick={toggleRegionalRer}><i className="regional-rer" /> <span><strong>{regionalRerLayerLoading ? 'Chargement…' : 'Région étendue'}</strong><small>RER C · RER D · RER E</small></span></button>
+          {air.enabled && <button type="button" data-tooltip={airCategorySelected ? 'Rétablir la visibilité du réseau ferroviaire' : 'Mettre les avions en évidence et atténuer les trains'} aria-label="Isoler les avions observés" aria-pressed={airCategorySelected} onClick={() => { const next = !airCategorySelected; clearSelection(); setAirCategorySelected(next); setLayerMenuOpen(false) }}><i className="air" /><span><strong>Isoler AIR</strong><small>Atténuer le réseau ferroviaire</small></span></button>}
         </section>
       )}
 
@@ -869,7 +869,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         <button type="button" aria-label="Zoom avant" onClick={() => moveCamera('zoom-in')}>+</button>
         <button type="button" aria-label="Zoom arrière" onClick={() => moveCamera('zoom-out')}>−</button>
         <button type="button" aria-label="Réinitialiser la carte" onClick={() => moveCamera('reset')}>↺</button>
-        <button type="button" aria-label={`Libellés ${trainLabelMode}`} onClick={() => setTrainLabelMode((value) => value === 'off' ? 'auto' : 'off')}>L·{trainLabelMode === 'off' ? '0' : 'A'}</button>
+        <button type="button" data-tooltip={trainLabelMode === 'off' ? 'Afficher automatiquement les libellés des véhicules selon le zoom' : 'Masquer les libellés des véhicules'} aria-label={`Libellés ${trainLabelMode}`} onClick={() => setTrainLabelMode((value) => value === 'off' ? 'auto' : 'off')}>L·{trainLabelMode === 'off' ? '0' : 'A'}</button>
       </aside>
 
       {network && (
@@ -879,8 +879,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           <aside>
             <button type="button" aria-label={isPlaying ? 'Pause' : 'Lecture'} onClick={() => setIsPlaying((value) => !value)}>{isPlaying ? 'Ⅱ' : '▶'}</button>
             <select aria-label="Vitesse" value={playbackRate} onChange={(event) => setPlaybackRate(Number(event.target.value))}>{PLAYBACK_RATES.map((rate) => <option key={rate.value} value={rate.value}>{rate.label}</option>)}</select>
-            <button type="button" aria-label={limitedChrome ? 'Afficher les commandes' : 'Plein écran'} aria-pressed={limitedChrome} onClick={() => setLimitedChrome((value) => !value)}>{limitedChrome ? '×' : '⛶'}</button>
-            {hasSelection && <button type="button" onClick={clearSelection}>Libérer</button>}
+            <button type="button" data-tooltip={limitedChrome ? 'Rétablir les panneaux et les commandes' : 'Masquer les panneaux pour se concentrer sur la carte'} aria-label={limitedChrome ? 'Afficher les commandes' : 'Plein écran'} aria-pressed={limitedChrome} onClick={() => setLimitedChrome((value) => !value)}>{limitedChrome ? '×' : '⛶'}</button>
+            {hasSelection && <button type="button" data-tooltip="Effacer la sélection et arrêter le suivi pour explorer librement la carte" onClick={clearSelection}>Libérer</button>}
           </aside>
         </section>
       )}
