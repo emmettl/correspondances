@@ -72,11 +72,16 @@ test('AIR failure leaves the railway usable and supports retry', async ({ page }
 })
 
 
-test('scale and reset release aircraft follow without disabling AIR', async ({ page }) => {
+test('scale and reset release aircraft follow without disabling AIR', async ({ page, isMobile }) => {
   await page.getByRole('button', { name: airToggle }).click()
   await expect(page.getByRole('button', { name: airToggle })).toHaveAttribute('aria-busy', 'false')
   const follow = async () => {
-    await page.getByRole('searchbox').fill(aircraft.callsign)
+    const search = page.getByRole('searchbox')
+    // fill() focuses without moving the mouse off the scale control. Its
+    // delayed hover help can then cover the result on a slower CI runner.
+    await search.click()
+    await expect(page.getByRole('tooltip')).toHaveCount(0)
+    await search.fill(aircraft.callsign)
     await page.getByRole('option', { name: /AIR · OBSERVÉ/ }).first().click()
     await expect(page.locator('main')).toHaveAttribute('data-selected-air-track', /.+/)
   }
@@ -84,6 +89,10 @@ test('scale and reset release aircraft follow without disabling AIR', async ({ p
   await page.getByRole('button', { name: 'Basculer entre le centre et la région' }).click()
   await expect(page.locator('main')).not.toHaveAttribute('data-selected-air-track')
   await expect(page.locator('main')).toHaveAttribute('data-scale-view', 'centre')
+  if (!isMobile) {
+    await page.getByRole('button', { name: 'Basculer entre le centre et la région' }).hover()
+    await expect(page.getByRole('tooltip')).toHaveText('Élargir la carte à la région parisienne')
+  }
   await follow()
   await page.getByRole('button', { name: 'Réinitialiser la carte' }).click()
   await expect(page.locator('main')).not.toHaveAttribute('data-selected-air-track')
