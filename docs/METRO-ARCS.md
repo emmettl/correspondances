@@ -48,4 +48,4 @@ These local measurements establish no frame-rate claim for Windows Edge or physi
 
 ## Next
 
-The second optional group, [Métro 5 and 7](METRO-CROSSINGS.md), extends the study to twelve lines with both layers enabled. Nine Métro lines remain outside the runtime; assess the next bounded group against the same payload, visual and frame gates.
+The second optional group, [Métro 5 and 7](METRO-CROSSINGS.md), extends the study to twelve lines with both layers enabled. The third group, [Métro 3 and 11](METRO-EAST.md), brings the optional composition to fourteen lines. Seven Métro lines remain outside the runtime; assess the next bounded group against the same payload, visual and frame gates.

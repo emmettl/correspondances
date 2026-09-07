@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 
 for (const spec of [
   { slug: 'metro-arcs', label: 'Couche arcs du Métro 2 et Métro 6', lines: ['Métro 2', 'Métro 6'], morningTrips: 1225, dayTrips: 6478 },
+  { slug: 'metro-east', label: 'Couche portes de l’Est Métro 3 et Métro 11', lines: ['Métro 3', 'Métro 11'], morningTrips: 1238, dayTrips: 6477 },
   { slug: 'metro-crossings', label: 'Couche traversées du Métro 5 et Métro 7', lines: ['Métro 5', 'Métro 7'], morningTrips: 1268, dayTrips: 6556 },
 ]) {
   test.describe(spec.slug, () => {
@@ -108,24 +109,76 @@ for (const spec of [
   })
 }
 
-test('both optional Metro groups compose independently across morning and day', async ({ page }) => {
+test('all three optional Metro groups compose independently across morning and day', async ({ page }) => {
   await page.goto('/')
   await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
   await page.getByRole('button', { name: 'Pause', exact: true }).click()
-  for (const label of ['Couche arcs du Métro 2 et Métro 6', 'Couche traversées du Métro 5 et Métro 7']) {
+  for (const label of ['Couche arcs du Métro 2 et Métro 6', 'Couche traversées du Métro 5 et Métro 7', 'Couche portes de l’Est Métro 3 et Métro 11']) {
     await page.getByRole('button', { name: 'Afficher les couches' }).click()
     await page.getByRole('button', { name: label }).click()
   }
-  await expect(page.locator('.paris-status')).toContainText('1516 missions planifiées')
-  await expect(page.locator('.paris-status')).toContainText('4 couches actives')
+  await expect(page.locator('.paris-status')).toContainText('1777 missions planifiées')
+  await expect(page.locator('.paris-status')).toContainText('5 couches actives')
   await page.getByRole('button', { name: 'Étude de vingt-quatre heures' }).click()
-  await expect(page.locator('.paris-status')).toContainText('8051 missions planifiées')
+  await expect(page.locator('.paris-status')).toContainText('9545 missions planifiées')
   await page.getByRole('slider', { name: 'Heure' }).fill('64800')
-  await expect(page.locator('.paris-status')).toContainText('8051 missions planifiées')
+  await expect(page.locator('.paris-status')).toContainText('9545 missions planifiées')
   await page.getByRole('button', { name: 'Afficher les couches' }).click()
   await page.getByRole('button', { name: 'Couche traversées du Métro 5 et Métro 7' }).click()
-  await expect(page.locator('.paris-status')).toContainText('6478 missions planifiées')
+  await expect(page.locator('.paris-status')).toContainText('7972 missions planifiées')
   await expect(page.locator('main')).toHaveAttribute('data-metro-arcs-enabled', 'true')
   await page.getByRole('button', { name: 'Étude du matin de deux heures' }).click()
+  await expect(page.locator('.paris-status')).toContainText('1486 missions planifiées')
+  await expect(page.locator('main')).toHaveAttribute('data-metro-east-enabled', 'true')
+  await page.getByRole('button', { name: 'Afficher les couches' }).click()
+  await page.getByRole('button', { name: 'Couche portes de l’Est Métro 3 et Métro 11' }).click()
   await expect(page.locator('.paris-status')).toContainText('1225 missions planifiées')
+})
+
+for (const window of ['morning', 'day'] as const) {
+  test(`eastern layer rejects a mismatched ${window} source and retries independently`, async ({ page }) => {
+    const file = window === 'morning' ? 'morning' : 'day-manifest'
+    const url = `**/correspondances-metro-east-${file}.json`
+    await page.route(url, async (route) => {
+      const response = await route.fetch()
+      const snapshot = await response.json()
+      snapshot.metadata.serviceDate = '2026-09-05'
+      await route.fulfill({ json: snapshot })
+    })
+    await page.goto('/')
+    await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
+    await page.getByRole('button', { name: 'Pause', exact: true }).click()
+    await page.getByRole('slider', { name: 'Heure' }).fill('28800')
+    if (window === 'day') {
+      await page.getByRole('button', { name: 'Étude de vingt-quatre heures' }).click()
+      await expect(page.locator('.paris-status')).toContainText('4983 missions planifiées')
+    }
+    await page.getByRole('button', { name: 'Afficher les couches' }).click()
+    await page.getByRole('button', { name: 'Couche portes de l’Est Métro 3 et Métro 11' }).click()
+    await expect(page.locator('.paris-status')).toContainText('Une couche est indisponible')
+    await expect(page.locator('main')).toHaveAttribute('data-metro-east-enabled', 'false')
+    await expect(page.locator('.paris-status strong')).toHaveText('333')
+    await page.unroute(url)
+    await page.getByRole('button', { name: 'Afficher les couches' }).click()
+    await page.getByRole('button', { name: 'Couche portes de l’Est Métro 3 et Métro 11' }).click()
+    await expect(page.locator('.paris-status')).toContainText(`${window === 'day' ? 6477 : 1238} missions planifiées`)
+  })
+}
+
+test('all layer controls fit the viewport when AIR is enabled', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
+  await page.getByRole('button', { name: 'AIR — avions observés' }).click()
+  await expect(page.getByRole('button', { name: 'AIR — avions observés' })).toHaveAttribute('aria-busy', 'false')
+  await page.getByRole('button', { name: 'Afficher les couches' }).click()
+  const controls = page.getByRole('region', { name: 'Couches du réseau' }).getByRole('button')
+  await expect(controls).toHaveCount(6)
+  const viewport = page.viewportSize()!
+  for (const control of await controls.all()) {
+    const box = (await control.boundingBox())!
+    expect(box.x).toBeGreaterThanOrEqual(0)
+    expect(box.y).toBeGreaterThanOrEqual(0)
+    expect(box.x + box.width).toBeLessThanOrEqual(viewport.width)
+    expect(box.y + box.height).toBeLessThanOrEqual(viewport.height)
+  }
 })

@@ -8,6 +8,7 @@ const { values } = parseArgs({ options: {
   headless: { type: 'boolean', default: false },
   'metro-arcs': { type: 'boolean', default: false },
   'metro-crossings': { type: 'boolean', default: false },
+  'metro-east': { type: 'boolean', default: false },
   width: { type: 'string', default: '1920' },
   height: { type: 'string', default: '1080' },
   dpr: { type: 'string', default: '1.5' },
@@ -35,16 +36,17 @@ try {
   await page.goto(values.url)
   await page.locator('.paris-status').filter({ hasText: '977 missions planifiées' }).waitFor()
   await page.locator('.scene canvas').waitFor()
-  if (values['metro-arcs']) {
+  let morningTrips = 977
+  for (const [flag, label, trips] of [
+    ['metro-arcs', 'Couche arcs du Métro 2 et Métro 6', 248],
+    ['metro-crossings', 'Couche traversées du Métro 5 et Métro 7', 291],
+    ['metro-east', 'Couche portes de l’Est Métro 3 et Métro 11', 261],
+  ]) {
+    if (!values[flag]) continue
     await page.getByRole('button', { name: 'Afficher les couches' }).click()
-    await page.getByRole('button', { name: 'Couche arcs du Métro 2 et Métro 6' }).click()
-    await page.locator('.paris-status').filter({ hasText: '1225 missions planifiées' }).waitFor()
-  }
-  if (values['metro-crossings']) {
-    await page.getByRole('button', { name: 'Afficher les couches' }).click()
-    await page.getByRole('button', { name: 'Couche traversées du Métro 5 et Métro 7' }).click()
-    const count = values['metro-arcs'] ? 1516 : 1268
-    await page.locator('.paris-status').filter({ hasText: `${count} missions planifiées` }).waitFor()
+    await page.getByRole('button', { name: label }).click()
+    morningTrips += trips
+    await page.locator('.paris-status').filter({ hasText: `${morningTrips} missions planifiées` }).waitFor()
   }
   const cdp = await page.context().newCDPSession(page)
   await cdp.send('Performance.enable')
@@ -119,7 +121,7 @@ try {
     capturedAt: new Date().toISOString(),
     platform: process.platform,
     browserVersion: browser.version(),
-    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, metroArcs: values['metro-arcs'], metroCrossings: values['metro-crossings'] },
+    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, metroArcs: values['metro-arcs'], metroCrossings: values['metro-crossings'], metroEast: values['metro-east'] },
     environment,
     scenarios,
   }, null, 2)

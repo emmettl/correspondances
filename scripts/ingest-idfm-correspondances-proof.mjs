@@ -46,6 +46,14 @@ const STUDIES = {
       ['IDFM:C01377', { name: 'Métro 7', category: 'metro', mode: 'subway' }],
     ],
   },
+  'metro-east': {
+    output: 'fixtures/idfm/correspondances-metro-east-morning.json',
+    label: 'Métro 3 / Métro 11 eastern gateways layer',
+    routes: [
+      ['IDFM:C01373', { name: 'Métro 3', category: 'metro', mode: 'subway' }],
+      ['IDFM:C01381', { name: 'Métro 11', category: 'metro', mode: 'subway' }],
+    ],
+  },
   'regional-rer': {
     output: 'fixtures/idfm/correspondances-regional-rer-morning.json',
     label: 'RER C / RER D / RER E regional layer',

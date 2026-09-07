@@ -30,7 +30,8 @@
     "check:boundary": "node scripts/check-boundary.mjs",
     "check:bundle": "node scripts/check-paris-proof.mjs && node scripts/check-paris-air.mjs && node scripts/check-paris-metro-layers.mjs",
     "data:paris:air": "node scripts/ingest-paris-air.mjs",
-    "profile:frames": "node scripts/profile-paris-frames.mjs"
+    "profile:frames": "node scripts/profile-paris-frames.mjs",
+    "data:paris:metro-east": "node scripts/ingest-idfm-correspondances-proof.mjs --study metro-east --archive /tmp/IDFM-gtfs-current.zip --source-sha256 c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18 --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --window-start 00:00:00 --window-end 24:00:00 --focus 12:00:00 --output /tmp/correspondances-metro-east-day.json && node scripts/chunk-network-snapshot.mjs --input /tmp/correspondances-metro-east-day.json --manifest fixtures/idfm/correspondances-metro-east-day-manifest.json --opening fixtures/idfm/correspondances-metro-east-morning.json --chunk-hours 2 --opening-start 07:00 --opening-end 09:00 --focus 08:00"
   },
   "dependencies": {
     "@motionstudies/core": "0.1.0-alpha.2",
