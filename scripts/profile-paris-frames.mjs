@@ -7,6 +7,7 @@ const { values } = parseArgs({ options: {
   channel: { type: 'string' },
   headless: { type: 'boolean', default: false },
   'metro-arcs': { type: 'boolean', default: false },
+  'metro-crossings': { type: 'boolean', default: false },
   width: { type: 'string', default: '1920' },
   height: { type: 'string', default: '1080' },
   dpr: { type: 'string', default: '1.5' },
@@ -38,6 +39,12 @@ try {
     await page.getByRole('button', { name: 'Afficher les couches' }).click()
     await page.getByRole('button', { name: 'Couche arcs du Métro 2 et Métro 6' }).click()
     await page.locator('.paris-status').filter({ hasText: '1225 missions planifiées' }).waitFor()
+  }
+  if (values['metro-crossings']) {
+    await page.getByRole('button', { name: 'Afficher les couches' }).click()
+    await page.getByRole('button', { name: 'Couche traversées du Métro 5 et Métro 7' }).click()
+    const count = values['metro-arcs'] ? 1516 : 1268
+    await page.locator('.paris-status').filter({ hasText: `${count} missions planifiées` }).waitFor()
   }
   const cdp = await page.context().newCDPSession(page)
   await cdp.send('Performance.enable')
@@ -112,7 +119,7 @@ try {
     capturedAt: new Date().toISOString(),
     platform: process.platform,
     browserVersion: browser.version(),
-    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, metroArcs: values['metro-arcs'] },
+    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, metroArcs: values['metro-arcs'], metroCrossings: values['metro-crossings'] },
     environment,
     scenarios,
   }, null, 2)

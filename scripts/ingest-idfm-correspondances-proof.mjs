@@ -38,6 +38,14 @@ const STUDIES = {
       ['IDFM:C01376', { name: 'Métro 6', category: 'metro', mode: 'subway' }],
     ],
   },
+  'metro-crossings': {
+    output: 'fixtures/idfm/correspondances-metro-crossings-morning.json',
+    label: 'Métro 5 / Métro 7 crossings layer',
+    routes: [
+      ['IDFM:C01375', { name: 'Métro 5', category: 'metro', mode: 'subway' }],
+      ['IDFM:C01377', { name: 'Métro 7', category: 'metro', mode: 'subway' }],
+    ],
+  },
   'regional-rer': {
     output: 'fixtures/idfm/correspondances-regional-rer-morning.json',
     label: 'RER C / RER D / RER E regional layer',

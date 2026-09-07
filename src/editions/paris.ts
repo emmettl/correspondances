@@ -24,6 +24,8 @@ export const CORRESPONDANCES_ROUTE_COLORS: Readonly<Record<string, string>> = {
   'Métro 1': '#ffd75d',
   'Métro 2': '#659bff',
   'Métro 6': '#9be78a',
+  'Métro 5': '#ff9754',
+  'Métro 7': '#ff99bf',
   'Métro 4': '#d86bc7',
   'Métro 14': '#9b79ff',
   'RER A': '#ff4e70',
@@ -50,6 +52,8 @@ export interface ParisDataCatalog extends EditionDataCatalog {
     readonly regionalRerDayManifest: string
     readonly metroArcsMorning: string
     readonly metroArcsDayManifest: string
+    readonly metroCrossingsMorning: string
+    readonly metroCrossingsDayManifest: string
   }
 }
 
@@ -85,6 +89,8 @@ export const PARIS_EDITION: ParisEdition = {
       regionalRerDayManifest: 'correspondances-regional-rer-day-manifest.json',
       metroArcsMorning: 'correspondances-metro-arcs-morning.json',
       metroArcsDayManifest: 'correspondances-metro-arcs-day-manifest.json',
+      metroCrossingsMorning: 'correspondances-metro-crossings-morning.json',
+      metroCrossingsDayManifest: 'correspondances-metro-crossings-day-manifest.json',
     },
   },
 }

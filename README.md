@@ -16,6 +16,10 @@ The opening budget counts both enabled layers: 625 KiB gzip in total, with a sep
 
 Enable **Arcs du Métro** in **Couches** to add Métro 2 and 6 around the centre. This optional pair brings the morning to ten lines and 1,225 scheduled journeys. Search either line to isolate it. The layer follows the same 24-hour clock with 1,495 journeys in twelve on-demand chunks; it can be disabled or retried independently. See the [layer review and regeneration guide](docs/METRO-ARCS.md).
 
+## Traversées du Métro
+
+Enable **Traversées du Métro** in **Couches** to add Métro 5 and 7, including both southern branches of line 7. This pair adds 291 morning journeys and 1,573 across the full day. With **Arcs du Métro** also enabled, the study reaches twelve lines and 1,516 morning journeys. Both groups load and retry independently. See the [layer review and regeneration guide](docs/METRO-CROSSINGS.md).
+
 ## AIR
 
 **AIR** adds observed aircraft from the same 4 September 2026 service day. It loads on demand, supports callsign and airport search (CDG, Orly and Le Bourget), aircraft follow and isolation, and shares both the morning and progressive 24-hour clocks. Positions are historical observations; airport associations are labelled as inferred. See the [AIR data and regeneration guide](docs/AIR.md).
@@ -34,7 +38,7 @@ To capture frame timings on Windows 11 Edge, run `npm run build` and `npm run pr
 
 ## Next in the study
 
-The eight-line density review and Cœur/Région transition tuning are recorded in [the density review](docs/DENSITY.md). Place names now lead the centre view, mission labels wait for closer zoom, and corridor emphasis follows the camera continuously. The first additional tranche, Métro 2 and 6, is now available on demand; its [review](docs/METRO-ARCS.md) records the ten-line checks. Next, assess the remaining eleven Métro lines for a further bounded tranche. Transilien, tram and operational rail variation remain later considerations.
+The eight-line density review and Cœur/Région transition tuning are recorded in [the density review](docs/DENSITY.md). Place names now lead the centre view, mission labels wait for closer zoom, and corridor emphasis follows the camera continuously. Métro 2 and 6 are available through [Arcs du Métro](docs/METRO-ARCS.md), and Métro 5 and 7 through [Traversées du Métro](docs/METRO-CROSSINGS.md), whose review records the twelve-line checks. Next, assess the remaining nine Métro lines for a further bounded tranche. Transilien, tram and operational rail variation remain later considerations.
 
 ## Hosting and data
 

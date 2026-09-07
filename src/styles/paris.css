@@ -387,6 +387,11 @@
   box-shadow: 0 0 12px rgba(155, 231, 138, 0.65);
 }
 
+.paris-layer-menu i.metro-crossings {
+  background: linear-gradient(135deg, #ff9754 0 49%, #ff99bf 50%);
+  box-shadow: 0 0 12px rgba(255, 153, 191, 0.65);
+}
+
 .paris-layer-menu span {
   display: grid;
   gap: 5px;
