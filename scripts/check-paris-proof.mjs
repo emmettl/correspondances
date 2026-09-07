@@ -231,7 +231,7 @@ const manifest = JSON.parse(
   await readFile(resolve('dist/.vite/manifest.json'), 'utf8'),
 )
 const entry = Object.entries(manifest).find(
-  ([key, chunk]) => chunk.isEntry && key === 'paris.html',
+  ([key, chunk]) => chunk.isEntry && key === 'index.html',
 )
 if (!entry) throw new Error('Vite manifest has no Correspondances entry')
 const scripts = new Set()

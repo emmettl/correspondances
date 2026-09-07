@@ -20,7 +20,7 @@ export default defineConfig({
   workers: runningInCi ? 1 : 2,
   reporter: 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: 'http://127.0.0.1:4178',
     colorScheme: 'dark',
     locale: 'en-CH',
     screenshot: 'only-on-failure',
@@ -37,8 +37,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1 --port 4173',
-    url: 'http://127.0.0.1:4173',
+    command: 'npm run dev -- --host 127.0.0.1 --port 4178',
+    url: 'http://127.0.0.1:4178',
     reuseExistingServer: true,
     timeout: 120_000,
   },

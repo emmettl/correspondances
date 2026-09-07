@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/paris.html')
+  await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Correspondances')
   await expect(page.locator('.scene canvas')).toBeVisible()
   await expect(page.locator('.paris-status')).toContainText('trains en mouvement')
