@@ -4,6 +4,8 @@ import { expect, test } from 'vitest'
 import * as THREE from 'three'
 import * as stationLabels from '../node_modules/@motionstudies/three/station-labels.js'
 import * as parisLabels from '../src/editions/paris-station-labels.ts'
+import * as mapCamera from '../node_modules/@motionstudies/three/map-camera.js'
+import { parisHeartFromWorld } from '../src/editions/paris-layout.ts'
 import { transformParisScale } from './paris-scale-renderer.ts'
 import { parisOverviewMix, parisTrainLabelBudget, parisStationLabelHeight } from '../src/editions/paris-scale.ts'
 
@@ -69,4 +71,49 @@ test('city scale keeps missions quiet, with bounded closer inspection on phone a
   expect(samples.at(-1)).toBe(1)
   expect(samples).toEqual([...samples].sort((a, b) => a - b))
   expect(parisOverviewMix(21)).toBeCloseTo(0.5)
+})
+
+test('a station selected during a morph stays centred until a direct gesture releases it', () => {
+  const source = transformParisScale(renderer)
+  const node = parse(source, { sourceType: 'module' }).program.body.find((node) => node.type === 'FunctionDeclaration' && node.id.name === 'NetworkCamera')
+  const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100)
+  const handlers = new Map()
+  const domElement = { addEventListener: (name, fn) => handlers.set(name, fn), removeEventListener: () => {}, setPointerCapture() {} }
+  const slots = []
+  let cursor = 0, frame
+  const memo = (factory, deps) => {
+    const index = cursor++, previous = slots[index]
+    if (!previous || deps.some((d, i) => !Object.is(d, previous.deps[i]))) slots[index] = { value: factory(), deps }
+    return slots[index].value
+  }
+  const scope = {
+    ...mapCamera, THREE, parisHeartFromWorld,
+    window: { matchMedia: () => ({ matches: true }) },
+    useMemo: memo, useRef: (value) => memo(() => ({ current: value }), []),
+    useEffect: (setup, deps) => memo(setup, deps), useFrame: (fn) => { frame = fn },
+    useThree: () => ({ camera, gl: { domElement }, size: { width: 1000, height: 1000 } }),
+    useContext: () => new Map(), LakeAvoidingPathsContext: {},
+    stationCentre: (station, stops) => new THREE.Vector3(...stops[station.stopIndexes[0]]),
+  }
+  const Camera = new Function(...Object.keys(scope), `return (${source.slice(node.start, node.end)})`)(...Object.values(scope))
+  const props = {
+    time: 28800, isPlaying: false, playbackRate: 120,
+    selectedStation: { name: 'Chosen station', stopIndexes: [0] },
+    cameraCommand: { id: 1, action: 'reveal-station', distanceScale: 0.22 },
+    cameraFraming: { homeDistanceScale: 1.12, minimumDistanceScale: 0.018 },
+    mapFocus: new THREE.Vector3(), airProjection: {},
+    projectedPaths: [],
+  }
+  const render = (x, mix) => {
+    cursor = 0
+    Camera({ ...props, projectedStops: [[x, 0, 0]], spatialLayoutMix: mix })
+    frame({}, 1 / 60)
+  }
+  render(2, 0.2)
+  expect(camera.position.x).toBe(2)
+  render(12, 1)
+  expect(camera.position.x).toBe(12)
+  handlers.get('pointerdown')({ pointerType: 'mouse', button: 0, pointerId: 1, clientX: 500, clientY: 500 })
+  render(18, 1)
+  expect(camera.position.x).toBe(12)
 })

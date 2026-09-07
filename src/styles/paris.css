@@ -57,6 +57,30 @@
   text-transform: uppercase;
 }
 
+.paris-heart-note {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--muted);
+  font: 400 0.65rem/1.5 'DM Mono', ui-monospace, monospace;
+}
+
+.paris-heart-note button {
+  width: fit-content;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid rgba(244, 207, 85, 0.35);
+  background: rgba(244, 207, 85, 0.06);
+  color: var(--cyan);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.paris-heart-note button:hover {
+  background: rgba(244, 207, 85, 0.14);
+}
+
 .paris-masthead > div > small {
   display: block;
   margin-top: 10px;

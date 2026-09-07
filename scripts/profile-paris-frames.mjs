@@ -6,6 +6,7 @@ const { values } = parseArgs({ options: {
   url: { type: 'string', default: 'http://127.0.0.1:4178' },
   channel: { type: 'string' },
   headless: { type: 'boolean', default: false },
+  angle: { type: 'string' },
   'metro-arcs': { type: 'boolean', default: false },
   'metro-crossings': { type: 'boolean', default: false },
   'metro-east': { type: 'boolean', default: false },
@@ -31,7 +32,7 @@ if (!Number.isInteger(numeric.width) || !Number.isInteger(numeric.height)) {
   throw new Error('--width and --height must be integers')
 }
 
-const browser = await chromium.launch({ channel: values.channel, headless: values.headless })
+const browser = await chromium.launch({ channel: values.channel, headless: values.headless, args: values.angle ? [`--use-angle=${values.angle}`] : [] })
 try {
   const page = await browser.newPage({
     viewport: { width: numeric.width, height: numeric.height },
@@ -140,7 +141,7 @@ try {
     capturedAt: new Date().toISOString(),
     platform: process.platform,
     browserVersion: browser.version(),
-    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, metroArcs: values['metro-arcs'], metroCrossings: values['metro-crossings'], metroEast: values['metro-east'], allMetro: values['all-metro'], transilien: values.transilien, metroBoulevards: values['metro-boulevards'], metroWest: values['metro-west'], metroLocal: values['metro-local'] },
+    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, angle: values.angle, metroArcs: values['metro-arcs'], metroCrossings: values['metro-crossings'], metroEast: values['metro-east'], allMetro: values['all-metro'], transilien: values.transilien, metroBoulevards: values['metro-boulevards'], metroWest: values['metro-west'], metroLocal: values['metro-local'] },
     environment,
     scenarios,
   }, null, 2)

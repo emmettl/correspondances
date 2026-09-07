@@ -23,6 +23,8 @@ import { airportAirTrackIds, searchAirports, type StudyAirport } from '@motionst
 import { PARIS_AIRPORTS } from '../editions/paris-airports.ts'
 import { useParisAir } from './use-paris-air.ts'
 import { useParisRailLayer } from './use-paris-rail-layer.ts'
+import { useParisLayout } from './use-paris-layout.ts'
+import { buildParisHeartLayout } from '../editions/paris-layout.ts'
 import { mergeNetworkLayers } from '@motionstudies/core/domain/network-layers'
 import { motionStudyMark } from '../editions/catalogue.ts'
 import { editionDataUrl } from '../editions/data-url.ts'
@@ -98,23 +100,6 @@ const PARIS_HUB_STUDIES = [
 
 function formatWindowBoundary(seconds: number): string {
   return seconds === 86_400 ? '24:00' : formatServiceTime(seconds)
-}
-
-function stationCoordinate(
-  station: StationIndexEntry,
-  snapshot: NetworkSnapshot,
-): readonly [longitude: number, latitude: number] | undefined {
-  const coordinates = station.stopIndexes.flatMap((index) => {
-    const stop = snapshot.stops[index]
-    return stop ? [[stop[0], stop[1]] as const] : []
-  })
-  if (!coordinates.length) return undefined
-  return [
-    coordinates.reduce((sum, coordinate) => sum + coordinate[0], 0) /
-      coordinates.length,
-    coordinates.reduce((sum, coordinate) => sum + coordinate[1], 0) /
-      coordinates.length,
-  ]
 }
 
 function supportsWebGL(): boolean {
@@ -287,6 +272,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const airportTrackIds = useMemo(() => selectedAirport && air.snapshot ? airportAirTrackIds(air.snapshot.tracks, selectedAirport) : undefined, [selectedAirport, air.snapshot])
   const activeAircraftCount = airportTrackIds ? activeAircraft.filter((track) => airportTrackIds.has(track.id)).length : activeAircraft.length
   const [scaleView, setScaleView] = useState<ParisScaleView>('region')
+  const heart = useParisLayout(scaleView === 'centre')
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [activeSearchIndex, setActiveSearchIndex] = useState(0)
@@ -391,6 +377,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     ? centralCrossDayStudy.loading
     : centralCrossLoading
   const centralCrossLayerError = centralCrossError || centralCrossDayStudy.error
+  const heartLayout = useMemo(() => network ? buildParisHeartLayout(network) : undefined, [network])
+
   const regionalRerLayerLoading = studyWindow === 'day'
     ? regionalRerDayStudy.loading
     : regionalRerLoading
@@ -661,19 +649,18 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       moveCamera('reset')
       return
     }
-    const chatelet = stations.find((station) =>
-      foldSearchText(station.name).includes('chatelet'),
-    )
-    const focus = chatelet && stationCoordinate(chatelet, network)
-    if (!focus) return
     setScaleView('centre')
     setCameraCommand((current) => ({
       id: (current?.id ?? 0) + 1,
-      action: 'focus-location',
-      focus,
-      distanceScale: 0.2,
+      action: 'reset',
     }))
-  }, [clearSelection, moveCamera, network, scaleView, stations])
+  }, [clearSelection, moveCamera, network, scaleView])
+
+  const revealHeartArcs = useCallback(() => {
+    clearSelection()
+    setLayerMenuOpen(false)
+    if (!metroArcs.enabled) toggleMetroArcsLayer()
+  }, [clearSelection, metroArcs.enabled, toggleMetroArcsLayer])
 
   const selectStation = useCallback((station: StationIndexEntry) => {
     clearAirSelection()
@@ -695,6 +682,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     const track = air.aircraft.find((candidate) => candidate.id === id)
     if (!track) return
     clearSelection()
+    setScaleView('region')
     setSelectedAirTrackId(id)
     setTime((current) => current >= track.start && current <= track.end ? current : Math.min(track.end, track.start + 10))
     setQuery(airTrackSearchValue(track))
@@ -726,14 +714,14 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       setSelectedRoute(choice.value)
       setSelectedTrain(undefined)
       setQuery(choice.value.name)
-      moveCamera('reset')
+      setCameraCommand((current) => ({ id: (current?.id ?? 0) + 1, action: 'reset' }))
       return
     }
     setSelectedTrain(choice.value)
     setSelectedRoute(undefined)
     setTime(Math.max(choice.value.start, Math.min(time, choice.value.end)))
     setQuery(`${choice.value.shortName} → ${choice.value.headsign}`)
-  }, [moveCamera, selectStation, time, selectAirTrack, clearSelection, clearAirSelection, setAirEnabled])
+  }, [selectStation, time, selectAirTrack, clearSelection, clearAirSelection, setAirEnabled])
 
   const selectRoute = useCallback((name: string) => {
     clearAirSelection()
@@ -745,8 +733,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setSelectedConnection(undefined)
     setQuery('')
     setSearchOpen(false)
-    moveCamera('reset')
-  }, [moveCamera, routes, clearAirSelection])
+    setCameraCommand((current) => ({ id: (current?.id ?? 0) + 1, action: 'reset' }))
+  }, [routes, clearAirSelection])
 
   const showNextConnection = useCallback(() => {
     if (!network) return
@@ -850,6 +838,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       className={`experience view-network correspondances-experience${hasSelection ? ' has-selection' : ''}${limitedChrome ? ' is-limited-chrome' : ''}`}
       data-limited-chrome={limitedChrome}
       data-scale-view={scaleView}
+      data-layout-mix={heart.mix.toFixed(3)}
+      data-layout-transitioning={heart.transitioning}
       data-metro-arcs-enabled={metroArcs.enabled}
       data-metro-crossings-enabled={metroCrossings.enabled}
       data-metro-east-enabled={metroEast.enabled}
@@ -879,6 +869,9 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
               referencePaths={references}
               snapshot={network}
               referenceSnapshot={network}
+              spatialLayout={heartLayout}
+              spatialLayoutMix={heart.mix}
+              layoutTransitioning={heart.transitioning}
               stations={stations}
               trainLabelMode={trainLabelMode}
               isPlaying={isPlaying}
@@ -895,9 +888,9 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
               cameraFraming={edition.mapFraming}
               routeColors={CORRESPONDANCES_ROUTE_COLORS}
               routeColorMix={1}
-              airSnapshot={air.snapshot}
+              airSnapshot={heart.mix === 0 ? air.snapshot : undefined}
               airCategorySelected={airCategorySelected}
-              airports={air.enabled ? PARIS_AIRPORTS : undefined}
+              airports={air.enabled && heart.mix === 0 ? PARIS_AIRPORTS : undefined}
               selectedAirTrack={selectedAirTrack}
               selectedAirport={selectedAirport}
               onSelectAirTrack={selectAirTrack}
@@ -953,7 +946,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           <nav className="paris-time-switch" aria-label="Durée de l’étude">
             <button type="button" data-tooltip="Rejouer le matin de 07 h à 09 h" aria-label="Étude du matin de deux heures" aria-pressed={studyWindow === 'morning'} onClick={() => activateStudyWindow('morning')}>2H</button>
             <button type="button" data-tooltip="Charger la journée complète et parcourir les 24 heures" aria-label="Étude de vingt-quatre heures" aria-pressed={studyWindow === 'day'} aria-busy={dayStudy.loading} onClick={() => activateStudyWindow('day')}>{dayStudy.loading ? '…' : '24H'}</button>
-            <button className="paris-scale-toggle" type="button" data-tooltip={scaleView === 'centre' ? 'Élargir la carte à la région parisienne' : 'Se rapprocher du centre de Paris'} aria-label="Basculer entre le centre et la région" aria-pressed={scaleView === 'centre'} onClick={toggleScaleView}>{scaleView === 'centre' ? 'RÉGION' : 'CŒUR'}</button>
+            <button className="paris-scale-toggle" type="button" data-tooltip={scaleView === 'centre' ? 'Élargir la carte à la région parisienne' : 'Déployer le cœur en gardant les branches régionales'} aria-label="Basculer entre le centre et la région" aria-pressed={scaleView === 'centre'} onClick={toggleScaleView}>{scaleView === 'centre' ? 'RÉGION' : 'CŒUR'}</button>
           </nav>
         </form>
         {searchOpen && query.trim() && (
@@ -1014,8 +1007,14 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
                       : `${plannedTripCount} missions planifiées · ${activeOptionalLayerCount ? `${activeOptionalLayerCount} couche${activeOptionalLayerCount > 1 ? 's' : ''} active${activeOptionalLayerCount > 1 ? 's' : ''} · ` : ''}pas de temps réel`}</small>
           </>
         ) : <p>Paris se dessine…</p>}
+        {scaleView === 'centre' && <aside className="paris-heart-note">
+          <span>Plan à échelle variable</span>
+          {metroArcs.enabled
+            ? <span>{metroArcs.loading ? 'Les arcs se dessinent…' : 'Métro 2 au nord · Métro 6 au sud'}</span>
+            : <button type="button" onClick={revealHeartArcs}>{metroArcs.error ? 'Réessayer les arcs · 2 et 6' : 'Révéler les arcs · Métro 2 et 6'}</button>}
+        </aside>}
         {air.enabled && <div className="paris-air-note" role="status">
-          <span>{air.error ? 'AIR indisponible · le rail reste actif' : air.loading ? 'AIR se charge…' : `AIR · ${activeAircraft.length} avions observés`}</span>
+          <span>{air.error ? 'AIR indisponible · le rail reste actif' : air.loading ? 'AIR se charge…' : scaleView === 'centre' ? 'AIR · visible en Région' : `AIR · ${activeAircraft.length} avions observés`}</span>
           {air.error && <button type="button" onClick={air.retry}>Réessayer AIR</button>}
           <span><a href="https://www.adsb.lol/docs/open-data/historical/" target="_blank" rel="noreferrer">ADSB.lol</a> · 04.09.2026 · <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noreferrer">ODbL</a></span>
         </div>}
@@ -1025,7 +1024,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         <button type="button" data-tooltip="Mettre en évidence le Métro 1 et ses missions" aria-label="Isoler Métro 1" aria-pressed={selectedRoute?.name === 'Métro 1'} onClick={() => selectRoute('Métro 1')}><i /> Métro 1 <small>le centre</small></button>
         <button type="button" data-tooltip="Mettre en évidence le RER A et ses missions" aria-label="Isoler RER A" aria-pressed={selectedRoute?.name === 'RER A'} onClick={() => selectRoute('RER A')}><i /> RER A <small>la région</small></button>
         <button className="paris-layer-button" type="button" data-tooltip={layerMenuOpen ? 'Fermer le choix des réseaux' : 'Choisir les réseaux ferroviaires et isoler AIR'} aria-label="Afficher les couches" aria-expanded={layerMenuOpen} onClick={() => setLayerMenuOpen((open) => !open)}><i /> Couches <small>{activeOptionalLayerCount ? `${activeOptionalLayerCount} active${activeOptionalLayerCount > 1 ? 's' : ''}` : 'réseau optionnel'}</small></button>
-        <button className="paris-air-toggle" type="button" data-tooltip={air.enabled ? 'Masquer les avions observés' : 'Afficher les avions observés sur la même horloge que les trains'} aria-label="AIR — avions observés" aria-pressed={air.enabled} aria-busy={air.loading} onClick={() => { clearSelection(); setAirEnabled(!air.enabled) }}><i /> AIR <small>observé</small></button>
+        <button className="paris-air-toggle" type="button" data-tooltip={air.enabled ? 'Masquer les avions observés' : 'Afficher les avions observés sur la même horloge que les trains'} aria-label="AIR — avions observés" aria-pressed={air.enabled} aria-busy={air.loading} onClick={() => { clearSelection(); setAirEnabled(!air.enabled); if (!air.enabled) moveCamera('reset') }}><i /> AIR <small>observé</small></button>
         <button className="paris-connection-button" type="button" data-tooltip="Passer au prochain pôle et explorer ses correspondances programmées" aria-label="Prochaine correspondance" onClick={showNextConnection}><i /> {activeHubStudy?.title ?? 'Correspondance'} <small>{activeHubStudy ? selectedConnection?.complex.name : '3 hubs · données IDFM'}</small></button>
       </nav>
 
@@ -1043,7 +1042,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           <button type="button" data-tooltip={transilienSaintLazare.error ? 'Réessayer Transilien Saint-Lazare' : transilienSaintLazare.enabled ? 'Masquer Transilien Saint-Lazare' : 'Ajouter Transilien Saint-Lazare'} aria-label="Couche Transilien J, L" aria-pressed={transilienSaintLazare.enabled} aria-busy={transilienSaintLazare.loading} onClick={toggleTransilienSaintLazare}><i className="transilien-saint-lazare" /><span><strong>{transilienSaintLazare.error ? 'Réessayer Transilien' : transilienSaintLazare.loading ? 'Chargement…' : 'Saint-Lazare'}</strong><small>Transilien J · L</small></span></button>
           <button type="button" data-tooltip={transilienSouthwest.error ? 'Réessayer Transilien Sud-ouest' : transilienSouthwest.enabled ? 'Masquer Transilien Sud-ouest' : 'Ajouter Transilien Sud-ouest'} aria-label="Couche Transilien N, U, V" aria-pressed={transilienSouthwest.enabled} aria-busy={transilienSouthwest.loading} onClick={toggleTransilienSouthwest}><i className="transilien-southwest" /><span><strong>{transilienSouthwest.error ? 'Réessayer Transilien' : transilienSouthwest.loading ? 'Chargement…' : 'Sud-ouest'}</strong><small>Transilien N · U · V</small></span></button>
           <button type="button" data-tooltip={transilienEast.error ? 'Réessayer Transilien Est et sud-est' : transilienEast.enabled ? 'Masquer Transilien Est et sud-est' : 'Ajouter Transilien Est et sud-est'} aria-label="Couche Transilien P, R" aria-pressed={transilienEast.enabled} aria-busy={transilienEast.loading} onClick={toggleTransilienEast}><i className="transilien-east" /><span><strong>{transilienEast.error ? 'Réessayer Transilien' : transilienEast.loading ? 'Chargement…' : 'Est et sud-est'}</strong><small>Transilien P · R</small></span></button>
-          {air.enabled && <button type="button" data-tooltip={airCategorySelected ? 'Rétablir la visibilité du réseau ferroviaire' : 'Mettre les avions en évidence et atténuer les trains'} aria-label="Isoler les avions observés" aria-pressed={airCategorySelected} onClick={() => { const next = !airCategorySelected; clearSelection(); setAirCategorySelected(next); setLayerMenuOpen(false) }}><i className="air" /><span><strong>Isoler AIR</strong><small>Atténuer le réseau ferroviaire</small></span></button>}
+          {air.enabled && <button type="button" data-tooltip={airCategorySelected ? 'Rétablir la visibilité du réseau ferroviaire' : 'Mettre les avions en évidence et atténuer les trains'} aria-label="Isoler les avions observés" aria-pressed={airCategorySelected} onClick={() => { const next = !airCategorySelected; clearSelection(); setAirCategorySelected(next); setLayerMenuOpen(false); if (next) moveCamera('reset') }}><i className="air" /><span><strong>Isoler AIR</strong><small>Atténuer le réseau ferroviaire</small></span></button>}
         </section>
       )}
 

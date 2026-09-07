@@ -1,4 +1,5 @@
 import type { Plugin } from 'vite'
+import { transformParisLayout } from './paris-layout-renderer.ts'
 
 /** Edition-only adapter for alpha.2's missing camera-driven density settings.
  * Keep the installed renderer intact and reject changed hooks on upgrades.
@@ -51,7 +52,7 @@ export function transformParisScale(source: string): string {
   replace('const onWheel = (event) => {', 'const onWheel = (event) => {\n            scaleJourney.current = 0;')
   replace('const damping = 1 -', 'scaleJourney.current = Math.max(0, scaleJourney.current - delta);\n        const damping = 1 -')
   replace('mapCameraDampingRate(Boolean(trainPosition || airPosition), directTouch.current)', '(scaleJourney.current > 0 && !trainPosition && !airPosition ? 3.2 : mapCameraDampingRate(Boolean(trainPosition || airPosition), directTouch.current))')
-  return 'import { parisOverviewMix, parisTrainLabelBudget, parisTrainLabelHeight, parisStationLabelHeight } from "/src/editions/paris-scale.ts";\nimport { parisStationLabels, parisStationLabelEligible } from "/src/editions/paris-station-labels.ts";\n' + source
+  return transformParisLayout('import { parisOverviewMix, parisTrainLabelBudget, parisTrainLabelHeight, parisStationLabelHeight } from "/src/editions/paris-scale.ts";\nimport { parisStationLabels, parisStationLabelEligible } from "/src/editions/paris-station-labels.ts";\n' + source)
 }
 
 export function parisScaleRenderer(): Plugin {

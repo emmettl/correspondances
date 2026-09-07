@@ -25,7 +25,9 @@ test('unselected minor stations gain map labels when zooming into the centre', a
   expect(await drawn()).not.toContain("Château d'Eau")
   await page.getByRole('button', { name: 'Basculer entre le centre et la région' }).click()
   await page.waitForTimeout(2200)
-  for (let step = 0; step < 4; step++) {
+  // Cœur now retains the region in a variable-scale plan. Reach neighbourhood
+  // scale before requiring both local labels to clear phone collisions.
+  for (let step = 0; step < 6; step++) {
     await page.getByRole('button', { name: 'Zoom avant', exact: true }).click()
     await page.waitForTimeout(800)
   }

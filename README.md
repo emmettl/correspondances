@@ -16,6 +16,10 @@ The opening budget counts both enabled layers: 625 KiB gzip in total, with a sep
 
 Enable **Arcs du Métro** in **Couches** to add Métro 2 and 6 around the centre. This optional pair brings the morning to ten lines and 1,225 scheduled journeys. Search either line to isolate it. The layer follows the same 24-hour clock with 1,495 journeys in twelve on-demand chunks; it can be disabled or retried independently. See the [layer review and regeneration guide](docs/METRO-ARCS.md).
 
+## Cœur / Région
+
+**CŒUR** opens the inner city into a plan with variable scale while keeping its regional branches connected. The railway, Seine and périphérique move together; the same trains continue on the same clock. **RÉGION** restores geography. The heart's **Révéler les arcs** control adds Métro 2 and 6 directly, and rail search retains the chosen composition. AIR is shown in Région. See the [spatial treatment and renderer notes](docs/COEUR-REGION.md).
+
 ## Traversées du Métro
 
 Enable **Traversées du Métro** in **Couches** to add Métro 5 and 7, including both southern branches of line 7. This pair adds 291 morning journeys and 1,573 across the full day. With **Arcs du Métro** also enabled, the study reaches twelve lines and 1,516 morning journeys. Both groups load and retry independently. See the [layer review and regeneration guide](docs/METRO-CROSSINGS.md).
