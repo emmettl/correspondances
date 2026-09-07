@@ -317,3 +317,8 @@ console.log(`Correspondances ten-line opt-in: ${((firstViewGzip + metroArcsGzip)
 console.log(`Correspondances twelve-line opt-in: ${((firstViewGzip + metroArcsGzip + metroCrossingsGzip) / 1024).toFixed(1)} KiB gzip / 750.0 KiB budget.`)
 
 console.log(`Correspondances fourteen-line opt-in: ${((firstViewGzip + metroArcsGzip + metroCrossingsGzip + metroEastGzip) / 1024).toFixed(1)} KiB gzip / 820.0 KiB budget.`)
+
+const remainingMetroGzip = (await Promise.all(['metro-boulevards', 'metro-west', 'metro-local'].map(async (slug) => gzipSync(await readFile(`fixtures/idfm/correspondances-${slug}-morning.json`), { level: 9 }).byteLength))).reduce((sum, size) => sum + size, 0)
+const completeNetworkGzip = firstViewGzip + metroArcsGzip + metroCrossingsGzip + metroEastGzip + remainingMetroGzip
+if (completeNetworkGzip > 1024 * 1024) throw new Error('Paris complete 21-line opt-in composition exceeds 1024 KiB gzip')
+console.log(`Correspondances complete 21-line opt-in: ${(completeNetworkGzip / 1024).toFixed(1)} KiB gzip / 1024.0 KiB budget.`)

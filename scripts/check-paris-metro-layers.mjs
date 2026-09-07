@@ -13,6 +13,9 @@ const base = (await read('correspondances-morning.json')).data
 const audit = (await read('correspondances-scope-audit.json')).data
 const layers = []
 for (const spec of [
+  { slug: 'metro-boulevards', auditKey: 'metroBoulevards', routes: ["Métro 8", "Métro 9"], stops: 150, morningTrips: 270, dayTrips: 1416, morningKiB: 96, chunkKiB: 96 },
+  { slug: 'metro-west', auditKey: 'metroWest', routes: ["Métro 12", "Métro 13"], stops: 127, morningTrips: 289, dayTrips: 1617, morningKiB: 96, chunkKiB: 96 },
+  { slug: 'metro-local', auditKey: 'metroLocal', routes: ["Métro 3bis", "Métro 7bis", "Métro 10"], stops: 62, morningTrips: 167, dayTrips: 1300, morningKiB: 64, chunkKiB: 52 },
   { slug: 'metro-arcs', auditKey: 'metroArcs', routes: ['Métro 2', 'Métro 6'], stops: 106, morningTrips: 248, dayTrips: 1495, morningKiB: 64, chunkKiB: 52 },
   { slug: 'metro-east', auditKey: 'metroEast', routes: ['Métro 3', 'Métro 11'], stops: 88, morningTrips: 261, dayTrips: 1494, morningKiB: 64, chunkKiB: 52 },
   { slug: 'metro-crossings', auditKey: 'metroCrossings', routes: ['Métro 5', 'Métro 7'], stops: 120, morningTrips: 291, dayTrips: 1573, morningKiB: 80, chunkKiB: 64 },
@@ -65,6 +68,28 @@ for (const spec of [
   assert.equal(ids.size, day.data.tripCount)
   assert.ok(morning.data.trains.every((train) => ids.has(train.id)))
   layers.push(morning.data)
+  if (spec.slug === 'metro-west') {
+    const destinations = new Set(morning.data.trains.filter((train) => train.route === 'Métro 13').map((train) => train.headsign))
+    assert.ok(destinations.has('Asnières - Gennevilliers - Les Courtilles'))
+    assert.ok(destinations.has('Saint-Denis - Université'))
+    assert.ok(destinations.has('Châtillon - Montrouge'))
+  }
+  if (spec.slug === 'metro-local') {
+    for (const [route, headsign, required, excluded] of [
+      ['Métro 7bis', 'Louis Blanc', 'Danube', 'Place des Fêtes'],
+      ['Métro 7bis', 'Pré-Saint-Gervais', 'Place des Fêtes', 'Danube'],
+      ['Métro 10', 'Boulogne Pont de Saint-Cloud', 'Michel-Ange - Auteuil', 'Michel-Ange - Molitor'],
+      ['Métro 10', "Gare d'Austerlitz", 'Michel-Ange - Molitor', 'Michel-Ange - Auteuil'],
+    ]) {
+      const trains = morning.data.trains.filter((train) => train.route === route && train.headsign === headsign)
+      assert.ok(trains.length > 0)
+      for (const train of trains) {
+        const stops = train.stops.map(([index]) => morning.data.stops[index][2])
+        assert.ok(stops.includes(required), `${route} must retain its directional stops`)
+        assert.ok(!stops.includes(excluded), `${route} must not take the opposite branch`)
+      }
+    }
+  }
   if (spec.slug === 'metro-east') {
     for (const [route, termini] of [['Métro 3', ['Gallieni', 'Pont de Levallois - Bécon']], ['Métro 11', ['Châtelet', 'Rosny-Bois-Perrier']]]) {
       const destinations = new Set(morning.data.trains.filter((train) => train.route === route).map((train) => train.headsign))
@@ -84,7 +109,13 @@ const merged = mergeNetworkLayers([
   (await read('correspondances-regional-rer-morning.json')).data,
   ...layers,
 ])
-assert.equal(merged.trains.length, 1777)
-assert.equal(new Set(merged.trains.map((train) => train.route)).size, 14)
-assert.equal(merged.trains.filter((train) => train.start <= 28_800 && train.end >= 28_800).length, 538)
-console.log('Fourteen-line composition verified: 1777 morning journeys and 538 vehicles active at 08:00.')
+assert.equal(merged.trains.length, 2503)
+assert.equal(new Set(merged.trains.map((train) => train.route)).size, 21)
+assert.equal(merged.trains.filter((train) => train.start <= 28_800 && train.end >= 28_800).length, 726)
+console.log('Complete 21-line composition verified: 2503 morning journeys and 726 vehicles active at 08:00.')
+
+const compiledRouteIds = new Set([base, (await read('correspondances-central-cross-morning.json')).data, (await read('correspondances-regional-rer-morning.json')).data, ...layers].flatMap((layer) => layer.metadata.localRouteIds))
+assert.deepEqual([...compiledRouteIds].sort(), audit.routes.map((route) => route.id).sort())
+assert.equal(merged.trains.length, audit.totals.tripCount)
+assert.equal(new Set(merged.trains.map((train) => train.id)).size, merged.trains.length)
+console.log('Every audited Métro and RER route is represented, with no duplicate journeys.')

@@ -24,6 +24,13 @@ export const CORRESPONDANCES_ROUTE_COLORS: Readonly<Record<string, string>> = {
   'Métro 1': '#ffd75d',
   'Métro 2': '#659bff',
   'Métro 3': '#c6c674',
+  'Métro 8': '#df9fd0',
+  'Métro 9': '#e4e66e',
+  'Métro 12': '#59bb8e',
+  'Métro 13': '#a0dbed',
+  'Métro 3bis': '#a0dbed',
+  'Métro 7bis': '#9be78a',
+  'Métro 10': '#e9b954',
   'Métro 11': '#c19465',
   'Métro 6': '#9be78a',
   'Métro 5': '#ff9754',
@@ -58,6 +65,12 @@ export interface ParisDataCatalog extends EditionDataCatalog {
     readonly metroCrossingsDayManifest: string
     readonly metroEastMorning: string
     readonly metroEastDayManifest: string
+    readonly metroBoulevardsMorning: string
+    readonly metroBoulevardsDayManifest: string
+    readonly metroWestMorning: string
+    readonly metroWestDayManifest: string
+    readonly metroLocalMorning: string
+    readonly metroLocalDayManifest: string
   }
 }
 
@@ -97,6 +110,12 @@ export const PARIS_EDITION: ParisEdition = {
       metroCrossingsDayManifest: 'correspondances-metro-crossings-day-manifest.json',
       metroEastMorning: 'correspondances-metro-east-morning.json',
       metroEastDayManifest: 'correspondances-metro-east-day-manifest.json',
+      metroBoulevardsMorning: 'correspondances-metro-boulevards-morning.json',
+      metroBoulevardsDayManifest: 'correspondances-metro-boulevards-day-manifest.json',
+      metroWestMorning: 'correspondances-metro-west-morning.json',
+      metroWestDayManifest: 'correspondances-metro-west-day-manifest.json',
+      metroLocalMorning: 'correspondances-metro-local-morning.json',
+      metroLocalDayManifest: 'correspondances-metro-local-day-manifest.json',
     },
   },
 }

@@ -9,6 +9,10 @@ const { values } = parseArgs({ options: {
   'metro-arcs': { type: 'boolean', default: false },
   'metro-crossings': { type: 'boolean', default: false },
   'metro-east': { type: 'boolean', default: false },
+  'all-metro': { type: 'boolean', default: false },
+  'metro-boulevards': { type: 'boolean', default: false },
+  'metro-west': { type: 'boolean', default: false },
+  'metro-local': { type: 'boolean', default: false },
   width: { type: 'string', default: '1920' },
   height: { type: 'string', default: '1080' },
   dpr: { type: 'string', default: '1.5' },
@@ -41,8 +45,11 @@ try {
     ['metro-arcs', 'Couche arcs du Métro 2 et Métro 6', 248],
     ['metro-crossings', 'Couche traversées du Métro 5 et Métro 7', 291],
     ['metro-east', 'Couche portes de l’Est Métro 3 et Métro 11', 261],
+    ['metro-boulevards', 'Couche grands boulevards Métro 8 et Métro 9', 270],
+    ['metro-west', 'Couche axes de l’Ouest Métro 12 et Métro 13', 289],
+    ['metro-local', 'Couche boucles et liaisons Métro 3bis, Métro 7bis et Métro 10', 167],
   ]) {
-    if (!values[flag]) continue
+    if (!values[flag] && !values['all-metro']) continue
     await page.getByRole('button', { name: 'Afficher les couches' }).click()
     await page.getByRole('button', { name: label }).click()
     morningTrips += trips
@@ -121,7 +128,7 @@ try {
     capturedAt: new Date().toISOString(),
     platform: process.platform,
     browserVersion: browser.version(),
-    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, metroArcs: values['metro-arcs'], metroCrossings: values['metro-crossings'], metroEast: values['metro-east'] },
+    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, metroArcs: values['metro-arcs'], metroCrossings: values['metro-crossings'], metroEast: values['metro-east'], allMetro: values['all-metro'], metroBoulevards: values['metro-boulevards'], metroWest: values['metro-west'], metroLocal: values['metro-local'] },
     environment,
     scenarios,
   }, null, 2)

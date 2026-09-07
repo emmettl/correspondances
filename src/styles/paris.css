@@ -65,6 +65,7 @@
 }
 
 .paris-masthead aside {
+  max-width: 44%;
   display: grid;
   gap: 7px;
   justify-items: end;
@@ -334,7 +335,10 @@
   z-index: 8;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: min(540px, calc(100% - 40px));
+  width: min(720px, calc(100% - 40px));
+  max-height: min(50vh, calc(100dvh - 280px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   transform: translateX(-50%);
   border: 1px solid rgba(225, 193, 255, 0.24);
   background: rgba(11, 5, 18, 0.94);
@@ -395,6 +399,21 @@
 .paris-layer-menu i.metro-east {
   background: linear-gradient(135deg, #c6c674 0 49%, #c19465 50%);
   box-shadow: 0 0 12px rgba(193, 148, 101, 0.65);
+}
+
+.paris-layer-menu i.metro-boulevards {
+  background: linear-gradient(135deg, #df9fd0, #e4e66e);
+  box-shadow: 0 0 12px #df9fd080;
+}
+
+.paris-layer-menu i.metro-west {
+  background: linear-gradient(135deg, #59bb8e, #a0dbed);
+  box-shadow: 0 0 12px #59bb8e80;
+}
+
+.paris-layer-menu i.metro-local {
+  background: linear-gradient(135deg, #a0dbed, #e9b954);
+  box-shadow: 0 0 12px #a0dbed80;
 }
 
 .paris-layer-menu span {

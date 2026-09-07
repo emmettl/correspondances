@@ -71,4 +71,4 @@ These local desktop samples establish no Windows Edge or physical-phone frame-ra
 
 ## Next
 
-Seven Métro lines remain outside the runtime: 3bis, 7bis, 8, 9, 10, 12 and 13. Review the next group against the same source, payload, visual and frame gates. Transilien, tram and operational rail variation remain later work.
+The [complete-network expansion](METRO-COMPLETE.md) now includes the final seven Métro lines. All 16 Métro lines and RER A–E are available on demand for the pinned service day. Transilien, tram and operational rail variation remain separate later scope decisions.

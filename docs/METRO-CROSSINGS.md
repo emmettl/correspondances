@@ -57,4 +57,4 @@ These measurements apply to this local desktop; they establish no Windows Edge o
 
 ## Next
 
-The third optional group, [Métro 3 and 11](METRO-EAST.md), extends the study to fourteen lines when all three groups are enabled. Seven Métro lines remain outside the runtime: 3bis, 7bis, 8, 9, 10, 12 and 13. Assess the next bounded group against the same source, payload, visual and frame gates. Transilien, tram and operational rail variation remain later work.
+The [complete-network expansion](METRO-COMPLETE.md) now includes the final seven Métro lines. All 16 Métro lines and RER A–E are available on demand for the pinned service day. Transilien, tram and operational rail variation remain separate later scope decisions.

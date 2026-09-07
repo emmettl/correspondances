@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test'
 
 for (const spec of [
+  { slug: 'metro-boulevards', label: 'Couche grands boulevards Métro 8 et Métro 9', lines: ["Métro 8", "Métro 9"], morningTrips: 1247, dayTrips: 6399 },
+  { slug: 'metro-west', label: 'Couche axes de l’Ouest Métro 12 et Métro 13', lines: ["Métro 12", "Métro 13"], morningTrips: 1266, dayTrips: 6600 },
+  { slug: 'metro-local', label: 'Couche boucles et liaisons Métro 3bis, Métro 7bis et Métro 10', lines: ["Métro 3bis", "Métro 7bis", "Métro 10"], morningTrips: 1144, dayTrips: 6283 },
   { slug: 'metro-arcs', label: 'Couche arcs du Métro 2 et Métro 6', lines: ['Métro 2', 'Métro 6'], morningTrips: 1225, dayTrips: 6478 },
   { slug: 'metro-east', label: 'Couche portes de l’Est Métro 3 et Métro 11', lines: ['Métro 3', 'Métro 11'], morningTrips: 1238, dayTrips: 6477 },
   { slug: 'metro-crossings', label: 'Couche traversées du Métro 5 et Métro 7', lines: ['Métro 5', 'Métro 7'], morningTrips: 1268, dayTrips: 6556 },
@@ -172,7 +175,7 @@ test('all layer controls fit the viewport when AIR is enabled', async ({ page })
   await expect(page.getByRole('button', { name: 'AIR — avions observés' })).toHaveAttribute('aria-busy', 'false')
   await page.getByRole('button', { name: 'Afficher les couches' }).click()
   const controls = page.getByRole('region', { name: 'Couches du réseau' }).getByRole('button')
-  await expect(controls).toHaveCount(6)
+  await expect(controls).toHaveCount(9)
   const viewport = page.viewportSize()!
   for (const control of await controls.all()) {
     const box = (await control.boundingBox())!
@@ -181,4 +184,64 @@ test('all layer controls fit the viewport when AIR is enabled', async ({ page })
     expect(box.x + box.width).toBeLessThanOrEqual(viewport.width)
     expect(box.y + box.height).toBeLessThanOrEqual(viewport.height)
   }
+})
+
+test('the complete Metro and RER network shares the full clock and each new group can be removed', async ({ page }) => {
+  const errors: string[] = []
+  page.on('pageerror', (error) => errors.push(error.message))
+  await page.goto('/')
+  await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
+  await page.getByRole('button', { name: 'Pause', exact: true }).click()
+  for (const label of [
+    'Couche arcs du Métro 2 et Métro 6',
+    'Couche traversées du Métro 5 et Métro 7',
+    'Couche portes de l’Est Métro 3 et Métro 11',
+    'Couche grands boulevards Métro 8 et Métro 9',
+    'Couche axes de l’Ouest Métro 12 et Métro 13',
+    'Couche boucles et liaisons Métro 3bis, Métro 7bis et Métro 10',
+  ]) {
+    await page.getByRole('button', { name: 'Afficher les couches' }).click()
+    await page.getByRole('button', { name: label }).click()
+  }
+  await expect(page.locator('.paris-status')).toContainText('2503 missions planifiées')
+  await expect(page.locator('.paris-status')).toContainText('8 couches actives')
+  await page.getByRole('slider', { name: 'Heure' }).fill('28800')
+  await expect(page.locator('.paris-status strong')).toHaveText('726')
+  await page.getByRole('button', { name: 'Étude de vingt-quatre heures' }).click()
+  await expect(page.locator('.paris-status')).toContainText('13878 missions planifiées')
+  for (const time of ['3600', '64800', '84600']) {
+    await page.getByRole('slider', { name: 'Heure' }).fill(time)
+    await expect(page.locator('.paris-status')).toContainText('13878 missions planifiées')
+  }
+  for (const [label, count] of [
+    ['Couche grands boulevards Métro 8 et Métro 9', 12462],
+    ['Couche axes de l’Ouest Métro 12 et Métro 13', 10845],
+    ['Couche boucles et liaisons Métro 3bis, Métro 7bis et Métro 10', 9545],
+  ] as const) {
+    await page.getByRole('button', { name: 'Afficher les couches' }).click()
+    await page.getByRole('button', { name: label }).click()
+    await expect(page.locator('.paris-status')).toContainText(`${count} missions planifiées`)
+  }
+  await page.getByRole('button', { name: 'Étude du matin de deux heures' }).click()
+  await expect(page.locator('.paris-status')).toContainText('1777 missions planifiées')
+  expect(errors).toEqual([])
+})
+
+test('the layer menu scrolls to its last control on a short screen', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 500 })
+  await page.goto('/')
+  await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
+  await page.getByRole('button', { name: 'AIR — avions observés' }).click()
+  await expect(page.getByRole('button', { name: 'AIR — avions observés' })).toHaveAttribute('aria-busy', 'false')
+  await page.getByRole('button', { name: 'Afficher les couches' }).click()
+  const menu = page.getByRole('region', { name: 'Couches du réseau' })
+  const last = page.getByRole('button', { name: 'Isoler les avions observés' })
+  await last.scrollIntoViewIfNeeded()
+  const menuBox = (await menu.boundingBox())!
+  const controlBox = (await last.boundingBox())!
+  expect(menuBox.y).toBeGreaterThanOrEqual(0)
+  expect(controlBox.y).toBeGreaterThanOrEqual(menuBox.y)
+  expect(controlBox.y + controlBox.height).toBeLessThanOrEqual(menuBox.y + menuBox.height)
+  await last.click()
+  await expect(menu).toHaveCount(0)
 })

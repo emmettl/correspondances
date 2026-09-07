@@ -48,4 +48,4 @@ These local measurements establish no frame-rate claim for Windows Edge or physi
 
 ## Next
 
-The second optional group, [Métro 5 and 7](METRO-CROSSINGS.md), extends the study to twelve lines with both layers enabled. The third group, [Métro 3 and 11](METRO-EAST.md), brings the optional composition to fourteen lines. Seven Métro lines remain outside the runtime; assess the next bounded group against the same payload, visual and frame gates.
+The [complete-network expansion](METRO-COMPLETE.md) now includes the final seven Métro lines. All 16 Métro lines and RER A–E are available on demand for the pinned service day. Transilien, tram and operational rail variation remain separate later scope decisions.

@@ -1,7 +1,7 @@
 import { copyFile, mkdir, readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
-const files = new Set(["correspondances-morning.json", "correspondances-geography.json", "correspondances-central-cross-morning.json", "correspondances-regional-rer-morning.json", "correspondances-metro-arcs-morning.json", "correspondances-metro-crossings-morning.json", "correspondances-metro-east-morning.json"])
-for (const manifest of ["correspondances-day-manifest.json", "correspondances-central-cross-day-manifest.json", "correspondances-regional-rer-day-manifest.json", "correspondances-metro-arcs-day-manifest.json", "correspondances-metro-crossings-day-manifest.json", "correspondances-metro-east-day-manifest.json"]) {
+const files = new Set(["correspondances-morning.json", "correspondances-geography.json", "correspondances-central-cross-morning.json", "correspondances-regional-rer-morning.json", "correspondances-metro-arcs-morning.json", "correspondances-metro-crossings-morning.json", "correspondances-metro-east-morning.json", "correspondances-metro-boulevards-morning.json", "correspondances-metro-west-morning.json", "correspondances-metro-local-morning.json"])
+for (const manifest of ["correspondances-day-manifest.json", "correspondances-central-cross-day-manifest.json", "correspondances-regional-rer-day-manifest.json", "correspondances-metro-arcs-day-manifest.json", "correspondances-metro-crossings-day-manifest.json", "correspondances-metro-east-day-manifest.json", "correspondances-metro-boulevards-day-manifest.json", "correspondances-metro-west-day-manifest.json", "correspondances-metro-local-day-manifest.json"]) {
   files.add(manifest)
   const data = JSON.parse(await readFile(`fixtures/idfm/${manifest}`, 'utf8'))
   for (const { path } of data.chunks) files.add(path)

@@ -261,6 +261,12 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const { network: metroCrossingsLayer, toggle: toggleMetroCrossingsLayer } = metroCrossings
   const metroEast = useParisMetroLayer(edition.data.layers.metroEastMorning, edition.data.layers.metroEastDayManifest, studyWindow, time)
   const { network: metroEastLayer, toggle: toggleMetroEastLayer } = metroEast
+  const metroBoulevards = useParisMetroLayer(edition.data.layers.metroBoulevardsMorning, edition.data.layers.metroBoulevardsDayManifest, studyWindow, time)
+  const { network: metroBoulevardsLayer, toggle: toggleMetroBoulevardsLayer } = metroBoulevards
+  const metroWest = useParisMetroLayer(edition.data.layers.metroWestMorning, edition.data.layers.metroWestDayManifest, studyWindow, time)
+  const { network: metroWestLayer, toggle: toggleMetroWestLayer } = metroWest
+  const metroLocal = useParisMetroLayer(edition.data.layers.metroLocalMorning, edition.data.layers.metroLocalDayManifest, studyWindow, time)
+  const { network: metroLocalLayer, toggle: toggleMetroLocalLayer } = metroLocal
   const air = useParisAir(edition, studyWindow, time)
   const { setEnabled: setAirEnabled } = air
   const [selectedAirTrackId, setSelectedAirTrackId] = useState<string>()
@@ -341,10 +347,22 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         metroEastLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
       optionalLayers.push(metroEastLayer)
     }
+    if (metroBoulevardsLayer?.metadata.windowStart === baseNetwork.metadata.windowStart &&
+        metroBoulevardsLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
+      optionalLayers.push(metroBoulevardsLayer)
+    }
+    if (metroWestLayer?.metadata.windowStart === baseNetwork.metadata.windowStart &&
+        metroWestLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
+      optionalLayers.push(metroWestLayer)
+    }
+    if (metroLocalLayer?.metadata.windowStart === baseNetwork.metadata.windowStart &&
+        metroLocalLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
+      optionalLayers.push(metroLocalLayer)
+    }
     return optionalLayers.length
       ? mergeNetworkLayers([baseNetwork, ...optionalLayers])
       : baseNetwork
-  }, [baseNetwork, centralCrossEnabled, centralCrossLayer, regionalRerEnabled, regionalRerLayer, metroArcsLayer, metroCrossingsLayer, metroEastLayer])
+  }, [baseNetwork, centralCrossEnabled, centralCrossLayer, regionalRerEnabled, regionalRerLayer, metroArcsLayer, metroCrossingsLayer, metroEastLayer, metroBoulevardsLayer, metroWestLayer, metroLocalLayer])
   const centralCrossLayerLoading = studyWindow === 'day'
     ? centralCrossDayStudy.loading
     : centralCrossLoading
@@ -553,6 +571,27 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     moveCamera('reset')
   }, [clearSelection, moveCamera, toggleMetroEastLayer])
 
+  const toggleMetroBoulevards = useCallback(() => {
+    clearSelection()
+    setLayerMenuOpen(false)
+    toggleMetroBoulevardsLayer()
+    moveCamera('reset')
+  }, [clearSelection, moveCamera, toggleMetroBoulevardsLayer])
+
+  const toggleMetroWest = useCallback(() => {
+    clearSelection()
+    setLayerMenuOpen(false)
+    toggleMetroWestLayer()
+    moveCamera('reset')
+  }, [clearSelection, moveCamera, toggleMetroWestLayer])
+
+  const toggleMetroLocal = useCallback(() => {
+    clearSelection()
+    setLayerMenuOpen(false)
+    toggleMetroLocalLayer()
+    moveCamera('reset')
+  }, [clearSelection, moveCamera, toggleMetroLocalLayer])
+
   const toggleScaleView = useCallback(() => {
     if (!network) return
     clearSelection()
@@ -720,13 +759,13 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const activeHubStudy = activeHubStudyIndex >= 0
     ? PARIS_HUB_STUDIES[activeHubStudyIndex]
     : undefined
-  const activeOptionalLayerCount = Number(centralCrossEnabled) + Number(regionalRerEnabled) + Number(metroArcs.enabled) + Number(metroCrossings.enabled) + Number(metroEast.enabled)
-  const optionalLayerLoading = centralCrossLayerLoading || regionalRerLayerLoading || metroArcs.loading || metroCrossings.loading || metroEast.loading
-  const optionalLayerError = centralCrossLayerError || regionalRerLayerError || metroArcs.error || metroCrossings.error || metroEast.error
+  const activeOptionalLayerCount = Number(centralCrossEnabled) + Number(regionalRerEnabled) + Number(metroArcs.enabled) + Number(metroCrossings.enabled) + Number(metroEast.enabled) + Number(metroBoulevards.enabled) + Number(metroWest.enabled) + Number(metroLocal.enabled)
+  const optionalLayerLoading = centralCrossLayerLoading || regionalRerLayerLoading || metroArcs.loading || metroCrossings.loading || metroEast.loading || metroBoulevards.loading || metroWest.loading || metroLocal.loading
+  const optionalLayerError = centralCrossLayerError || regionalRerLayerError || metroArcs.error || metroCrossings.error || metroEast.error || metroBoulevards.error || metroWest.error || metroLocal.error
   const plannedTripCount = studyWindow === 'day'
     ? (dayStudy.manifest?.tripCount ?? 0) +
       (centralCrossEnabled ? (centralCrossDayStudy.manifest?.tripCount ?? 0) : 0) +
-      (regionalRerEnabled ? (regionalRerDayStudy.manifest?.tripCount ?? 0) : 0) + metroArcs.tripCount + metroCrossings.tripCount + metroEast.tripCount
+      (regionalRerEnabled ? (regionalRerDayStudy.manifest?.tripCount ?? 0) : 0) + metroArcs.tripCount + metroCrossings.tripCount + metroEast.tripCount + metroBoulevards.tripCount + metroWest.tripCount + metroLocal.tripCount
     : (network?.trains.length ?? 0)
   const activeNetworkLabel = [
     'Métro 1',
@@ -736,6 +775,9 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     ...(metroArcs.enabled ? ['Métro 2 · 6'] : []),
     ...(metroCrossings.enabled ? ['Métro 5 · 7'] : []),
     ...(metroEast.enabled ? ['Métro 3 · 11'] : []),
+    ...(metroBoulevards.enabled ? ['Métro 8 · 9'] : []),
+    ...(metroWest.enabled ? ['Métro 12 · 13'] : []),
+    ...(metroLocal.enabled ? ['Métro 3bis · 7bis · 10'] : []),
   ].join(' · ')
 
   return (
@@ -746,6 +788,9 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       data-metro-arcs-enabled={metroArcs.enabled}
       data-metro-crossings-enabled={metroCrossings.enabled}
       data-metro-east-enabled={metroEast.enabled}
+      data-metro-boulevards-enabled={metroBoulevards.enabled}
+      data-metro-west-enabled={metroWest.enabled}
+      data-metro-local-enabled={metroLocal.enabled}
       data-air-enabled={air.enabled}
       data-selected-air-track={selectedAirTrackId}
       data-selected-airport={selectedAirport?.id}
@@ -922,6 +967,9 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           <button type="button" data-tooltip={metroArcs.error ? 'Réessayer les arcs du Métro' : metroArcs.enabled ? 'Masquer les lignes Métro 2 et Métro 6' : 'Ajouter les arcs nord et sud autour du centre'} aria-label="Couche arcs du Métro 2 et Métro 6" aria-pressed={metroArcs.enabled} aria-busy={metroArcs.loading} onClick={toggleMetroArcs}><i className="metro-arcs" /><span><strong>{metroArcs.error ? 'Réessayer les arcs' : metroArcs.loading ? 'Chargement…' : 'Arcs du Métro'}</strong><small>Métro 2 · Métro 6</small></span></button>
           <button type="button" data-tooltip={metroCrossings.error ? 'Réessayer les traversées du Métro' : metroCrossings.enabled ? 'Masquer les lignes Métro 5 et Métro 7' : 'Ajouter les traversées du Métro 5 et du Métro 7'} aria-label="Couche traversées du Métro 5 et Métro 7" aria-pressed={metroCrossings.enabled} aria-busy={metroCrossings.loading} onClick={toggleMetroCrossings}><i className="metro-crossings" /><span><strong>{metroCrossings.error ? 'Réessayer les traversées' : metroCrossings.loading ? 'Chargement…' : 'Traversées du Métro'}</strong><small>Métro 5 · Métro 7</small></span></button>
           <button type="button" data-tooltip={metroEast.error ? 'Réessayer les portes de l’Est' : metroEast.enabled ? 'Masquer les lignes Métro 3 et Métro 11' : 'Ajouter les liaisons du Métro vers l’est'} aria-label="Couche portes de l’Est Métro 3 et Métro 11" aria-pressed={metroEast.enabled} aria-busy={metroEast.loading} onClick={toggleMetroEast}><i className="metro-east" /><span><strong>{metroEast.error ? 'Réessayer les portes' : metroEast.loading ? 'Chargement…' : 'Portes de l’Est'}</strong><small>Métro 3 · Métro 11</small></span></button>
+          <button type="button" data-tooltip={metroBoulevards.error ? 'Réessayer cette couche' : metroBoulevards.enabled ? 'Masquer cette couche' : 'Ajouter cette couche'} aria-label="Couche grands boulevards Métro 8 et Métro 9" aria-pressed={metroBoulevards.enabled} aria-busy={metroBoulevards.loading} onClick={toggleMetroBoulevards}><i className="metro-boulevards" /><span><strong>{metroBoulevards.error ? 'Réessayer la couche' : metroBoulevards.loading ? 'Chargement…' : 'Grands boulevards'}</strong><small>Métro 8 · Métro 9</small></span></button>
+          <button type="button" data-tooltip={metroWest.error ? 'Réessayer cette couche' : metroWest.enabled ? 'Masquer cette couche' : 'Ajouter cette couche'} aria-label="Couche axes de l’Ouest Métro 12 et Métro 13" aria-pressed={metroWest.enabled} aria-busy={metroWest.loading} onClick={toggleMetroWest}><i className="metro-west" /><span><strong>{metroWest.error ? 'Réessayer la couche' : metroWest.loading ? 'Chargement…' : 'Axes de l’Ouest'}</strong><small>Métro 12 · Métro 13</small></span></button>
+          <button type="button" data-tooltip={metroLocal.error ? 'Réessayer cette couche' : metroLocal.enabled ? 'Masquer cette couche' : 'Ajouter cette couche'} aria-label="Couche boucles et liaisons Métro 3bis, Métro 7bis et Métro 10" aria-pressed={metroLocal.enabled} aria-busy={metroLocal.loading} onClick={toggleMetroLocal}><i className="metro-local" /><span><strong>{metroLocal.error ? 'Réessayer la couche' : metroLocal.loading ? 'Chargement…' : 'Boucles et liaisons'}</strong><small>Métro 3bis · Métro 7bis · Métro 10</small></span></button>
           {air.enabled && <button type="button" data-tooltip={airCategorySelected ? 'Rétablir la visibilité du réseau ferroviaire' : 'Mettre les avions en évidence et atténuer les trains'} aria-label="Isoler les avions observés" aria-pressed={airCategorySelected} onClick={() => { const next = !airCategorySelected; clearSelection(); setAirCategorySelected(next); setLayerMenuOpen(false) }}><i className="air" /><span><strong>Isoler AIR</strong><small>Atténuer le réseau ferroviaire</small></span></button>}
         </section>
       )}

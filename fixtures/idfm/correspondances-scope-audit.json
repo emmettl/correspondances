@@ -259,6 +259,37 @@
       "callCount": 5728,
       "uniqueStopCount": 88
     },
+    "metroBoulevards": {
+      "routeIds": [
+        "IDFM:C01378",
+        "IDFM:C01379"
+      ],
+      "routeCount": 2,
+      "tripCount": 270,
+      "callCount": 10046,
+      "uniqueStopCount": 150
+    },
+    "metroWest": {
+      "routeIds": [
+        "IDFM:C01382",
+        "IDFM:C01383"
+      ],
+      "routeCount": 2,
+      "tripCount": 289,
+      "callCount": 7925,
+      "uniqueStopCount": 127
+    },
+    "metroLocal": {
+      "routeIds": [
+        "IDFM:C01386",
+        "IDFM:C01387",
+        "IDFM:C01380"
+      ],
+      "routeCount": 3,
+      "tripCount": 167,
+      "callCount": 1996,
+      "uniqueStopCount": 62
+    },
     "metroRemainder": {
       "routeIds": [
         "IDFM:C01372",

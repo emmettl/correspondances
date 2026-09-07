@@ -54,6 +54,31 @@ const STUDIES = {
       ['IDFM:C01381', { name: 'Métro 11', category: 'metro', mode: 'subway' }],
     ],
   },
+  'metro-boulevards': {
+    output: 'fixtures/idfm/correspondances-metro-boulevards-morning.json',
+    label: 'Grands boulevards layer',
+    routes: [
+      ['IDFM:C01378', { name: 'Métro 8', category: 'metro', mode: 'subway' }],
+      ['IDFM:C01379', { name: 'Métro 9', category: 'metro', mode: 'subway' }],
+    ],
+  },
+  'metro-west': {
+    output: 'fixtures/idfm/correspondances-metro-west-morning.json',
+    label: 'Axes de l’Ouest layer',
+    routes: [
+      ['IDFM:C01382', { name: 'Métro 12', category: 'metro', mode: 'subway' }],
+      ['IDFM:C01383', { name: 'Métro 13', category: 'metro', mode: 'subway' }],
+    ],
+  },
+  'metro-local': {
+    output: 'fixtures/idfm/correspondances-metro-local-morning.json',
+    label: 'Boucles et liaisons layer',
+    routes: [
+      ['IDFM:C01386', { name: 'Métro 3bis', category: 'metro', mode: 'subway' }],
+      ['IDFM:C01387', { name: 'Métro 7bis', category: 'metro', mode: 'subway' }],
+      ['IDFM:C01380', { name: 'Métro 10', category: 'metro', mode: 'subway' }],
+    ],
+  },
   'regional-rer': {
     output: 'fixtures/idfm/correspondances-regional-rer-morning.json',
     label: 'RER C / RER D / RER E regional layer',

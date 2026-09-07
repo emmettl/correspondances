@@ -143,6 +143,9 @@ const layers = {
   metroArcs: layer('Métro 2', 'Métro 6'),
   metroCrossings: layer('Métro 5', 'Métro 7'),
   metroEast: layer('Métro 3', 'Métro 11'),
+  metroBoulevards: layer('Métro 8', 'Métro 9'),
+  metroWest: layer('Métro 12', 'Métro 13'),
+  metroLocal: layer('Métro 3B', 'Métro 7B', 'Métro 10'),
   metroRemainder: routes
     .filter((route) => route.mode === 'metro')
     .map((route) => route.id)
