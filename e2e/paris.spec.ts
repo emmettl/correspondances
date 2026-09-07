@@ -5,9 +5,10 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Correspondances')
   await expect(page.locator('.scene canvas')).toBeVisible()
   await expect(page.locator('.paris-status')).toContainText('trains en mouvement')
+  await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
 })
 
-test('boots from the bounded IDFM artifact only', async ({ page }) => {
+test('opens all eight implemented lines without fetching full-day data', async ({ page }) => {
   const resources = await page.evaluate(() =>
     (globalThis as unknown as {
       performance: {
@@ -18,8 +19,12 @@ test('boots from the bounded IDFM artifact only', async ({ page }) => {
   expect(resources.some((url) => url.includes('correspondances-morning.json'))).toBe(true)
   expect(resources.some((url) => url.includes('correspondances-geography.json'))).toBe(true)
   expect(resources.some((url) => url.includes('correspondances-day-manifest'))).toBe(false)
-  expect(resources.some((url) => url.includes('correspondances-central-cross'))).toBe(false)
-  expect(resources.some((url) => url.includes('correspondances-regional-rer'))).toBe(false)
+  expect(resources.some((url) => url.includes('correspondances-central-cross-morning.json'))).toBe(true)
+  expect(resources.some((url) => url.includes('correspondances-regional-rer-morning.json'))).toBe(true)
+  expect(resources.some((url) => url.includes('-day-manifest') || url.includes('-day-chunks/'))).toBe(false)
+  await page.getByRole('button', { name: 'Afficher les couches' }).click()
+  await expect(page.getByRole('button', { name: 'Couche nord–sud Métro 4, Métro 14 et RER B' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('button', { name: 'Couche régionale RER C, RER D et RER E' })).toHaveAttribute('aria-pressed', 'true')
   expect(resources.some((url) => url.includes('swiss-rail-morning.json'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-rail-led'))).toBe(false)
   expect(resources.some((url) => url.includes('local-express-lexington'))).toBe(false)
@@ -27,22 +32,18 @@ test('boots from the bounded IDFM artifact only', async ({ page }) => {
   await expect(page.locator('.paris-transport')).toContainText('09:00')
 })
 
-test('loads the north–south layer only when requested', async ({ page }) => {
+test('can disable and restore the north–south layer', async ({ page }) => {
   await page.getByRole('button', { name: 'Afficher les couches' }).click()
   const layer = page.getByRole('button', {
     name: 'Couche nord–sud Métro 4, Métro 14 et RER B',
   })
   await layer.click()
   await expect(page.locator('.paris-status')).toContainText('1 couche active')
-  await expect.poll(async () => page.evaluate(() =>
-    (globalThis as unknown as {
-      performance: {
-        getEntriesByType(type: string): readonly { readonly name: string }[]
-      }
-    }).performance
-      .getEntriesByType('resource')
-      .some((entry) => entry.name.includes('correspondances-central-cross-morning.json')),
-  )).toBe(true)
+  await expect(page.locator('.paris-status')).toContainText('605 missions planifiées')
+  await page.getByRole('button', { name: 'Afficher les couches' }).click()
+  await expect(layer).toHaveAttribute('aria-pressed', 'false')
+  await layer.click()
+  await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
 
   const search = page.getByRole('searchbox', {
     name: 'Rechercher une station, ligne ou mission',
@@ -57,7 +58,7 @@ test('loads the 24-hour study progressively', async ({ page }) => {
   await page.getByRole('button', { name: 'Étude de vingt-quatre heures' }).click()
   await expect(page.locator('.paris-transport')).toContainText('00:00')
   await expect(page.locator('.paris-transport')).toContainText('24:00')
-  await expect(page.locator('.paris-status')).toContainText('1461 missions planifiées')
+  await expect(page.locator('.paris-status')).toContainText('4983 missions planifiées')
   await expect.poll(async () => page.evaluate(() => {
     const browser = globalThis as unknown as {
       performance: {
@@ -71,15 +72,16 @@ test('loads the 24-hour study progressively', async ({ page }) => {
   ]))
 })
 
-test('keeps the optional north–south layer across the progressive 24-hour clock', async ({ page }) => {
+test('keeps the north–south layer across the day while the regional layer is disabled', async ({ page }) => {
   await page.getByRole('button', { name: 'Afficher les couches' }).click()
   const layer = page.getByRole('button', {
-    name: 'Couche nord–sud Métro 4, Métro 14 et RER B',
+    name: 'Couche régionale RER C, RER D et RER E',
   })
   await layer.click()
   await expect(page.locator('.paris-status')).toContainText('1 couche active')
   await page.getByRole('button', { name: 'Étude de vingt-quatre heures' }).click()
   await expect(page.locator('.paris-transport')).toContainText('24:00')
+  await expect(page.locator('.paris-status')).toContainText('3561 missions planifiées')
   await expect.poll(async () => page.evaluate(() => {
     const resources = (globalThis as unknown as {
       performance: {
@@ -92,19 +94,15 @@ test('keeps the optional north–south layer across the progressive 24-hour cloc
     expect.stringMatching(/correspondances-central-cross-day-chunks\/\d{2}-\d{2}\.json/),
   ]))
   await expect(page.locator('.paris-status')).toContainText('1 couche active')
+  const requestedDayLayers = await page.evaluate(() =>
+    (globalThis as unknown as {
+      performance: { getEntriesByType(type: string): readonly { readonly name: string }[] }
+    }).performance.getEntriesByType('resource').map((entry) => entry.name),
+  )
+  expect(requestedDayLayers.some((url) => url.includes('correspondances-regional-rer-day-'))).toBe(false)
 })
 
 test('composes the extended RER layer with the cross and the full clock', async ({ page }) => {
-  const layers = page.getByRole('button', { name: 'Afficher les couches' })
-  await layers.click()
-  await page.getByRole('button', {
-    name: 'Couche nord–sud Métro 4, Métro 14 et RER B',
-  }).click()
-  await expect(page.locator('.paris-status')).toContainText('1 couche active')
-  await layers.click()
-  await page.getByRole('button', {
-    name: 'Couche régionale RER C, RER D et RER E',
-  }).click()
   await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
   await expect(page.locator('.paris-status')).toContainText('2 couches actives')
 
@@ -128,6 +126,35 @@ test('composes the extended RER layer with the cross and the full clock', async 
     expect.stringContaining('correspondances-regional-rer-day-manifest.json'),
     expect.stringMatching(/correspondances-regional-rer-day-chunks\/\d{2}-\d{2}\.json/),
   ]))
+})
+
+test('keeps the base usable while a default layer is delayed, fails and is retried', async ({ page }) => {
+  let releaseLayer!: () => void
+  const pendingLayer = new Promise<void>((resolve) => { releaseLayer = resolve })
+  const layerUrl = '**/correspondances-central-cross-morning.json'
+  await page.route(layerUrl, async (route) => {
+    await pendingLayer
+    await route.fulfill({ status: 503, body: 'Temporarily unavailable' })
+  })
+  try {
+    await page.reload()
+    await expect(page.locator('.paris-status')).toContainText('trains en mouvement')
+    await expect(page.locator('.paris-status')).toContainText('se chargent séparément')
+    await page.getByRole('button', { name: 'Pause', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Lecture', exact: true })).toBeVisible()
+    releaseLayer()
+    await expect(page.locator('.paris-status')).toContainText('Une couche est indisponible')
+    await page.getByRole('button', { name: 'Afficher les couches' }).click()
+    const layer = page.getByRole('button', { name: 'Couche nord–sud Métro 4, Métro 14 et RER B' })
+    await expect(layer).toHaveAttribute('aria-pressed', 'false')
+    await expect(layer).toHaveAttribute('aria-busy', 'false')
+    await page.unroute(layerUrl)
+    await layer.click()
+    await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
+    await expect(page.locator('.paris-status')).toContainText('2 couches actives')
+  } finally {
+    releaseLayer()
+  }
 })
 
 test('changes scale without replacing the network or stopping its clock', async ({ page }) => {
@@ -179,7 +206,11 @@ test('the correspondence director cycles authored hubs using published transfer 
   await nextHub.click()
   await expect(page.locator('.paris-status')).toContainText('Châtelet–Les Halles')
   await expect(page.locator('.paris-status')).toContainText('densité Métro au centre')
-  await expect(page.locator('.paris-status')).toContainText(/Métro 1 → RER A|RER A → Métro 1/)
+  const connection = ((await page.locator('.paris-status').textContent()) ?? '').replace(/\s+/g, ' ').match(
+    /(Métro (?:1|4|14)|RER [A-E]) → (Métro (?:1|4|14)|RER [A-E]) · (\d+) min disponibles · (\d+) min minimum publié/,
+  )
+  expect(connection).not.toBeNull()
+  expect(Number(connection?.[3])).toBeGreaterThanOrEqual(Number(connection?.[4]))
   await expect(page.locator('.paris-status')).toContainText('minimum publié')
   await expect(page.getByRole('button', { name: 'Lecture' })).toBeVisible()
   await nextHub.click()

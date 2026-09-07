@@ -227,12 +227,12 @@ function nextConnection(
 export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const [openingNetwork, setOpeningNetwork] = useState<NetworkSnapshot>()
   const [centralCrossNetwork, setCentralCrossNetwork] = useState<NetworkSnapshot>()
-  const [centralCrossEnabled, setCentralCrossEnabled] = useState(false)
-  const [centralCrossLoading, setCentralCrossLoading] = useState(false)
+  const [centralCrossEnabled, setCentralCrossEnabled] = useState(true)
+  const [centralCrossLoading, setCentralCrossLoading] = useState(true)
   const [centralCrossError, setCentralCrossError] = useState(false)
   const [regionalRerNetwork, setRegionalRerNetwork] = useState<NetworkSnapshot>()
-  const [regionalRerEnabled, setRegionalRerEnabled] = useState(false)
-  const [regionalRerLoading, setRegionalRerLoading] = useState(false)
+  const [regionalRerEnabled, setRegionalRerEnabled] = useState(true)
+  const [regionalRerLoading, setRegionalRerLoading] = useState(true)
   const [regionalRerError, setRegionalRerError] = useState(false)
   const [layerMenuOpen, setLayerMenuOpen] = useState(false)
   const [geography, setGeography] = useState<ParisGeographySnapshot>()
@@ -442,6 +442,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setLayerMenuOpen(false)
     if (centralCrossEnabled) {
       setCentralCrossEnabled(false)
+      setCentralCrossLoading(false)
       moveCamera('reset')
       return
     }
@@ -457,6 +458,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setLayerMenuOpen(false)
     if (regionalRerEnabled) {
       setRegionalRerEnabled(false)
+      setRegionalRerLoading(false)
       moveCamera('reset')
       return
     }

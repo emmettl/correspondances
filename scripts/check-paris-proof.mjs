@@ -257,12 +257,16 @@ const totalGzipSize = async (files) => {
 }
 const javaScriptGzip = await totalGzipSize(scripts)
 const cssGzip = await totalGzipSize(styles)
-const firstViewGzip =
+const baseViewGzip =
   javaScriptGzip + cssGzip + gzipBytes + geographyGzipBytes
+// Both independently fetched morning layers are enabled on a fresh visit.
+// Count them in the opening budget even though the base can render first.
+const firstViewGzip = baseViewGzip + centralCrossGzipBytes + regionalRerGzipBytes
 if (
   javaScriptGzip > 340 * 1024 ||
   cssGzip > 15 * 1024 ||
-  firstViewGzip > 425 * 1024
+  baseViewGzip > 425 * 1024 ||
+  firstViewGzip > 625 * 1024
 ) {
   throw new Error(
     `Paris first view exceeds its mobile budget: ${javaScriptGzip} JS / ` +
@@ -298,5 +302,6 @@ console.log(
 )
 console.log(
   `Correspondances mobile first view: ${(javaScriptGzip / 1024).toFixed(1)} KiB JS / ` +
-    `${(cssGzip / 1024).toFixed(1)} KiB CSS / ${(firstViewGzip / 1024).toFixed(1)} KiB total.`,
+    `${(cssGzip / 1024).toFixed(1)} KiB CSS / ${(baseViewGzip / 1024).toFixed(1)} KiB base / ` +
+    `${(firstViewGzip / 1024).toFixed(1)} KiB eight-line opening / 625.0 KiB budget.`,
 )
