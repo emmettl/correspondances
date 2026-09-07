@@ -13,14 +13,8 @@ export function parisTrainLabelHeight(width: number, selected: boolean): number 
   return selected ? 34 : width <= 600 ? 26 : 30
 }
 
-export function parisStationLabelHeight(width: number, selected: boolean, rank?: number): number {
+export function parisStationLabelHeight(width: number, selected: boolean, rank?: number, cameraHeight = Infinity): number {
+  if (!selected && (rank ?? 3) >= 3 && cameraHeight < 15) return width <= 600 ? 24 : 26
   if (width > 600) return selected ? 44 : rank === 1 ? 38 : 32
   return selected ? 36 : rank === 1 ? 32 : 28
-}
-
-const PARIS_ORIENTATION_HUBS = ['Châtelet', 'Gare de Lyon', 'La Défense', 'Gare du Nord']
-
-export function parisStationPriority(name: string): number {
-  const index = PARIS_ORIENTATION_HUBS.indexOf(name)
-  return index < 0 ? PARIS_ORIENTATION_HUBS.length : index
 }

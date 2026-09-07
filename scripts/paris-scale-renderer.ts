@@ -10,9 +10,18 @@ export function transformParisScale(source: string): string {
   }
   replace('trainLabelBudget(semanticCameraHeight, trainLabelMode);', 'parisTrainLabelBudget(semanticCameraHeight, size.width, trainLabelMode);')
   replace('trainLabelScreenHeight(size.width, candidate.selected, semanticCameraHeight)', 'parisTrainLabelHeight(size.width, candidate.selected)')
-  replace('stationLabelScreenHeight(selected, label.emphasised, label.station.labelRank)', 'parisStationLabelHeight(size.width, selected || label.emphasised, label.station.labelRank)')
-  replace('stationLabelWithinTier(label.station.labelRank, tierLimit)', 'stationLabelWithinTier(label.station.labelRank, Math.min(tierLimit ?? 3, semanticHeight >= 15 ? 2 : 3))')
-  replace('const ranked = rankStationsForLabels(stations);', 'const ranked = rankStationsForLabels(stations).sort((a, b) => parisStationPriority(a.name) - parisStationPriority(b.name));')
+  replace('stationLabelScreenHeight(selected, label.emphasised, label.station.labelRank)', 'parisStationLabelHeight(size.width, selected || label.emphasised, label.station.labelRank, semanticHeight)')
+  replace('stationLabelWithinTier(label.station.labelRank, tierLimit)', 'parisStationLabelEligible(label.station, semanticHeight, tierLimit)')
+  replace('const ranked = rankStationsForLabels(stations);', 'const ranked = parisStationLabels(rankStationsForLabels(stations));')
+  // Admission is by Paris group and zoom, not the first N stations across the
+  // whole region. Keep the existing on-screen budgets and collision handling.
+  replace('const rankLimit = stationLabelRankLimit(semanticHeight);', 'const rankLimit = Infinity;')
+  // Match tap targets to the label policy, retaining original array indexes
+  // through flatMap so a tap still resolves to the correct station object.
+  replace('const rankedStations = useMemo(() => rankStationsForLabels(stations), [stations]);', 'const rankedStations = useMemo(() => parisStationLabels(rankStationsForLabels(stations)), [stations]);')
+  replace('const rankLimit = Math.min(rankedStations.length, stationLabelRankLimit(semanticHeight));', 'const rankLimit = rankedStations.length;')
+  replace('.flatMap((station, index) => {\n                projected.copy(stationCentre(station, projectedStops)).project(camera);', '.flatMap((station, index) => {\n                if (!parisStationLabelEligible(station, semanticHeight)) return [];\n                projected.copy(stationCentre(station, projectedStops)).project(camera);')
+  replace('const screenHeight = stationLabelScreenHeight(false, false);', 'const screenHeight = parisStationLabelHeight(rect.width, false, station.labelRank, semanticHeight);')
   // Avoid half a long terminus label hanging outside a narrow phone viewport.
   replace('const overlaps = occupied.some((other) => box.left < other.right + 5', 'if (box.left < 8 || box.right > size.width - 8 || box.top < 8 || box.bottom > size.height - 8) continue;\n            const overlaps = occupied.some((other) => box.left < other.right + 5', 2)
 
@@ -42,7 +51,7 @@ export function transformParisScale(source: string): string {
   replace('const onWheel = (event) => {', 'const onWheel = (event) => {\n            scaleJourney.current = 0;')
   replace('const damping = 1 -', 'scaleJourney.current = Math.max(0, scaleJourney.current - delta);\n        const damping = 1 -')
   replace('mapCameraDampingRate(Boolean(trainPosition || airPosition), directTouch.current)', '(scaleJourney.current > 0 && !trainPosition && !airPosition ? 3.2 : mapCameraDampingRate(Boolean(trainPosition || airPosition), directTouch.current))')
-  return 'import { parisOverviewMix, parisTrainLabelBudget, parisTrainLabelHeight, parisStationLabelHeight, parisStationPriority } from "/src/editions/paris-scale.ts";\n' + source
+  return 'import { parisOverviewMix, parisTrainLabelBudget, parisTrainLabelHeight, parisStationLabelHeight } from "/src/editions/paris-scale.ts";\nimport { parisStationLabels, parisStationLabelEligible } from "/src/editions/paris-station-labels.ts";\n' + source
 }
 
 export function parisScaleRenderer(): Plugin {
