@@ -25,6 +25,7 @@ function requiredArgument(name) {
 }
 
 function routeDisplayName(route) {
+  if (route.mode === 'tram') return `Tram ${route.shortName}`
   return route.mode === 'metro'
     ? `Métro ${route.shortName}`
     : `${route.mode === 'transilien' ? 'Transilien' : 'RER'} ${route.shortName}`
@@ -47,6 +48,7 @@ function summarizeRoutes(routeIds, routeRecords, routeMetrics) {
 }
 
 const transilien = argument('scope') === 'transilien'
+const tram = argument('scope') === 'tram'
 const archive = resolve(requiredArgument('archive'))
 const output = resolve(
   argument('output', 'fixtures/idfm/correspondances-scope-audit.json'),
@@ -62,7 +64,9 @@ const services = await activeServices(archive, serviceDate)
 const routeRecords = new Map()
 for await (const row of rowsFromArchive(archive, 'routes.txt')) {
   const routeType = Number(row.route_type)
-  const mode = transilien
+  const mode = tram
+    ? (routeType === 0 && /^T\d+[ab]?$/.test(row.route_short_name) ? 'tram' : undefined)
+    : transilien
     ? (routeType === 2 && TRANSILIEN_LINES.has(row.route_short_name) ? 'transilien' : undefined)
     : routeType === 1
     ? 'metro'
@@ -141,7 +145,10 @@ const routes = [...routeRecords.values()]
 
 const idsByName = new Map(routes.map((route) => [route.name, route.id]))
 const layer = (...names) => names.map((name) => idsByName.get(name)).filter(Boolean)
-const layers = transilien ? {
+const layers = tram ? {
+  tramMarechaux: layer('Tram T3a', 'Tram T3b'),
+  tramRemainder: routes.filter((route) => !['Tram T3a', 'Tram T3b'].includes(route.name)).map((route) => route.id),
+} : transilien ? {
   transilienNorth: layer('Transilien H', 'Transilien K'),
   transilienSaintLazare: layer('Transilien J', 'Transilien L'),
   transilienSouthwest: layer('Transilien N', 'Transilien U', 'Transilien V'),
@@ -191,7 +198,7 @@ const result = {
 await mkdir(dirname(output), { recursive: true })
 await writeFile(output, `${JSON.stringify(result, null, 2)}\n`)
 console.log(
-  `Audited ${result.totals.routeCount} ${transilien ? 'Transilien' : 'Métro/RER'} lines: ${result.totals.tripCount} trips, ` +
+  `Audited ${result.totals.routeCount} ${tram ? 'Tram' : transilien ? 'Transilien' : 'Métro/RER'} lines: ${result.totals.tripCount} trips, ` +
     `${result.totals.uniqueStopCount} unique stops in the study window.`,
 )
 for (const [name, summary] of Object.entries(result.candidateLayers)) {

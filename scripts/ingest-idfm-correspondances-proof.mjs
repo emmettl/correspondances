@@ -13,6 +13,14 @@ const DATASET_URL =
 const LICENSE_URL =
   'https://www.iledefrance-mobilites.fr/medias/portail-idfm/4dc136f7-df23-449b-9670-24bc5254a706_RAA138.pdf'
 const STUDIES = {
+  'tram-marechaux': {
+    output: 'fixtures/idfm/correspondances-tram-marechaux-morning.json',
+    label: 'Tram des Maréchaux · T3a / T3b',
+    routes: [
+      ['IDFM:C01391', { name: 'Tram T3a', category: 'tram', mode: 'tram' }],
+      ['IDFM:C01679', { name: 'Tram T3b', category: 'tram', mode: 'tram' }],
+    ],
+  },
   opening: {
     output: 'fixtures/idfm/correspondances-morning.json',
     label: 'Métro 1 / RER A scale proof',
@@ -285,6 +293,13 @@ for (const [shapeId, points] of shapes) {
       .map(({ coordinate }) => coordinate),
   )
 }
+if (studyId.startsWith('tram-')) {
+  for (const shapeId of shapeIds) {
+    if ((shapes.get(shapeId)?.length ?? 0) < 2) {
+      throw new Error(`Tram trip has no published shape: ${shapeId}`)
+    }
+  }
+}
 
 const orderedStops = [...stopRecords.values()].sort((first, second) =>
   first.id.localeCompare(second.id),
@@ -298,8 +313,8 @@ const edgeIndexByKey = new Map()
 function pathForSegment(fromStop, toStop, shapeId) {
   const shape = shapes.get(shapeId)
   if (!shape?.length) {
-    if (studyId.startsWith('transilien-')) {
-      throw new Error(`Transilien segment has no published shape: ${shapeId}`)
+    if (studyId.startsWith('transilien-') || studyId.startsWith('tram-')) {
+      throw new Error(`${studyId} segment has no published shape: ${shapeId}`)
     }
     return [
       [fromStop.longitude, fromStop.latitude],

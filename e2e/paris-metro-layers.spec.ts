@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 for (const spec of [
+  { slug: 'tram-marechaux', label: 'Couche tram des Maréchaux T3a et T3b', lines: ['Tram T3a', 'Tram T3b'], morningTrips: 1151, dayTrips: 5924 },
   { slug: 'transilien-north', label: 'Couche Transilien H, K', lines: ['Transilien H', 'Transilien K'], morningTrips: 1093, dayTrips: 5502 },
   { slug: 'transilien-saint-lazare', label: 'Couche Transilien J, L', lines: ['Transilien J', 'Transilien L'], morningTrips: 1164, dayTrips: 5956 },
   { slug: 'transilien-southwest', label: 'Couche Transilien N, U, V', lines: ['Transilien N', 'Transilien U', 'Transilien V'], morningTrips: 1068, dayTrips: 5403 },
@@ -179,7 +180,7 @@ test('all layer controls fit the viewport when AIR is enabled', async ({ page })
   await expect(page.getByRole('button', { name: 'AIR — avions observés' })).toHaveAttribute('aria-busy', 'false')
   await page.getByRole('button', { name: 'Afficher les couches' }).click()
   const controls = page.getByRole('region', { name: 'Couches du réseau' }).getByRole('button')
-  await expect(controls).toHaveCount(13)
+  await expect(controls).toHaveCount(14)
   const viewport = page.viewportSize()!
   for (const control of await controls.all()) {
     await control.scrollIntoViewIfNeeded()

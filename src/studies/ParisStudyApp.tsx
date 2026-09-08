@@ -264,6 +264,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const { network: transilienSouthwestLayer, toggle: toggleTransilienSouthwestLayer } = transilienSouthwest
   const transilienEast = useParisRailLayer(edition.data.layers.transilienEastMorning, edition.data.layers.transilienEastDayManifest, studyWindow, time)
   const { network: transilienEastLayer, toggle: toggleTransilienEastLayer } = transilienEast
+  const tramMarechaux = useParisRailLayer(edition.data.layers.tramMarechauxMorning, edition.data.layers.tramMarechauxDayManifest, studyWindow, time)
+  const { network: tramMarechauxLayer, toggle: toggleTramMarechauxLayer } = tramMarechaux
   const air = useParisAir(edition, studyWindow, time)
   const { setEnabled: setAirEnabled } = air
   const [selectedAirTrackId, setSelectedAirTrackId] = useState<string>()
@@ -374,10 +376,14 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         transilienEastLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
       optionalLayers.push(transilienEastLayer)
     }
+    if (tramMarechauxLayer?.metadata.windowStart === baseNetwork.metadata.windowStart &&
+        tramMarechauxLayer.metadata.windowEnd === baseNetwork.metadata.windowEnd) {
+      optionalLayers.push(tramMarechauxLayer)
+    }
     return optionalLayers.length
       ? mergeNetworkLayers([baseNetwork, ...optionalLayers])
       : baseNetwork
-  }, [baseNetwork, centralCrossEnabled, centralCrossLayer, regionalRerEnabled, regionalRerLayer, metroArcsLayer, metroCrossingsLayer, metroEastLayer, metroBoulevardsLayer, metroWestLayer, metroLocalLayer, transilienNorthLayer, transilienSaintLazareLayer, transilienSouthwestLayer, transilienEastLayer])
+  }, [baseNetwork, centralCrossEnabled, centralCrossLayer, regionalRerEnabled, regionalRerLayer, metroArcsLayer, metroCrossingsLayer, metroEastLayer, metroBoulevardsLayer, metroWestLayer, metroLocalLayer, transilienNorthLayer, transilienSaintLazareLayer, transilienSouthwestLayer, transilienEastLayer, tramMarechauxLayer])
   const centralCrossLayerLoading = studyWindow === 'day'
     ? centralCrossDayStudy.loading
     : centralCrossLoading
@@ -531,7 +537,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setActiveHubStudyIndex(-1)
     setQuery('')
     setSearchOpen(false)
-  }, [clearAirSelection])
+  }, [clearAirSelection, setSearchOpen])
 
   const activateStudyWindow = useCallback((next: 'morning' | 'day') => {
     if (next === studyWindow) return
@@ -646,6 +652,13 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     moveCamera('reset')
   }, [clearSelection, moveCamera, toggleTransilienEastLayer])
 
+  const toggleTramMarechaux = useCallback(() => {
+    clearSelection()
+    setLayerMenuOpen(false)
+    toggleTramMarechauxLayer()
+    moveCamera('reset')
+  }, [clearSelection, moveCamera, toggleTramMarechauxLayer])
+
   const toggleScaleView = useCallback(() => {
     if (!network) return
     clearSelection()
@@ -681,7 +694,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       action: 'reveal-station',
       distanceScale: station.labelRank === 1 ? 0.22 : 0.32,
     }))
-  }, [clearAirSelection])
+  }, [clearAirSelection, setSearchOpen])
 
   const selectAirTrack = useCallback((id: string) => {
     const track = air.aircraft.find((candidate) => candidate.id === id)
@@ -726,7 +739,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setSelectedRoute(undefined)
     setTime(Math.max(choice.value.start, Math.min(time, choice.value.end)))
     setQuery(`${choice.value.shortName} → ${choice.value.headsign}`)
-  }, [selectStation, time, selectAirTrack, clearSelection, clearAirSelection, setAirEnabled])
+  }, [selectStation, time, selectAirTrack, clearSelection, clearAirSelection, setAirEnabled, setSearchOpen])
 
   const selectRoute = useCallback((name: string) => {
     clearAirSelection()
@@ -739,7 +752,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setQuery('')
     setSearchOpen(false)
     setCameraCommand((current) => ({ id: (current?.id ?? 0) + 1, action: 'reset' }))
-  }, [routes, clearAirSelection])
+  }, [routes, clearAirSelection, setSearchOpen])
 
   const showNextConnection = useCallback(() => {
     if (!network) return
@@ -766,7 +779,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       focus: [connection.complex.longitude, connection.complex.latitude],
       distanceScale: hubStudy.distanceScale,
     }))
-  }, [activeHubStudyIndex, network, time, clearAirSelection])
+  }, [activeHubStudyIndex, network, time, clearAirSelection, setSearchOpen])
 
   const onSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     event.stopPropagation()
@@ -813,13 +826,13 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const activeHubStudy = activeHubStudyIndex >= 0
     ? PARIS_HUB_STUDIES[activeHubStudyIndex]
     : undefined
-  const activeOptionalLayerCount = Number(centralCrossEnabled) + Number(regionalRerEnabled) + Number(metroArcs.enabled) + Number(metroCrossings.enabled) + Number(metroEast.enabled) + Number(metroBoulevards.enabled) + Number(metroWest.enabled) + Number(metroLocal.enabled) + Number(transilienNorth.enabled) + Number(transilienSaintLazare.enabled) + Number(transilienSouthwest.enabled) + Number(transilienEast.enabled)
-  const optionalLayerLoading = centralCrossLayerLoading || regionalRerLayerLoading || metroArcs.loading || metroCrossings.loading || metroEast.loading || metroBoulevards.loading || metroWest.loading || metroLocal.loading || transilienNorth.loading || transilienSaintLazare.loading || transilienSouthwest.loading || transilienEast.loading
-  const optionalLayerError = centralCrossLayerError || regionalRerLayerError || metroArcs.error || metroCrossings.error || metroEast.error || metroBoulevards.error || metroWest.error || metroLocal.error || transilienNorth.error || transilienSaintLazare.error || transilienSouthwest.error || transilienEast.error
+  const activeOptionalLayerCount = Number(centralCrossEnabled) + Number(regionalRerEnabled) + Number(metroArcs.enabled) + Number(metroCrossings.enabled) + Number(metroEast.enabled) + Number(metroBoulevards.enabled) + Number(metroWest.enabled) + Number(metroLocal.enabled) + Number(transilienNorth.enabled) + Number(transilienSaintLazare.enabled) + Number(transilienSouthwest.enabled) + Number(transilienEast.enabled) + Number(tramMarechaux.enabled)
+  const optionalLayerLoading = centralCrossLayerLoading || regionalRerLayerLoading || metroArcs.loading || metroCrossings.loading || metroEast.loading || metroBoulevards.loading || metroWest.loading || metroLocal.loading || transilienNorth.loading || transilienSaintLazare.loading || transilienSouthwest.loading || transilienEast.loading || tramMarechaux.loading
+  const optionalLayerError = centralCrossLayerError || regionalRerLayerError || metroArcs.error || metroCrossings.error || metroEast.error || metroBoulevards.error || metroWest.error || metroLocal.error || transilienNorth.error || transilienSaintLazare.error || transilienSouthwest.error || transilienEast.error || tramMarechaux.error
   const plannedTripCount = studyWindow === 'day'
     ? (dayStudy.manifest?.tripCount ?? 0) +
       (centralCrossEnabled ? (centralCrossDayStudy.manifest?.tripCount ?? 0) : 0) +
-      (regionalRerEnabled ? (regionalRerDayStudy.manifest?.tripCount ?? 0) : 0) + metroArcs.tripCount + metroCrossings.tripCount + metroEast.tripCount + metroBoulevards.tripCount + metroWest.tripCount + metroLocal.tripCount + transilienNorth.tripCount + transilienSaintLazare.tripCount + transilienSouthwest.tripCount + transilienEast.tripCount
+      (regionalRerEnabled ? (regionalRerDayStudy.manifest?.tripCount ?? 0) : 0) + metroArcs.tripCount + metroCrossings.tripCount + metroEast.tripCount + metroBoulevards.tripCount + metroWest.tripCount + metroLocal.tripCount + transilienNorth.tripCount + transilienSaintLazare.tripCount + transilienSouthwest.tripCount + transilienEast.tripCount + tramMarechaux.tripCount
     : (network?.trains.length ?? 0)
   const activeNetworkLabel = [
     'Métro 1',
@@ -836,6 +849,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     ...(transilienSaintLazare.enabled ? ['Transilien J · L'] : []),
     ...(transilienSouthwest.enabled ? ['Transilien N · U · V'] : []),
     ...(transilienEast.enabled ? ['Transilien P · R'] : []),
+    ...(tramMarechaux.enabled ? ['Tram T3a · T3b'] : []),
   ].join(' · ')
 
   return (
@@ -855,6 +869,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       data-transilien-saint-lazare-enabled={transilienSaintLazare.enabled}
       data-transilien-southwest-enabled={transilienSouthwest.enabled}
       data-transilien-east-enabled={transilienEast.enabled}
+      data-tram-marechaux-enabled={tramMarechaux.enabled}
       data-air-enabled={air.enabled}
       data-selected-air-track={selectedAirTrackId}
       data-selected-airport={selectedAirport?.id}
@@ -938,7 +953,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
               autoComplete="off"
               aria-controls="paris-search-results"
               aria-expanded={searchOpen && choices.length > 0}
-              onFocus={() => setSearchOpen(true)}
+              onFocus={() => { setSearchOpen(true); setLayerMenuOpen(false) }}
               onChange={(event) => {
                 setQuery(event.target.value)
                 setActiveSearchIndex(0)
@@ -1039,7 +1054,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       <nav className="paris-routes" aria-label="Lignes de l’étude">
         <button type="button" data-tooltip="Mettre en évidence le Métro 1 et ses missions" aria-label="Isoler Métro 1" aria-pressed={selectedRoute?.name === 'Métro 1'} onClick={() => selectRoute('Métro 1')}><i /> Métro 1 <small>le centre</small></button>
         <button type="button" data-tooltip="Mettre en évidence le RER A et ses missions" aria-label="Isoler RER A" aria-pressed={selectedRoute?.name === 'RER A'} onClick={() => selectRoute('RER A')}><i /> RER A <small>la région</small></button>
-        <button className="paris-layer-button" type="button" data-tooltip={layerMenuOpen ? 'Fermer le choix des réseaux' : 'Choisir les réseaux ferroviaires et isoler AIR'} aria-label="Afficher les couches" aria-expanded={layerMenuOpen} onClick={() => setLayerMenuOpen((open) => !open)}><i /> Couches <small>{activeOptionalLayerCount ? `${activeOptionalLayerCount} active${activeOptionalLayerCount > 1 ? 's' : ''}` : 'réseau optionnel'}</small></button>
+        <button className="paris-layer-button" type="button" data-tooltip={layerMenuOpen ? 'Fermer le choix des réseaux' : 'Choisir les réseaux ferroviaires et isoler AIR'} aria-label="Afficher les couches" aria-expanded={layerMenuOpen} onClick={() => { setSearchOpen(false); setLayerMenuOpen((open) => !open) }}><i /> Couches <small>{activeOptionalLayerCount ? `${activeOptionalLayerCount} active${activeOptionalLayerCount > 1 ? 's' : ''}` : 'réseau optionnel'}</small></button>
         <button className="paris-air-toggle" type="button" data-tooltip={air.enabled ? 'Masquer les avions observés' : 'Afficher les avions observés sur la même horloge que les trains'} aria-label="AIR — avions observés" aria-pressed={air.enabled} aria-busy={air.loading} onClick={() => { clearSelection(); setAirEnabled(!air.enabled); if (!air.enabled) moveCamera('reset') }}><i /> AIR <small>observé</small></button>
         <button className="paris-connection-button" type="button" data-tooltip="Passer au prochain pôle et explorer ses correspondances programmées" aria-label="Prochaine correspondance" onClick={showNextConnection}><i /> {activeHubStudy?.title ?? 'Correspondance'} <small>{activeHubStudy ? selectedConnection?.complex.name : '3 hubs · données IDFM'}</small></button>
       </nav>
@@ -1058,6 +1073,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           <button type="button" data-tooltip={transilienSaintLazare.error ? 'Réessayer Transilien Saint-Lazare' : transilienSaintLazare.enabled ? 'Masquer Transilien Saint-Lazare' : 'Ajouter Transilien Saint-Lazare'} aria-label="Couche Transilien J, L" aria-pressed={transilienSaintLazare.enabled} aria-busy={transilienSaintLazare.loading} onClick={toggleTransilienSaintLazare}><i className="transilien-saint-lazare" /><span><strong>{transilienSaintLazare.error ? 'Réessayer Transilien' : transilienSaintLazare.loading ? 'Chargement…' : 'Saint-Lazare'}</strong><small>Transilien J · L</small></span></button>
           <button type="button" data-tooltip={transilienSouthwest.error ? 'Réessayer Transilien Sud-ouest' : transilienSouthwest.enabled ? 'Masquer Transilien Sud-ouest' : 'Ajouter Transilien Sud-ouest'} aria-label="Couche Transilien N, U, V" aria-pressed={transilienSouthwest.enabled} aria-busy={transilienSouthwest.loading} onClick={toggleTransilienSouthwest}><i className="transilien-southwest" /><span><strong>{transilienSouthwest.error ? 'Réessayer Transilien' : transilienSouthwest.loading ? 'Chargement…' : 'Sud-ouest'}</strong><small>Transilien N · U · V</small></span></button>
           <button type="button" data-tooltip={transilienEast.error ? 'Réessayer Transilien Est et sud-est' : transilienEast.enabled ? 'Masquer Transilien Est et sud-est' : 'Ajouter Transilien Est et sud-est'} aria-label="Couche Transilien P, R" aria-pressed={transilienEast.enabled} aria-busy={transilienEast.loading} onClick={toggleTransilienEast}><i className="transilien-east" /><span><strong>{transilienEast.error ? 'Réessayer Transilien' : transilienEast.loading ? 'Chargement…' : 'Est et sud-est'}</strong><small>Transilien P · R</small></span></button>
+          <button type="button" data-tooltip={tramMarechaux.error ? 'Réessayer le tram des Maréchaux' : tramMarechaux.enabled ? 'Masquer le tram des Maréchaux' : 'Ajouter le tram des Maréchaux'} aria-label="Couche tram des Maréchaux T3a et T3b" aria-pressed={tramMarechaux.enabled} aria-busy={tramMarechaux.loading} onClick={toggleTramMarechaux}><i className="tram-marechaux" /><span><strong>{tramMarechaux.error ? 'Réessayer le tram' : tramMarechaux.loading ? 'Chargement…' : 'Tram des Maréchaux'}</strong><small>Tram T3a · T3b</small></span></button>
           {air.enabled && <button type="button" data-tooltip={airCategorySelected ? 'Rétablir la visibilité du réseau ferroviaire' : 'Mettre les avions en évidence et atténuer les trains'} aria-label="Isoler les avions observés" aria-pressed={airCategorySelected} onClick={() => { const next = !airCategorySelected; clearSelection(); setAirCategorySelected(next); setLayerMenuOpen(false); if (next) moveCamera('reset') }}><i className="air" /><span><strong>Isoler AIR</strong><small>Atténuer le réseau ferroviaire</small></span></button>}
         </section>
       )}

@@ -21,6 +21,8 @@ const CORRESPONDANCES_THEME = {
  * slightly lifted variants remain legible in the dark Motion Studies palette.
  */
 export const CORRESPONDANCES_ROUTE_COLORS: Readonly<Record<string, string>> = {
+  'Tram T3a': '#ff9754',
+  'Tram T3b': '#59bb8e',
   'Métro 1': '#ffd75d',
   'Métro 2': '#659bff',
   'Métro 3': '#c6c674',
@@ -86,6 +88,8 @@ export interface ParisDataCatalog extends EditionDataCatalog {
     readonly transilienSouthwestDayManifest: string
     readonly transilienEastMorning: string
     readonly transilienEastDayManifest: string
+    readonly tramMarechauxMorning: string
+    readonly tramMarechauxDayManifest: string
     readonly metroLocalMorning: string
     readonly metroLocalDayManifest: string
   }
@@ -139,6 +143,8 @@ export const PARIS_EDITION: ParisEdition = {
       transilienSouthwestDayManifest: 'correspondances-transilien-southwest-day-manifest.json',
       transilienEastMorning: 'correspondances-transilien-east-morning.json',
       transilienEastDayManifest: 'correspondances-transilien-east-day-manifest.json',
+      tramMarechauxMorning: 'correspondances-tram-marechaux-morning.json',
+      tramMarechauxDayManifest: 'correspondances-tram-marechaux-day-manifest.json',
       metroLocalMorning: 'correspondances-metro-local-morning.json',
       metroLocalDayManifest: 'correspondances-metro-local-day-manifest.json',
     },

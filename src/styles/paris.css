@@ -5,6 +5,8 @@
 
 .correspondances-experience {
   --paris-gutter: clamp(20px, 3.4vw, 52px);
+  --paris-search-top: clamp(142px, 18vh, 190px);
+  --paris-layer-bottom: clamp(204px, 25vh, 255px);
 }
 
 .correspondances-experience .atmosphere {
@@ -105,7 +107,7 @@
 
 .paris-search {
   position: absolute;
-  top: clamp(142px, 18vh, 190px);
+  top: var(--paris-search-top);
   left: 50%;
   z-index: 10;
   width: min(44vw, 610px);
@@ -215,7 +217,7 @@
 
 .paris-search-results {
   display: grid;
-  max-height: min(50vh, 390px);
+  max-height: min(50vh, 390px, calc(100svh - var(--paris-search-top) - 108px - var(--paris-layer-bottom)));
   overflow-y: auto;
   border: 1px solid rgba(244, 207, 85, 0.3);
   border-top: 0;
@@ -354,13 +356,14 @@
 
 .paris-layer-menu {
   position: absolute;
-  bottom: clamp(204px, 25vh, 255px);
+  bottom: var(--paris-layer-bottom);
   left: 50%;
   z-index: 8;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   width: min(720px, calc(100% - 40px));
-  max-height: min(50vh, calc(100dvh - 280px));
+  /* Reserve both search rows (including a populated query) above the menu. */
+  max-height: min(50vh, calc(100svh - var(--paris-search-top) - 108px - var(--paris-layer-bottom)));
   overflow-y: auto;
   overscroll-behavior: contain;
   transform: translateX(-50%);
@@ -592,6 +595,8 @@
 @media (max-width: 760px) {
   .correspondances-experience {
     --paris-gutter: 18px;
+    --paris-search-top: max(78px, calc(env(safe-area-inset-top) + 59px));
+    --paris-layer-bottom: calc(164px + env(safe-area-inset-bottom));
     min-height: 520px;
   }
 
@@ -615,7 +620,6 @@
   }
 
   .paris-search {
-    top: max(78px, calc(env(safe-area-inset-top) + 59px));
     width: calc(100% - 36px);
   }
 
@@ -698,7 +702,6 @@
 
   .paris-layer-menu {
     right: 12px;
-    bottom: calc(164px + env(safe-area-inset-bottom));
     left: 12px;
     width: auto;
     transform: none;
@@ -811,3 +814,5 @@
 @media (min-width: 721px) {
   .correspondances-experience .edition-airport-card { --airport-top: calc(clamp(142px, 18vh, 190px) + 96px); top: var(--airport-top); max-height: calc(100svh - var(--airport-top) - 190px); }
 }
+
+.paris-layer-menu i.tram-marechaux { background: linear-gradient(135deg, #ff9754 50%, #59bb8e 50%); }

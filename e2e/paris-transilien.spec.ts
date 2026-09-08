@@ -37,8 +37,8 @@ for (const [slug, label] of groups) {
   }
 }
 
-test('all 30 rail lines compose across scales and the full day', async ({ page }, testInfo) => {
-  // Ten optional groups plus three full-day seeks are substantially slower
+test('all 32 rail and tram lines compose across scales and the full day', async ({ page }, testInfo) => {
+  // Eleven optional groups plus three full-day seeks are substantially slower
   // with CI's software WebGL. Individual assertions retain their 15s limit.
   test.setTimeout(180_000)
   const errors: string[] = []
@@ -51,27 +51,28 @@ test('all 30 rail lines compose across scales and the full day', async ({ page }
     'Couche portes de l’Est Métro 3 et Métro 11', 'Couche grands boulevards Métro 8 et Métro 9',
     'Couche axes de l’Ouest Métro 12 et Métro 13', 'Couche boucles et liaisons Métro 3bis, Métro 7bis et Métro 10',
     ...groups.map(([, label]) => label),
+    'Couche tram des Maréchaux T3a et T3b',
   ]) {
     await page.getByRole('button', { name: 'Afficher les couches' }).click()
     await page.getByRole('button', { name: label }).click()
   }
-  await expect(page.locator('.paris-status')).toContainText('2967 missions planifiées')
-  await expect(page.locator('.paris-status')).toContainText('12 couches actives')
+  await expect(page.locator('.paris-status')).toContainText('3141 missions planifiées')
+  await expect(page.locator('.paris-status')).toContainText('13 couches actives')
   await page.getByRole('slider', { name: 'Heure' }).fill('28800')
-  await expect(page.locator('.paris-status strong')).toHaveText('860')
+  await expect(page.locator('.paris-status strong')).toHaveText('917')
   await page.waitForTimeout(1800)
-  await page.screenshot({ path: testInfo.outputPath('transilien-region.png') })
+  await page.screenshot({ path: testInfo.outputPath('tram-complete-region.png') })
   await page.getByRole('button', { name: 'Basculer entre le centre et la région' }).click()
   await expect(page.locator('main')).toHaveAttribute('data-scale-view', 'centre')
   await page.waitForTimeout(1800)
-  await page.screenshot({ path: testInfo.outputPath('transilien-centre.png') })
+  await page.screenshot({ path: testInfo.outputPath('tram-complete-centre.png') })
   await page.getByRole('button', { name: 'Étude de vingt-quatre heures' }).click()
-  await expect(page.locator('.paris-status')).toContainText('16147 missions planifiées')
+  await expect(page.locator('.paris-status')).toContainText('17088 missions planifiées')
   for (const time of ['3600', '64800', '84600']) {
     await page.getByRole('slider', { name: 'Heure' }).fill(time)
-    await expect(page.locator('.paris-status')).toContainText('16147 missions planifiées')
+    await expect(page.locator('.paris-status')).toContainText('17088 missions planifiées')
   }
-  let count = 16147
+  let count = 17088
   for (const [index, trips] of [519, 973, 420, 357].entries()) {
     await page.getByRole('button', { name: 'Afficher les couches' }).click()
     await page.getByRole('button', { name: groups[index][1] }).click()
@@ -79,6 +80,9 @@ test('all 30 rail lines compose across scales and the full day', async ({ page }
     await expect(page.locator('.paris-status')).toContainText(`${count} missions planifiées`)
   }
   await page.getByRole('button', { name: 'Étude du matin de deux heures' }).click()
+  await expect(page.locator('.paris-status')).toContainText('2677 missions planifiées')
+  await page.getByRole('button', { name: 'Afficher les couches' }).click()
+  await page.getByRole('button', { name: 'Couche tram des Maréchaux T3a et T3b' }).click()
   await expect(page.locator('.paris-status')).toContainText('2503 missions planifiées')
   expect(errors).toEqual([])
 })

@@ -1,0 +1,189 @@
+{
+  "metadata": {
+    "publisher": "Île-de-France Mobilités",
+    "datasetUrl": "https://prim.iledefrance-mobilites.fr/fr/jeux-de-donnees/offre-horaires-tc-gtfs-idfm",
+    "sourceUrl": "https://eu.ftp.opendatasoft.com/stif/GTFS/IDFM-gtfs.zip",
+    "sourceSha256": "c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18",
+    "retrievedAt": "2026-09-06T11:41:37.000Z",
+    "serviceDate": "2026-09-04",
+    "windowStart": 25200,
+    "windowEnd": 32400,
+    "method": "Active GTFS journeys intersecting the study window; counts only, no published runtime artifact."
+  },
+  "totals": {
+    "routeCount": 15,
+    "tripCount": 922,
+    "callCount": 17858,
+    "uniqueStopCount": 560
+  },
+  "routes": [
+    {
+      "id": "IDFM:C01389",
+      "name": "Tram T1",
+      "mode": "tram",
+      "sourceColor": "0055C8",
+      "tripCount": 73,
+      "callCount": 2509,
+      "uniqueStopCount": 74
+    },
+    {
+      "id": "IDFM:C01390",
+      "name": "Tram T2",
+      "mode": "tram",
+      "sourceColor": "A0006E",
+      "tripCount": 90,
+      "callCount": 1943,
+      "uniqueStopCount": 48
+    },
+    {
+      "id": "IDFM:C01391",
+      "name": "Tram T3a",
+      "mode": "tram",
+      "sourceColor": "FF5A00",
+      "tripCount": 84,
+      "callCount": 2100,
+      "uniqueStopCount": 50
+    },
+    {
+      "id": "IDFM:C01679",
+      "name": "Tram T3b",
+      "mode": "tram",
+      "sourceColor": "00643C",
+      "tripCount": 90,
+      "callCount": 2821,
+      "uniqueStopCount": 66
+    },
+    {
+      "id": "IDFM:C01843",
+      "name": "Tram T4",
+      "mode": "tram",
+      "sourceColor": "DC9600",
+      "tripCount": 82,
+      "callCount": 1050,
+      "uniqueStopCount": 40
+    },
+    {
+      "id": "IDFM:C01684",
+      "name": "Tram T5",
+      "mode": "tram",
+      "sourceColor": "640082",
+      "tripCount": 61,
+      "callCount": 953,
+      "uniqueStopCount": 32
+    },
+    {
+      "id": "IDFM:C01794",
+      "name": "Tram T6",
+      "mode": "tram",
+      "sourceColor": "FF0000",
+      "tripCount": 80,
+      "callCount": 1596,
+      "uniqueStopCount": 42
+    },
+    {
+      "id": "IDFM:C01774",
+      "name": "Tram T7",
+      "mode": "tram",
+      "sourceColor": "6E491E",
+      "tripCount": 51,
+      "callCount": 900,
+      "uniqueStopCount": 36
+    },
+    {
+      "id": "IDFM:C01795",
+      "name": "Tram T8",
+      "mode": "tram",
+      "sourceColor": "6E6E00",
+      "tripCount": 70,
+      "callCount": 769,
+      "uniqueStopCount": 34
+    },
+    {
+      "id": "IDFM:C02317",
+      "name": "Tram T9",
+      "mode": "tram",
+      "sourceColor": "3C91DC",
+      "tripCount": 71,
+      "callCount": 1341,
+      "uniqueStopCount": 38
+    },
+    {
+      "id": "IDFM:C02528",
+      "name": "Tram T10",
+      "mode": "tram",
+      "sourceColor": "6E6E00",
+      "tripCount": 47,
+      "callCount": 598,
+      "uniqueStopCount": 26
+    },
+    {
+      "id": "IDFM:C01999",
+      "name": "Tram T11",
+      "mode": "tram",
+      "sourceColor": "FF5A00",
+      "tripCount": 56,
+      "callCount": 392,
+      "uniqueStopCount": 14
+    },
+    {
+      "id": "IDFM:C02529",
+      "name": "Tram T12",
+      "mode": "tram",
+      "sourceColor": "A50034",
+      "tripCount": 30,
+      "callCount": 496,
+      "uniqueStopCount": 33
+    },
+    {
+      "id": "IDFM:C02344",
+      "name": "Tram T13",
+      "mode": "tram",
+      "sourceColor": "8D653D",
+      "tripCount": 30,
+      "callCount": 358,
+      "uniqueStopCount": 22
+    },
+    {
+      "id": "IDFM:C02732",
+      "name": "Tram T14",
+      "mode": "tram",
+      "sourceColor": "00A092",
+      "tripCount": 7,
+      "callCount": 32,
+      "uniqueStopCount": 5
+    }
+  ],
+  "candidateLayers": {
+    "tramMarechaux": {
+      "routeIds": [
+        "IDFM:C01391",
+        "IDFM:C01679"
+      ],
+      "routeCount": 2,
+      "tripCount": 174,
+      "callCount": 4921,
+      "uniqueStopCount": 116
+    },
+    "tramRemainder": {
+      "routeIds": [
+        "IDFM:C01389",
+        "IDFM:C01390",
+        "IDFM:C01843",
+        "IDFM:C01684",
+        "IDFM:C01794",
+        "IDFM:C01774",
+        "IDFM:C01795",
+        "IDFM:C02317",
+        "IDFM:C02528",
+        "IDFM:C01999",
+        "IDFM:C02529",
+        "IDFM:C02344",
+        "IDFM:C02732"
+      ],
+      "routeCount": 13,
+      "tripCount": 748,
+      "callCount": 12937,
+      "uniqueStopCount": 444
+    }
+  }
+}

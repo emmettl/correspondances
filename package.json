@@ -28,7 +28,7 @@
     "test": "vitest run",
     "test:e2e:ci": "playwright test",
     "check:boundary": "node scripts/check-boundary.mjs",
-    "check:bundle": "node scripts/check-paris-proof.mjs && node scripts/check-paris-air.mjs && node scripts/check-paris-metro-layers.mjs && node scripts/check-paris-transilien.mjs",
+    "check:bundle": "node scripts/check-paris-proof.mjs && node scripts/check-paris-air.mjs && node scripts/check-paris-metro-layers.mjs && node scripts/check-paris-transilien.mjs && node scripts/check-paris-tram.mjs",
     "data:paris:air": "node scripts/ingest-paris-air.mjs",
     "profile:frames": "node scripts/profile-paris-frames.mjs",
     "data:paris:metro-east": "node scripts/ingest-idfm-correspondances-proof.mjs --study metro-east --archive /tmp/IDFM-gtfs-current.zip --source-sha256 c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18 --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --window-start 00:00:00 --window-end 24:00:00 --focus 12:00:00 --output /tmp/correspondances-metro-east-day.json && node scripts/chunk-network-snapshot.mjs --input /tmp/correspondances-metro-east-day.json --manifest fixtures/idfm/correspondances-metro-east-day-manifest.json --opening fixtures/idfm/correspondances-metro-east-morning.json --chunk-hours 2 --opening-start 07:00 --opening-end 09:00 --focus 08:00",
@@ -41,7 +41,10 @@
     "data:paris:transilien-east": "node scripts/ingest-idfm-correspondances-proof.mjs --study transilien-east --archive /tmp/IDFM-gtfs-current.zip --source-sha256 c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18 --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --window-start 00:00:00 --window-end 24:00:00 --focus 12:00:00 --output /tmp/correspondances-transilien-east-day.json && node scripts/chunk-network-snapshot.mjs --input /tmp/correspondances-transilien-east-day.json --manifest fixtures/idfm/correspondances-transilien-east-day-manifest.json --opening fixtures/idfm/correspondances-transilien-east-morning.json --chunk-hours 2 --opening-start 07:00 --opening-end 09:00 --focus 08:00",
     "data:paris:audit:transilien": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope transilien --output fixtures/idfm/correspondances-transilien-audit.json",
     "data:paris:audit:transilien:day": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope transilien --output fixtures/idfm/correspondances-transilien-day-audit.json --window-start 00:00:00 --window-end 24:00:00",
-    "data:air:routes": "node scripts/enrich-air-routes.mjs"
+    "data:air:routes": "node scripts/enrich-air-routes.mjs",
+    "data:paris:tram-marechaux": "node scripts/ingest-idfm-correspondances-proof.mjs --study tram-marechaux --archive /tmp/IDFM-gtfs-current.zip --source-sha256 c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18 --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --window-start 00:00:00 --window-end 24:00:00 --focus 12:00:00 --output /tmp/correspondances-tram-marechaux-day.json && node scripts/chunk-network-snapshot.mjs --input /tmp/correspondances-tram-marechaux-day.json --manifest fixtures/idfm/correspondances-tram-marechaux-day-manifest.json --opening fixtures/idfm/correspondances-tram-marechaux-morning.json --chunk-hours 2 --opening-start 07:00 --opening-end 09:00 --focus 08:00",
+    "data:paris:audit:tram": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope tram --output fixtures/idfm/correspondances-tram-audit.json",
+    "data:paris:audit:tram:day": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope tram --output fixtures/idfm/correspondances-tram-day-audit.json --window-start 00:00:00 --window-end 24:00:00"
   },
   "dependencies": {
     "@motionstudies/core": "0.1.0-alpha.5",

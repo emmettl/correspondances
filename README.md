@@ -4,7 +4,7 @@
 
 [Study brief](https://github.com/emmettl/motionstudies/blob/main/docs/PARIS.md) · [Project goals](https://github.com/emmettl/motionstudies/blob/main/docs/VISION.md) · [Roadmap](https://github.com/emmettl/motionstudies/blob/main/ROADMAP.md)
 
-An independent Motion Studies edition. This repository owns its application, style, authored fixtures, source-specific data compilers and browser/provenance checks. Shared code comes from the four exact `@motionstudies/*` npm releases at `0.1.0-alpha.2`.
+An independent Motion Studies edition. This repository owns its application, style, authored fixtures, source-specific data compilers and browser/provenance checks. Shared code comes from the four exact `@motionstudies/*` npm releases at `0.1.0-alpha.5`.
 
 ## Opening study
 
@@ -49,6 +49,10 @@ Enable the four optional Transilien groups in **Couches** to add all nine conven
 
 They add 464 morning journeys and 2,269 across the day, preserving the outer branches and the U/V links between suburbs. Every group has independent loading, cancellation and retry, line/station/mission search, and progressive **24H** playback. With all Métro, RER and Transilien groups enabled, the study reaches 30 lines, 2,967 morning journeys and 16,147 full-day journeys. The default eight-line opening stays within its existing budget. See the [source, payload and density review](docs/TRANSILIEN.md).
 
+## Tram des Maréchaux
+
+Enable **Tram des Maréchaux** in **Couches** to add T3a and T3b around the city’s edge, retaining their separate termini and the western gap. This first optional tram group adds 174 morning journeys and 941 across the full day, with line/station search, isolation and independent loading/retry. All rail and tram groups together reach 32 lines and 3,141 morning / 17,088 full-day journeys. See the [tram source, payload and density review](docs/TRAM.md).
+
 ## AIR
 
 CDG, Orly and Le Bourget appear as geographic landmarks in Région, including when AIR is off. **AIR** adds observed aircraft from the same 4 September 2026 service day. It loads on demand, supports callsign and airport search, aircraft follow and isolation, and shares both the morning and progressive 24-hour clocks. Positions are historical observations; airport associations are labelled as inferred. See the [AIR data and regeneration guide](docs/AIR.md).
@@ -67,7 +71,7 @@ To capture frame timings on Windows 11 Edge, run `npm run build` and `npm run pr
 
 ## Next in the study
 
-The [density review](docs/DENSITY.md) and [station-label hierarchy](docs/STATION-LABELS.md) guide the two map scales. The [complete-network review](docs/METRO-COMPLETE.md) closes the Métro/RER coverage backlog for the pinned service day. The [Transilien review](docs/TRANSILIEN.md) extends the region with nine optional rail lines. Tram and operational rail variation are the next scope decisions, each requiring a separate source and density review.
+The [density review](docs/DENSITY.md) and [station-label hierarchy](docs/STATION-LABELS.md) guide the two map scales. The [complete-network review](docs/METRO-COMPLETE.md) closes the Métro/RER coverage backlog for the pinned service day. The [Transilien review](docs/TRANSILIEN.md) extends the region with nine optional rail lines. The [first tram review](docs/TRAM.md) adds T3a/T3b. Remaining tram groups and operational rail variation are the next scope decisions, each requiring a separate source and density review.
 
 ## Hosting and data
 
@@ -81,7 +85,7 @@ Extracted from [Gleislicht 5c65186](https://github.com/emmettl/gleislicht/commit
 
 ## Standard selection labels
 
-The shared `@motionstudies/three` alpha.4 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
+The shared `@motionstudies/three` alpha.5 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
 
 ### Airport movement boards
 

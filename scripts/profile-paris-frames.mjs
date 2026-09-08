@@ -10,6 +10,7 @@ const { values } = parseArgs({ options: {
   'metro-arcs': { type: 'boolean', default: false },
   'metro-crossings': { type: 'boolean', default: false },
   'metro-east': { type: 'boolean', default: false },
+  'tram-marechaux': { type: 'boolean', default: false },
   transilien: { type: 'boolean', default: false },
   'all-metro': { type: 'boolean', default: false },
   'metro-boulevards': { type: 'boolean', default: false },
@@ -67,6 +68,12 @@ try {
       morningTrips += trips
       await page.locator('.paris-status').filter({ hasText: `${morningTrips} missions planifiées` }).waitFor()
     }
+  }
+  if (values['tram-marechaux']) {
+    await page.getByRole('button', { name: 'Afficher les couches' }).click()
+    await page.getByRole('button', { name: 'Couche tram des Maréchaux T3a et T3b' }).click()
+    morningTrips += 174
+    await page.locator('.paris-status').filter({ hasText: `${morningTrips} missions planifiées` }).waitFor()
   }
   const cdp = await page.context().newCDPSession(page)
   await cdp.send('Performance.enable')
@@ -141,7 +148,7 @@ try {
     capturedAt: new Date().toISOString(),
     platform: process.platform,
     browserVersion: browser.version(),
-    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, angle: values.angle, metroArcs: values['metro-arcs'], metroCrossings: values['metro-crossings'], metroEast: values['metro-east'], allMetro: values['all-metro'], transilien: values.transilien, metroBoulevards: values['metro-boulevards'], metroWest: values['metro-west'], metroLocal: values['metro-local'] },
+    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless, angle: values.angle, metroArcs: values['metro-arcs'], metroCrossings: values['metro-crossings'], metroEast: values['metro-east'], allMetro: values['all-metro'], transilien: values.transilien, tramMarechaux: values['tram-marechaux'], metroBoulevards: values['metro-boulevards'], metroWest: values['metro-west'], metroLocal: values['metro-local'] },
     environment,
     scenarios,
   }, null, 2)
