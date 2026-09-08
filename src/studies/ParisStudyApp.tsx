@@ -290,6 +290,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const [activeHubStudyIndex, setActiveHubStudyIndex] = useState(-1)
   const [trainLabelMode, setTrainLabelMode] = useState<TrainLabelMode>('auto')
   const [limitedChrome, setLimitedChrome] = useState(false)
+  const [statusExpanded, setStatusExpanded] = useState(false)
   const [cameraCommand, setCameraCommand] = useState<MapCameraCommand>()
   const webglAvailable = useMemo(() => supportsWebGL(), [])
   const dayStudy = useProgressiveNetworkDay(
@@ -1014,40 +1015,42 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           note={<><a href="https://www.adsb.lol/docs/open-data/historical/">ADSB.lol</a> · ODbL · <a href="https://ourairports.com/data/">OurAirports</a> · {AIRPORT_NOTES['fr']}</>}
         />
       ) : (
-      <section className="paris-status" aria-live="polite">
-        {loadError || dayStudy.error ? <p>Étude indisponible.</p> : network ? (
-          <>
-            <div><strong>{selectedAirTrackId ? (selectedAirPosition ? 1 : 0) : selectedAirport || airCategorySelected ? activeAircraftCount : activeTrainCount}</strong><span>{selectedAirTrackId || selectedAirport || airCategorySelected ? 'avions observés' : 'trains en mouvement'}</span></div>
-            <p>{selectedAirEntry ? airTrackSearchValue(selectedAirEntry) : (airCategorySelected ? 'Le ciel parisien' : undefined) ?? selectedConnection?.complex.name ?? selectedStation?.name ?? selectedRoute?.name ?? (selectedTrain ? `${selectedTrain.shortName} → ${selectedTrain.headsign}` : scaleView === 'centre' ? 'Le cœur en détail' : 'Deux échelles, une ville')}</p>
-            <small>{selectedAirTrackId
-              ? selectedAirPosition ? `${Math.round(selectedAirPosition.altitudeFeet).toLocaleString('fr-FR')} ft · ${Math.round(selectedAirPosition.groundSpeedKnots)} kt · altitude comprimée` : 'Aucune position observée à cet instant'
-              : selectedAirport ? 'Présence dans l’enveloppe d’approche · liaison inférée'
-              : selectedConnection
-              ? `${activeHubStudy?.description ?? 'correspondance planifiée'} · ${selectedConnection.incoming.route} → ${selectedConnection.outgoing.route} · ${Math.round((selectedConnection.departure - selectedConnection.arrival) / 60)} min disponibles · ${Math.round(selectedConnection.minimumTransferSeconds / 60)} min minimum publié`
-              : selectedStation
-              ? `${selectedStation.trainIds.length} passages planifiés dans l’étude`
-              : selectedRoute
-                ? `${selectedRoute.trainIds.length} missions · ${selectedRoute.stopIndexes.length} stations`
-                : selectedTrain
-                  ? `${selectedTrain.route} · ${formatServiceTime(selectedTrain.start)}–${formatServiceTime(selectedTrain.end)}`
-                  : optionalLayerLoading
-                    ? 'Les couches choisies se chargent séparément…'
-                    : optionalLayerError
-                      ? 'Une couche est indisponible · le socle reste actif'
-                      : `${plannedTripCount} missions planifiées · ${activeOptionalLayerCount ? `${activeOptionalLayerCount} couche${activeOptionalLayerCount > 1 ? 's' : ''} active${activeOptionalLayerCount > 1 ? 's' : ''} · ` : ''}pas de temps réel`}</small>
-          </>
-        ) : <p>Paris se dessine…</p>}
-        {scaleView === 'centre' && <aside className="paris-heart-note">
-          <span>Plan à échelle variable</span>
-          {metroArcs.enabled
-            ? <span>{metroArcs.loading ? 'Les arcs se dessinent…' : 'Métro 2 au nord · Métro 6 au sud'}</span>
-            : <button type="button" onClick={revealHeartArcs}>{metroArcs.error ? 'Réessayer les arcs · 2 et 6' : 'Révéler les arcs · Métro 2 et 6'}</button>}
-        </aside>}
-        {air.enabled && <div className="paris-air-note" role="status">
-          <span>{air.error ? 'AIR indisponible · le rail reste actif' : air.loading ? 'AIR se charge…' : scaleView === 'centre' ? 'AIR · visible en Région' : `AIR · ${activeAircraft.length} avions observés`}</span>
-          {air.error && <button type="button" onClick={air.retry}>Réessayer AIR</button>}
-          <span><a href="https://www.adsb.lol/docs/open-data/historical/" target="_blank" rel="noreferrer">ADSB.lol</a> · 04.09.2026 · <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noreferrer">ODbL</a></span>
-        </div>}
+      <section className={`paris-status${statusExpanded || !network || loadError || dayStudy.error ? ' is-expanded' : ''}`} aria-live="polite">
+        {network && !loadError && !dayStudy.error && <>
+          <div className="paris-status-count"><strong>{selectedAirTrackId ? (selectedAirPosition ? 1 : 0) : selectedAirport || airCategorySelected ? activeAircraftCount : activeTrainCount}</strong><span>{selectedAirTrackId || selectedAirport || airCategorySelected ? 'avions observés' : 'trains en mouvement'}</span><button className="paris-status-toggle" type="button" aria-label="Détails de l’étude" aria-expanded={statusExpanded} aria-controls="paris-status-details" onClick={() => setStatusExpanded((value) => !value)}>{statusExpanded ? '−' : 'Info'}</button></div>
+          <p className="paris-status-context">{selectedAirEntry ? airTrackSearchValue(selectedAirEntry) : (airCategorySelected ? 'Le ciel parisien' : undefined) ?? selectedConnection?.complex.name ?? selectedStation?.name ?? selectedRoute?.name ?? (selectedTrain ? `${selectedTrain.shortName} → ${selectedTrain.headsign}` : scaleView === 'centre' ? 'Le cœur en détail' : 'Deux échelles, une ville')}</p>
+        </>}
+        <div id="paris-status-details" className="paris-status-details">
+          {loadError || dayStudy.error ? <p>Étude indisponible.</p> : network ? (
+              <small>{selectedAirTrackId
+                ? selectedAirPosition ? `${Math.round(selectedAirPosition.altitudeFeet).toLocaleString('fr-FR')} ft · ${Math.round(selectedAirPosition.groundSpeedKnots)} kt · altitude comprimée` : 'Aucune position observée à cet instant'
+                : selectedAirport ? 'Présence dans l’enveloppe d’approche · liaison inférée'
+                : selectedConnection
+                ? `${activeHubStudy?.description ?? 'correspondance planifiée'} · ${selectedConnection.incoming.route} → ${selectedConnection.outgoing.route} · ${Math.round((selectedConnection.departure - selectedConnection.arrival) / 60)} min disponibles · ${Math.round(selectedConnection.minimumTransferSeconds / 60)} min minimum publié`
+                : selectedStation
+                ? `${selectedStation.trainIds.length} passages planifiés dans l’étude`
+                : selectedRoute
+                  ? `${selectedRoute.trainIds.length} missions · ${selectedRoute.stopIndexes.length} stations`
+                  : selectedTrain
+                    ? `${selectedTrain.route} · ${formatServiceTime(selectedTrain.start)}–${formatServiceTime(selectedTrain.end)}`
+                    : optionalLayerLoading
+                      ? 'Les couches choisies se chargent séparément…'
+                      : optionalLayerError
+                        ? 'Une couche est indisponible · le socle reste actif'
+                        : `${plannedTripCount} missions planifiées · ${activeOptionalLayerCount ? `${activeOptionalLayerCount} couche${activeOptionalLayerCount > 1 ? 's' : ''} active${activeOptionalLayerCount > 1 ? 's' : ''} · ` : ''}pas de temps réel`}</small>
+          ) : <p>Paris se dessine…</p>}
+          {scaleView === 'centre' && <aside className="paris-heart-note">
+            <span>Plan à échelle variable</span>
+            {metroArcs.enabled
+              ? <span>{metroArcs.loading ? 'Les arcs se dessinent…' : 'Métro 2 au nord · Métro 6 au sud'}</span>
+              : <button type="button" onClick={revealHeartArcs}>{metroArcs.error ? 'Réessayer les arcs · 2 et 6' : 'Révéler les arcs · Métro 2 et 6'}</button>}
+          </aside>}
+          {air.enabled && <div className="paris-air-note" role="status">
+            <span>{air.error ? 'AIR indisponible · le rail reste actif' : air.loading ? 'AIR se charge…' : scaleView === 'centre' ? 'AIR · visible en Région' : `AIR · ${activeAircraft.length} avions observés`}</span>
+            {air.error && <button type="button" onClick={air.retry}>Réessayer AIR</button>}
+            <span><a href="https://www.adsb.lol/docs/open-data/historical/" target="_blank" rel="noreferrer">ADSB.lol</a> · 04.09.2026 · <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noreferrer">ODbL</a></span>
+          </div>}
+        </div>
       </section>
       )}
 
@@ -1056,7 +1059,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         <button type="button" data-tooltip="Mettre en évidence le RER A et ses missions" aria-label="Isoler RER A" aria-pressed={selectedRoute?.name === 'RER A'} onClick={() => selectRoute('RER A')}><i /> RER A <small>la région</small></button>
         <button className="paris-layer-button" type="button" data-tooltip={layerMenuOpen ? 'Fermer le choix des réseaux' : 'Choisir les réseaux ferroviaires et isoler AIR'} aria-label="Afficher les couches" aria-expanded={layerMenuOpen} onClick={() => { setSearchOpen(false); setLayerMenuOpen((open) => !open) }}><i /> Couches <small>{activeOptionalLayerCount ? `${activeOptionalLayerCount} active${activeOptionalLayerCount > 1 ? 's' : ''}` : 'réseau optionnel'}</small></button>
         <button className="paris-air-toggle" type="button" data-tooltip={air.enabled ? 'Masquer les avions observés' : 'Afficher les avions observés sur la même horloge que les trains'} aria-label="AIR — avions observés" aria-pressed={air.enabled} aria-busy={air.loading} onClick={() => { clearSelection(); setAirEnabled(!air.enabled); if (!air.enabled) moveCamera('reset') }}><i /> AIR <small>observé</small></button>
-        <button className="paris-connection-button" type="button" data-tooltip="Passer au prochain pôle et explorer ses correspondances programmées" aria-label="Prochaine correspondance" onClick={showNextConnection}><i /> {activeHubStudy?.title ?? 'Correspondance'} <small>{activeHubStudy ? selectedConnection?.complex.name : '3 hubs · données IDFM'}</small></button>
+        <button className="paris-connection-button" type="button" data-tooltip="Passer au prochain pôle et explorer ses correspondances programmées" aria-label="Prochaine correspondance" onClick={showNextConnection}><i /> <span className="paris-connection-title">{activeHubStudy?.title ?? 'Correspondance'}</span><span className="paris-connection-short" aria-hidden="true">Hubs</span> <small>{activeHubStudy ? selectedConnection?.complex.name : '3 hubs · données IDFM'}</small></button>
       </nav>
 
       {layerMenuOpen && (

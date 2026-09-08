@@ -247,6 +247,43 @@ test('typing in search does not activate global playback shortcuts', async ({ pa
   await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible()
 })
 
+test('phone chrome leaves room for the map with AIR and heart details available on demand', async ({ page, isMobile }, testInfo) => {
+  test.skip(!isMobile, 'Phone layout')
+  // Include a shorter Safari viewport and the narrowest supported phone width.
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 664 })
+    await page.getByRole('button', { name: 'Pause', exact: true }).click()
+    await page.getByRole('button', { name: 'AIR — avions observés' }).click()
+    await page.getByRole('button', { name: 'Basculer entre le centre et la région' }).click()
+    const status = page.locator('.paris-status')
+    const info = page.getByRole('button', { name: 'Détails de l’étude' })
+    await expect(info).toHaveAttribute('aria-expanded', 'false')
+    expect((await status.boundingBox())!.height).toBeLessThanOrEqual(48)
+    const routes = (await page.locator('.paris-routes').boundingBox())!
+    const tools = (await page.locator('.paris-map-tools').boundingBox())!
+    expect(routes.y - tools.y - tools.height).toBeGreaterThan(664 * 0.5)
+    await info.click()
+    await expect(page.locator('.paris-heart-note')).toBeVisible()
+    await expect(page.locator('.paris-air-note')).toBeVisible()
+    await info.click()
+    await expect(page.locator('.paris-status-details')).toBeHidden()
+    const search = page.getByRole('searchbox')
+    const emptySearch = (await page.locator('.paris-search').boundingBox())!
+    expect((await search.boundingBox())!.width).toBeGreaterThan(90)
+    await search.fill('RER A')
+    await page.getByRole('option', { name: /^RER A \d+ MISSIONS PLANIFIÉES$/ }).click()
+    await expect(page.locator('.paris-status-context')).toBeVisible()
+    const populatedSearch = (await page.locator('.paris-search').boundingBox())!
+    expect(populatedSearch.height).toBe(emptySearch.height)
+    await page.getByRole('button', { name: 'Effacer', exact: true }).click()
+    await expect(search).toHaveValue('')
+    await page.waitForTimeout(1000) // Let WebKit paint the cleared selection before visual review.
+    await page.screenshot({ path: testInfo.outputPath(`compact-phone-${width}.png`) })
+    await page.reload()
+    await expect(status).toContainText('977 missions planifiées')
+  }
+})
+
 test('iPhone chrome remains inside the viewport and reduces to the timeline', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'iphone-webkit', 'iPhone-only layout gate')
   const layout = await page.evaluate(() => {

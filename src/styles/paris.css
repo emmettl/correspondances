@@ -272,20 +272,28 @@
   backdrop-filter: blur(17px);
 }
 
-.paris-status > div {
+.paris-status-count {
   display: flex;
   align-items: baseline;
   gap: 8px;
 }
 
-.paris-status > div strong {
+.paris-status-count strong {
   color: var(--cyan);
   font: 300 2.08rem/1 'DM Mono', ui-monospace, monospace;
   text-shadow: 0 0 15px rgba(244, 207, 85, 0.28);
 }
 
-.paris-status > div span {
+.paris-status-count span {
   font-size: 0.8rem;
+}
+
+.paris-status-toggle {
+  display: none;
+}
+
+.paris-connection-short {
+  display: none;
 }
 
 .paris-status p {
@@ -594,23 +602,22 @@
 
 @media (max-width: 760px) {
   .correspondances-experience {
-    --paris-gutter: 18px;
-    --paris-search-top: max(78px, calc(env(safe-area-inset-top) + 59px));
-    --paris-layer-bottom: calc(164px + env(safe-area-inset-bottom));
-    min-height: 520px;
+    --paris-gutter: 12px;
+    --paris-search-top: calc(44px + env(safe-area-inset-top));
+    --paris-layer-bottom: calc(130px + env(safe-area-inset-bottom));
+    min-height: 0;
   }
 
   .paris-masthead {
-    padding-top: max(16px, env(safe-area-inset-top));
+    padding-top: calc(12px + env(safe-area-inset-top));
   }
 
   .paris-masthead p {
-    margin-bottom: 3px;
-    font-size: 0.5rem;
+    display: none;
   }
 
   .paris-masthead h1 {
-    font-size: clamp(1.45rem, 7.1vw, 1.95rem);
+    font-size: 1.25rem;
     letter-spacing: -0.058em;
   }
 
@@ -620,19 +627,39 @@
   }
 
   .paris-search {
-    width: calc(100% - 36px);
+    width: calc(100% - 24px);
   }
 
   .paris-search form {
     min-height: 46px;
+    grid-template-columns: 24px minmax(0, 1fr) auto auto;
+    padding: 0 9px;
+  }
+
+  .paris-search .search-mark {
+    display: block;
+    width: 13px;
+    height: 13px;
+    margin-left: 0;
+  }
+
+  .paris-time-switch {
+    grid-column: 4;
+    margin-right: -10px;
   }
 
   .paris-search input {
-    font-size: 0.72rem;
+    /* Keep Safari from zooming the page when the search receives focus. */
+    font-size: 16px;
+  }
+
+  .paris-search form > button {
+    width: 44px;
+    height: 44px;
   }
 
   .paris-time-switch button {
-    min-width: 38px;
+    min-width: 44px;
   }
 
   .paris-time-switch .paris-scale-toggle {
@@ -641,19 +668,54 @@
   }
 
   .paris-status {
-    top: max(136px, calc(env(safe-area-inset-top) + 117px));
+    top: calc(var(--paris-search-top) + 52px);
     width: auto;
-    max-width: calc(100% - 98px);
-    padding: 9px 12px;
+    max-width: calc(100% - 80px);
+    max-height: calc(100svh - var(--paris-search-top) - var(--paris-layer-bottom) - 60px);
+    overflow-y: auto;
+    padding: 0 8px;
   }
 
-  .paris-status > div strong {
-    font-size: 1.38rem;
+  .paris-status-count {
+    min-height: 44px;
+    align-items: center;
+    gap: 6px;
   }
 
-  .paris-status > div span,
+  .paris-status-count strong {
+    font-size: 1.15rem;
+  }
+
+  .paris-status-count span,
   .paris-status p {
     font-size: 0.67rem;
+  }
+
+  .paris-status-toggle {
+    display: block;
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    margin-left: auto;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--cyan);
+    font: 400 0.65rem/1 'DM Mono', ui-monospace, monospace;
+    cursor: pointer;
+  }
+
+  .paris-status:not(.is-expanded) .paris-status-details,
+  .correspondances-experience:not(.has-selection) .paris-status:not(.is-expanded) .paris-status-context {
+    display: none;
+  }
+
+  .paris-status .paris-status-context {
+    margin: 0 0 8px;
+  }
+
+  .paris-status-details {
+    padding-bottom: 10px;
   }
 
   .paris-status small {
@@ -661,14 +723,14 @@
   }
 
   .paris-map-tools {
-    top: max(136px, calc(env(safe-area-inset-top) + 117px));
+    top: calc(var(--paris-search-top) + 52px);
     right: var(--paris-gutter);
-    grid-template-columns: 37px;
+    grid-template-columns: 44px;
     transform: none;
   }
 
   .paris-map-tools button {
-    min-height: 37px;
+    min-height: 44px;
   }
 
   .paris-map-tools button:nth-child(2),
@@ -678,22 +740,32 @@
 
   .paris-routes {
     right: 12px;
-    bottom: calc(110px + env(safe-area-inset-bottom));
+    bottom: calc(78px + env(safe-area-inset-bottom));
     left: 12px;
     width: auto;
     transform: none;
+    overflow-x: auto;
   }
 
   .paris-routes button {
     min-width: 0;
-    min-height: 46px;
-    flex: 1;
-    padding: 8px;
+    min-height: 44px;
+    flex: 1 0 auto;
+    padding: 8px 6px;
+    gap: 0 5px;
     font-size: 0.55rem;
   }
 
   .paris-routes button small {
     display: none;
+  }
+
+  .paris-routes .paris-connection-title {
+    display: none;
+  }
+
+  .paris-routes .paris-connection-short {
+    display: inline;
   }
 
   .paris-routes button i {
@@ -722,16 +794,21 @@
 
   .paris-transport {
     right: 12px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
+    bottom: calc(8px + env(safe-area-inset-bottom));
     left: 12px;
-    padding: 9px;
+    gap: 0 8px;
+    padding: 6px 8px 0;
+  }
+
+  .paris-transport label {
+    min-width: 0;
   }
 
   .paris-transport button,
   .paris-transport select {
-    min-width: 40px;
-    min-height: 38px;
-    padding: 0 7px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 6px;
   }
 
   .paris-footer {

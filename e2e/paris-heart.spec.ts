@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
 })
 
-test('the heart retains playback and regional branches while adding and inspecting the arcs', async ({ page }, testInfo) => {
+test('the heart retains playback and regional branches while adding and inspecting the arcs', async ({ page, isMobile }, testInfo) => {
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   const clock = page.getByRole('slider', { name: 'Heure' })
@@ -17,6 +17,7 @@ test('the heart retains playback and regional branches while adding and inspecti
   await expect.poll(async () => Number(await clock.inputValue())).toBeGreaterThan(before)
   await page.getByRole('button', { name: 'Pause', exact: true }).click()
   const paused = await clock.inputValue()
+  if (isMobile) await page.getByRole('button', { name: 'Détails de l’étude' }).click()
   await page.getByRole('button', { name: 'Révéler les arcs · Métro 2 et 6' }).click()
   await expect(page.locator('.paris-status')).toContainText('1225 missions planifiées')
   await expect(page.locator('main')).toHaveAttribute('data-layout-mix', '1.000')
@@ -54,7 +55,7 @@ test('rapid reversal and reduced motion settle in the requested composition', as
   await expect(page.locator('main')).toHaveAttribute('data-layout-mix', '0.000')
 })
 
-test('failed arcs can be retried in the heart and keep the full-day clock', async ({ page }) => {
+test('failed arcs can be retried in the heart and keep the full-day clock', async ({ page, isMobile }) => {
   let failed = false
   await page.route('**/correspondances-metro-arcs-morning.json', async (route) => {
     if (!failed) { failed = true; await route.fulfill({ status: 503, body: 'Unavailable' }) }
@@ -62,6 +63,7 @@ test('failed arcs can be retried in the heart and keep the full-day clock', asyn
   })
   await page.getByRole('button', { name: 'Pause', exact: true }).click()
   await page.getByRole('button', { name: scaleName }).click()
+  if (isMobile) await page.getByRole('button', { name: 'Détails de l’étude' }).click()
   await page.getByRole('button', { name: 'Révéler les arcs · Métro 2 et 6' }).click()
   await page.getByRole('button', { name: 'Réessayer les arcs · 2 et 6' }).click()
   await expect(page.locator('.paris-status')).toContainText('1225 missions planifiées')

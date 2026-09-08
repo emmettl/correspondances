@@ -76,13 +76,14 @@ test('AIR follows the 24-hour clock through bounded chunks', async ({ page }) =>
   await expect(page.locator('.paris-air-note')).toContainText('avions observés')
 })
 
-test('AIR failure leaves the railway usable and supports retry', async ({ page }) => {
+test('AIR failure leaves the railway usable and supports retry', async ({ page, isMobile }) => {
   const url = '**/correspondances-air-morning.json'
   await page.route(url, (route) => route.fulfill({ status: 503, body: 'Unavailable' }))
   await page.getByRole('button', { name: airToggle }).click()
   await expect(page.locator('.paris-air-note')).toContainText('AIR indisponible')
   await expect(page.locator('.paris-status')).toContainText('977 missions planifiées')
   await page.unroute(url)
+  if (isMobile) await page.getByRole('button', { name: 'Détails de l’étude' }).click()
   await page.getByRole('button', { name: 'Réessayer AIR' }).click()
   await expect(page.locator('.paris-air-note')).toContainText('avions observés')
   await expect(page.locator('.paris-air-note')).not.toContainText('indisponible')
