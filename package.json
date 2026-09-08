@@ -40,12 +40,13 @@
     "data:paris:transilien-southwest": "node scripts/ingest-idfm-correspondances-proof.mjs --study transilien-southwest --archive /tmp/IDFM-gtfs-current.zip --source-sha256 c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18 --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --window-start 00:00:00 --window-end 24:00:00 --focus 12:00:00 --output /tmp/correspondances-transilien-southwest-day.json && node scripts/chunk-network-snapshot.mjs --input /tmp/correspondances-transilien-southwest-day.json --manifest fixtures/idfm/correspondances-transilien-southwest-day-manifest.json --opening fixtures/idfm/correspondances-transilien-southwest-morning.json --chunk-hours 2 --opening-start 07:00 --opening-end 09:00 --focus 08:00",
     "data:paris:transilien-east": "node scripts/ingest-idfm-correspondances-proof.mjs --study transilien-east --archive /tmp/IDFM-gtfs-current.zip --source-sha256 c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18 --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --window-start 00:00:00 --window-end 24:00:00 --focus 12:00:00 --output /tmp/correspondances-transilien-east-day.json && node scripts/chunk-network-snapshot.mjs --input /tmp/correspondances-transilien-east-day.json --manifest fixtures/idfm/correspondances-transilien-east-day-manifest.json --opening fixtures/idfm/correspondances-transilien-east-morning.json --chunk-hours 2 --opening-start 07:00 --opening-end 09:00 --focus 08:00",
     "data:paris:audit:transilien": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope transilien --output fixtures/idfm/correspondances-transilien-audit.json",
-    "data:paris:audit:transilien:day": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope transilien --output fixtures/idfm/correspondances-transilien-day-audit.json --window-start 00:00:00 --window-end 24:00:00"
+    "data:paris:audit:transilien:day": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope transilien --output fixtures/idfm/correspondances-transilien-day-audit.json --window-start 00:00:00 --window-end 24:00:00",
+    "data:air:routes": "node scripts/enrich-air-routes.mjs"
   },
   "dependencies": {
-    "@motionstudies/core": "0.1.0-alpha.4",
-    "@motionstudies/three": "0.1.0-alpha.4",
-    "@motionstudies/web": "0.1.0-alpha.4",
+    "@motionstudies/core": "0.1.0-alpha.5",
+    "@motionstudies/three": "0.1.0-alpha.5",
+    "@motionstudies/web": "0.1.0-alpha.5",
     "@react-three/fiber": "9.7.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -62,7 +63,7 @@
     "typescript": "7.0.2",
     "vite": "8.2.2",
     "vitest": "5.0.0",
-    "@motionstudies/data": "0.1.0-alpha.4"
+    "@motionstudies/data": "0.1.0-alpha.5"
   },
   "packageManager": "npm@11.19.0"
 }

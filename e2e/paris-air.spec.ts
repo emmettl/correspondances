@@ -30,13 +30,24 @@ test('AIR loads on demand, supports callsign follow and returns to rail', async 
   await expect(page.locator('.paris-air-note')).toHaveCount(0)
 })
 
-test('airport search enables AIR and its isolation can be cleared', async ({ page }) => {
+test('airport search enables AIR and its isolation can be cleared', async ({ page }, testInfo) => {
   const search = page.getByRole('searchbox', { name: 'Rechercher une station, ligne, mission, aéroport ou avion' })
   await search.fill('CDG')
   await page.getByRole('option', { name: /Charles de Gaulle/ }).click()
   await expect(page.locator('main')).toHaveAttribute('data-air-enabled', 'true')
   await expect(page.locator('main')).toHaveAttribute('data-selected-airport', 'cdg')
-  await expect(page.locator('.paris-status')).toContainText('liaison inférée')
+  const card = page.locator('.ms-airport-hero')
+  await expect(card).toContainText('Charles de Gaulle')
+  const searchBounds = await page.locator('.paris-search').boundingBox()
+  const cardBounds = await card.boundingBox()
+  expect(cardBounds!.y).toBeGreaterThanOrEqual(searchBounds!.y + searchBounds!.height)
+  await expect(card.locator('.ms-split-flap-board')).not.toHaveAttribute('data-loading')
+  await expect(card.locator('tbody button').first()).toBeVisible()
+  await card.getByRole('button', { name: 'Arrivées' }).click()
+  await expect(card.getByRole('region', { name: 'CDG Arrivées' })).toBeVisible()
+  await expect(card.locator('tbody button').first()).toBeVisible()
+  await page.waitForTimeout(1000) // Capture the settled characters after switching direction.
+  await page.screenshot({ path: testInfo.outputPath('airport-hero.png') })
   await page.getByRole('button', { name: 'Afficher les couches' }).click()
   const isolation = page.getByRole('button', { name: 'Isoler les avions observés' })
   await expect(isolation).toHaveAttribute('aria-pressed', 'true')

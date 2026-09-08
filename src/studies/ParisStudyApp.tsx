@@ -1,3 +1,7 @@
+import { AirportHeroCard } from '@motionstudies/web/components/AirportHeroCard'
+import '@motionstudies/web/airport-hero-card.css'
+import { airportBoardMovements } from '@motionstudies/core/domain/airport'
+import { AIRPORT_LABELS, AIRPORT_NOTES } from './airport-copy.ts'
 import {
   lazy,
   Suspense,
@@ -269,6 +273,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
   const selectedAirEntry = air.aircraft.find((track) => track.id === selectedAirTrackId)
   const selectedAirPosition = selectedAirTrack ? positionForAirTrack(selectedAirTrack, time) : undefined
   const activeAircraft = useMemo(() => air.snapshot ? activeAirTracks(air.snapshot, time) : [], [air.snapshot, time])
+  const airportMovements = useMemo(() => selectedAirport ? airportBoardMovements(air.aircraft, selectedAirport) : { departures: [], arrivals: [] }, [selectedAirport, air.aircraft])
   const airportTrackIds = useMemo(() => selectedAirport && air.snapshot ? airportAirTrackIds(air.snapshot.tracks, selectedAirport) : undefined, [selectedAirport, air.snapshot])
   const activeAircraftCount = airportTrackIds ? activeAircraft.filter((track) => airportTrackIds.has(track.id)).length : activeAircraft.length
   const [scaleView, setScaleView] = useState<ParisScaleView>('region')
@@ -984,11 +989,21 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
         )}
       </section>
 
+      {selectedAirport ? (
+        <AirportHeroCard key={selectedAirport.id} className="edition-airport-card"
+          airport={selectedAirport} departures={airportMovements.departures} arrivals={airportMovements.arrivals}
+          study={{ time: time, windowStart: Math.max(network?.metadata.windowStart ?? 0, air.snapshot?.metadata.windowStart ?? 0), windowEnd: Math.min(network?.metadata.windowEnd ?? 86400, air.snapshot?.metadata.windowEnd ?? 86400) }}
+          maxRows={4} dateLabel="04.09.2026" labels={AIRPORT_LABELS['fr']}
+          loading={air.boardLoading} error={air.error ? 'AIR indisponible' : undefined}
+          onSelectFlight={selectAirTrack} onRetry={air.retry}
+          note={<><a href="https://www.adsb.lol/docs/open-data/historical/">ADSB.lol</a> · ODbL · <a href="https://ourairports.com/data/">OurAirports</a> · {AIRPORT_NOTES['fr']}</>}
+        />
+      ) : (
       <section className="paris-status" aria-live="polite">
         {loadError || dayStudy.error ? <p>Étude indisponible.</p> : network ? (
           <>
             <div><strong>{selectedAirTrackId ? (selectedAirPosition ? 1 : 0) : selectedAirport || airCategorySelected ? activeAircraftCount : activeTrainCount}</strong><span>{selectedAirTrackId || selectedAirport || airCategorySelected ? 'avions observés' : 'trains en mouvement'}</span></div>
-            <p>{selectedAirEntry ? airTrackSearchValue(selectedAirEntry) : selectedAirport?.name ?? (airCategorySelected ? 'Le ciel parisien' : undefined) ?? selectedConnection?.complex.name ?? selectedStation?.name ?? selectedRoute?.name ?? (selectedTrain ? `${selectedTrain.shortName} → ${selectedTrain.headsign}` : scaleView === 'centre' ? 'Le cœur en détail' : 'Deux échelles, une ville')}</p>
+            <p>{selectedAirEntry ? airTrackSearchValue(selectedAirEntry) : (airCategorySelected ? 'Le ciel parisien' : undefined) ?? selectedConnection?.complex.name ?? selectedStation?.name ?? selectedRoute?.name ?? (selectedTrain ? `${selectedTrain.shortName} → ${selectedTrain.headsign}` : scaleView === 'centre' ? 'Le cœur en détail' : 'Deux échelles, une ville')}</p>
             <small>{selectedAirTrackId
               ? selectedAirPosition ? `${Math.round(selectedAirPosition.altitudeFeet).toLocaleString('fr-FR')} ft · ${Math.round(selectedAirPosition.groundSpeedKnots)} kt · altitude comprimée` : 'Aucune position observée à cet instant'
               : selectedAirport ? 'Présence dans l’enveloppe d’approche · liaison inférée'
@@ -1019,6 +1034,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           <span><a href="https://www.adsb.lol/docs/open-data/historical/" target="_blank" rel="noreferrer">ADSB.lol</a> · 04.09.2026 · <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noreferrer">ODbL</a></span>
         </div>}
       </section>
+      )}
 
       <nav className="paris-routes" aria-label="Lignes de l’étude">
         <button type="button" data-tooltip="Mettre en évidence le Métro 1 et ses missions" aria-label="Isoler Métro 1" aria-pressed={selectedRoute?.name === 'Métro 1'} onClick={() => selectRoute('Métro 1')}><i /> Métro 1 <small>le centre</small></button>

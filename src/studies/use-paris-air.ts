@@ -45,6 +45,7 @@ export function useParisAir(edition: ParisEdition, window: 'morning' | 'day', ti
     window === 'day' ? day.manifest?.aircraft ?? [] : morning?.tracks ?? []
   return {
     enabled, setEnabled, snapshot, aircraft, error,
+    boardLoading: enabled && !error && (window === 'day' ? !day.manifest : !morning),
     loading: enabled && !error && (window === 'day' ? day.loading : !morning),
     retry: () => { setMorningError(false); setAttempt((value) => value + 1) },
   }

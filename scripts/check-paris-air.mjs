@@ -63,7 +63,11 @@ for (const [position, descriptor] of day.chunks.entries()) {
   assert.equal(chunk.tracks.length, descriptor.trackCount)
   assert.equal(chunk.tracks.reduce((sum, track) => sum + track.samples.length, 0), descriptor.sampleCount)
   validateTracks(chunk.tracks, Math.max(0, chunk.windowStart - 180), Math.min(86_400, chunk.windowEnd + 45))
-  for (const track of chunk.tracks) assert(index.has(track.id))
+  for (const track of chunk.tracks) {
+    assert(index.has(track.id))
+    assert.deepEqual(track.origin, index.get(track.id).origin)
+    assert.deepEqual(track.destination, index.get(track.id).destination)
+  }
   const gzip = gzipSync(bytes, { level: 9 }).length
   assert(gzip <= 420 * 1024, `${descriptor.path} exceeds its lazy-chunk budget`)
   largestChunk = Math.max(largestChunk, gzip)
@@ -76,7 +80,8 @@ for (const track of day.aircraft) {
 const morningGzip = gzipSync(await readFile(directory + 'correspondances-air-morning.json'), { level: 9 }).length
 const manifestGzip = gzipSync(await readFile(directory + 'correspondances-air-day-manifest.json'), { level: 9 }).length
 assert(morningGzip <= 350 * 1024)
-assert(manifestGzip <= 110 * 1024)
+// Full-day origin/destination evidence increases this index to ~157 KiB.
+assert(manifestGzip <= 175 * 1024)
 assert(totalChunks <= 3_200 * 1024)
 assert.deepEqual(airports.map((airport) => airport.icao).sort(), ['LFPB', 'LFPG', 'LFPO'])
 for (const airport of airports) {
