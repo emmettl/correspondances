@@ -94,3 +94,5 @@ Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.
 The 4 September 2026 air fixtures include optional origin/destination evidence from cached global ADSB.lol heatmaps and the public-domain [OurAirports reference](https://ourairports.com/data/). These are inferred observed movements, not schedules or confirmed flight plans. Unknown routes remain blank. Full-day manifest entries and playback chunks carry the same evidence; metadata records the input hashes, reference source, and local UTC offset (2 hours for this service date).
 
 After ingesting the base air study, regenerate the enrichment with `npm run data:air:routes -- /path/to/cached-heatmaps /path/to/airports.csv`. Supply heatmaps covering the same local service day and a saved OurAirports `airports.csv`; the command performs no network calls. Raw source files remain outside the repository.
+
+Rendering and performance changes, source comparisons and measurements are documented in [docs/PERFORMANCE.md](docs/PERFORMANCE.md).

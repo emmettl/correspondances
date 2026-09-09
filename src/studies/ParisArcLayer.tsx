@@ -46,7 +46,7 @@ export function ParisArcLayer({ snapshot, projectedPaths, mix, subdued }: {
   useEffect(() => () => arcs.forEach(({ geometry }) => geometry.dispose()), [arcs])
   return <group name="paris-metro-arcs" visible={mix > 0.001}>
     {arcs.map(({ name, geometry }) => <mesh key={name} geometry={geometry} renderOrder={2}>
-      <meshBasicMaterial color={CORRESPONDANCES_ROUTE_COLORS[name]} transparent opacity={mix * (subdued ? 0.12 : 0.58)} side={DoubleSide} depthWrite={false} toneMapped={false} fog={false} />
+      <meshBasicMaterial color={CORRESPONDANCES_ROUTE_COLORS[name]} transparent opacity={mix * (subdued ? 0.12 : 0.58)} side={DoubleSide} forceSinglePass depthWrite={false} toneMapped={false} fog={false} />
     </mesh>)}
   </group>
 }

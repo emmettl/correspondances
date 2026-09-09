@@ -1,0 +1,290 @@
+{
+  "baselineCommit": "15074b2",
+  "sourceReferences": {
+    "allchange": [
+      "8594786",
+      "17197e0",
+      "b5fdf86",
+      "ff11612",
+      "f63adb3"
+    ],
+    "gleislicht": [
+      "e9fc934",
+      "a9f80cc",
+      "cd2c4f4",
+      "49dfaad",
+      "0cbe149"
+    ]
+  },
+  "note": "Exploratory single before/after pair on local development builds. Headless Chromium uses SwiftShader; not a hardware-calibrated FPS claim. Samples follow live playback and are not fixed-time paired trials. No browser tests ran during either profile.",
+  "before": {
+    "capturedAt": "2026-09-08T23:59:22.660Z",
+    "platform": "darwin",
+    "browserVersion": "151.0.7922.34",
+    "settings": {
+      "width": 1280,
+      "height": 720,
+      "dpr": 1,
+      "duration": 2500,
+      "fps": 60,
+      "channel": "chromium",
+      "headless": true,
+      "metroArcs": false,
+      "metroCrossings": false,
+      "metroEast": false,
+      "allMetro": false,
+      "transilien": false,
+      "tramMarechaux": false,
+      "metroBoulevards": false,
+      "metroWest": false,
+      "metroLocal": false
+    },
+    "environment": {
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+      "canvas": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    "scenarios": [
+      {
+        "name": "opening",
+        "frames": 73,
+        "meanFps": 29,
+        "p50Ms": 33.3,
+        "p95Ms": 49.8,
+        "p99Ms": 50.7,
+        "maxMs": 50.7,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2466.71,
+          "ScriptDuration": 310.86,
+          "LayoutDuration": 2.17,
+          "RecalcStyleDuration": 0
+        }
+      },
+      {
+        "name": "search-open",
+        "frames": 72,
+        "meanFps": 28.43,
+        "p50Ms": 33.4,
+        "p95Ms": 49.9,
+        "p99Ms": 50.5,
+        "maxMs": 50.5,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2511.81,
+          "ScriptDuration": 322.43,
+          "LayoutDuration": 2.4,
+          "RecalcStyleDuration": 0
+        }
+      },
+      {
+        "name": "selected-search-closed",
+        "frames": 72,
+        "meanFps": 28.61,
+        "p50Ms": 33.4,
+        "p95Ms": 49.8,
+        "p99Ms": 50.4,
+        "maxMs": 50.4,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2498.62,
+          "ScriptDuration": 297.38,
+          "LayoutDuration": 2.15,
+          "RecalcStyleDuration": 0
+        }
+      },
+      {
+        "name": "to-centre",
+        "frames": 47,
+        "meanFps": 18.8,
+        "p50Ms": 34.1,
+        "p95Ms": 83.7,
+        "p99Ms": 100.5,
+        "maxMs": 100.5,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2522.43,
+          "ScriptDuration": 1046.23,
+          "LayoutDuration": 2.15,
+          "RecalcStyleDuration": 0.13
+        }
+      },
+      {
+        "name": "centre",
+        "frames": 74,
+        "meanFps": 29.21,
+        "p50Ms": 33.3,
+        "p95Ms": 49.8,
+        "p99Ms": 50.1,
+        "maxMs": 50.1,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2480.12,
+          "ScriptDuration": 332.16,
+          "LayoutDuration": 2.43,
+          "RecalcStyleDuration": 0
+        }
+      },
+      {
+        "name": "to-region",
+        "frames": 49,
+        "meanFps": 19.6,
+        "p50Ms": 33.9,
+        "p95Ms": 99,
+        "p99Ms": 100.9,
+        "maxMs": 100.9,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2599.88,
+          "ScriptDuration": 1052.38,
+          "LayoutDuration": 2.44,
+          "RecalcStyleDuration": 0.12
+        }
+      }
+    ]
+  },
+  "after": {
+    "capturedAt": "2026-09-09T00:02:47.447Z",
+    "platform": "darwin",
+    "browserVersion": "151.0.7922.34",
+    "settings": {
+      "width": 1280,
+      "height": 720,
+      "dpr": 1,
+      "duration": 2500,
+      "fps": 60,
+      "channel": "chromium",
+      "headless": true,
+      "metroArcs": false,
+      "metroCrossings": false,
+      "metroEast": false,
+      "allMetro": false,
+      "transilien": false,
+      "tramMarechaux": false,
+      "metroBoulevards": false,
+      "metroWest": false,
+      "metroLocal": false
+    },
+    "environment": {
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+      "canvas": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    "scenarios": [
+      {
+        "name": "opening",
+        "frames": 74,
+        "meanFps": 29.21,
+        "p50Ms": 33.3,
+        "p95Ms": 34.2,
+        "p99Ms": 67,
+        "maxMs": 67,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2619.34,
+          "ScriptDuration": 267.04,
+          "LayoutDuration": 1.41,
+          "RecalcStyleDuration": 0
+        }
+      },
+      {
+        "name": "search-open",
+        "frames": 74,
+        "meanFps": 29.6,
+        "p50Ms": 33.4,
+        "p95Ms": 34.2,
+        "p99Ms": 50,
+        "maxMs": 50,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2451.72,
+          "ScriptDuration": 262.06,
+          "LayoutDuration": 1.35,
+          "RecalcStyleDuration": 0
+        }
+      },
+      {
+        "name": "selected-search-closed",
+        "frames": 76,
+        "meanFps": 30.01,
+        "p50Ms": 33.3,
+        "p95Ms": 33.7,
+        "p99Ms": 34,
+        "maxMs": 34,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2457.82,
+          "ScriptDuration": 248.29,
+          "LayoutDuration": 1.25,
+          "RecalcStyleDuration": 0
+        }
+      },
+      {
+        "name": "to-centre",
+        "frames": 51,
+        "meanFps": 20.27,
+        "p50Ms": 33.7,
+        "p95Ms": 93.1,
+        "p99Ms": 100.6,
+        "maxMs": 100.6,
+        "overBudgetPercent": 98.04,
+        "overOneAndHalfBudgetsPercent": 96.08,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2518.35,
+          "ScriptDuration": 1056.51,
+          "LayoutDuration": 1.46,
+          "RecalcStyleDuration": 0.06
+        }
+      },
+      {
+        "name": "centre",
+        "frames": 76,
+        "meanFps": 30.2,
+        "p50Ms": 33.3,
+        "p95Ms": 33.8,
+        "p99Ms": 34.1,
+        "maxMs": 34.1,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 98.68,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2407.51,
+          "ScriptDuration": 256.63,
+          "LayoutDuration": 1.37,
+          "RecalcStyleDuration": 0
+        }
+      },
+      {
+        "name": "to-region",
+        "frames": 51,
+        "meanFps": 20.27,
+        "p50Ms": 33.5,
+        "p95Ms": 99.8,
+        "p99Ms": 100.5,
+        "maxMs": 100.5,
+        "overBudgetPercent": 100,
+        "overOneAndHalfBudgetsPercent": 100,
+        "mainThreadMilliseconds": {
+          "TaskDuration": 2582.43,
+          "ScriptDuration": 1068.35,
+          "LayoutDuration": 1.22,
+          "RecalcStyleDuration": 0.12
+        }
+      }
+    ]
+  }
+}

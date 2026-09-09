@@ -12,6 +12,12 @@ export function transformParisScale(source: string): string {
   }
   replace('trainLabelBudget(semanticCameraHeight, trainLabelMode);', 'parisTrainLabelBudget(semanticCameraHeight, size.width, trainLabelMode);')
   replace('trainLabelScreenHeight(size.width, candidate.selected, semanticCameraHeight)', 'parisTrainLabelHeight(size.width, candidate.selected)')
+  // The centre/region blend changes route colours. Include the rendered colour
+  // in the texture key so retained mission labels follow that same palette.
+  replace('const textureKey = `${candidate.train.category}:${text}`;',
+    'const labelColor = mixedRouteColor(candidate.train.category, candidate.train.route, routeColors, routeColorMix);\n            const textureKey = `${candidate.train.category}:${labelColor}:${text}`;')
+  replace('createTrainLabelTexture(text, mixedRouteColor(candidate.train.category, candidate.train.route, routeColors, routeColorMix))',
+    'createTrainLabelTexture(text, labelColor)')
   replace('stationLabelScreenHeight(selected, label.emphasised, label.station.labelRank)', 'parisStationLabelHeight(size.width, selected || label.emphasised, label.station.labelRank, semanticHeight)')
   replace('stationLabelWithinTier(label.station.labelRank, tierLimit)', 'parisStationLabelEligible(label.station, semanticHeight, tierLimit)')
   replace('const ranked = rankStationsForLabels(stations);', 'const ranked = parisStationLabels(rankStationsForLabels(stations));')

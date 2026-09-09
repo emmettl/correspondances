@@ -1,3 +1,4 @@
+import { createActiveTimetableVehicleCounter } from './vehicle-counts.ts'
 import { AirportHeroCard } from '@motionstudies/web/components/AirportHeroCard'
 import '@motionstudies/web/airport-hero-card.css'
 import { airportBoardMovements } from '@motionstudies/core/domain/airport'
@@ -513,10 +514,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       (!selectedRoute || (train.route === selectedRoute.name && train.category === selectedRoute.category)),
     ) ?? []
   }, [network, selectedRoute, selectedStation, stations])
-  const activeTrainCount = useMemo(
-    () => countableTrains.filter((train) => train.realtime?.status !== 'cancelled' && time >= train.start && time <= train.end).length,
-    [countableTrains, time],
-  )
+  const countActiveTrains = useMemo(() => createActiveTimetableVehicleCounter(countableTrains), [countableTrains])
+  const activeTrainCount = countActiveTrains(time)
 
   const moveCamera = useCallback((action: MapCameraAction) => {
     if (action === 'reset') setScaleView('region')
