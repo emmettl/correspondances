@@ -11,6 +11,7 @@ import {
   useMemo,
   useState,
   type KeyboardEvent,
+  type ComponentType,
 } from 'react'
 import {
   buildRouteIndex,
@@ -44,6 +45,7 @@ import {
   type ParisEdition,
 } from '../editions/paris.ts'
 import type {
+  NationalNetworkSceneProps,
   MapCameraAction,
   MapCameraCommand,
 } from '@motionstudies/three/NationalNetworkScene'
@@ -51,9 +53,11 @@ import type { TrainLabelMode } from '@motionstudies/three/train-labels'
 import { foldSearchText } from '@motionstudies/core/search-text'
 import { useProgressiveNetworkDay } from '@motionstudies/web/use-progressive-network-day'
 
+import type { ParisAirportSelectionProps } from './ParisAirportSelection.tsx'
+
 const NationalNetworkScene = lazy(() =>
   import('@motionstudies/three/NationalNetworkScene').then(
-    ({ NationalNetworkScene: Scene }) => ({ default: Scene }),
+    ({ NationalNetworkScene: Scene }) => ({ default: Scene as ComponentType<NationalNetworkSceneProps & ParisAirportSelectionProps> }),
   ),
 )
 
@@ -707,18 +711,19 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setIsPlaying(true)
   }, [air.aircraft, clearSelection])
 
+  const selectAirport = useCallback((airport: StudyAirport) => {
+    clearSelection()
+    setAirEnabled(true)
+    setSelectedAirport(airport)
+    setAirCategorySelected(true)
+    setQuery(`${airport.name} · ${airport.iata}`)
+    setScaleView('region')
+    setCameraCommand((current) => ({ id: (current?.id ?? 0) + 1, action: 'focus-location', focus: [airport.longitude, airport.latitude], distanceScale: 0.22 }))
+  }, [clearSelection, setAirEnabled])
+
   const activateChoice = useCallback((choice: SearchChoice) => {
     if (choice.kind === 'air') { selectAirTrack(choice.value.id); return }
-    if (choice.kind === 'airport') {
-      clearSelection()
-      setAirEnabled(true)
-      setSelectedAirport(choice.value)
-      setAirCategorySelected(true)
-      setQuery(`${choice.value.name} · ${choice.value.iata}`)
-      setScaleView('region')
-      setCameraCommand((current) => ({ id: (current?.id ?? 0) + 1, action: 'focus-location', focus: [choice.value.longitude, choice.value.latitude], distanceScale: 0.22 }))
-      return
-    }
+    if (choice.kind === 'airport') { selectAirport(choice.value); return }
     clearAirSelection()
     setActiveHubStudyIndex(-1)
     setSelectedConnection(undefined)
@@ -739,7 +744,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     setSelectedRoute(undefined)
     setTime(Math.max(choice.value.start, Math.min(time, choice.value.end)))
     setQuery(`${choice.value.shortName} → ${choice.value.headsign}`)
-  }, [selectStation, time, selectAirTrack, clearSelection, clearAirSelection, setAirEnabled, setSearchOpen])
+  }, [selectStation, time, selectAirTrack, selectAirport, clearAirSelection, setSearchOpen])
 
   const selectRoute = useCallback((name: string) => {
     clearAirSelection()
@@ -913,6 +918,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
               airports={PARIS_AIRPORTS}
               selectedAirTrack={selectedAirTrack}
               selectedAirport={selectedAirport}
+              onSelectAirport={selectAirport}
               onSelectAirTrack={selectAirTrack}
               trafficOverviewEmphasis={1}
               stationLabelTierLimit={3}

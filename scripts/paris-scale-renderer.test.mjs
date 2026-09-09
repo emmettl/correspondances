@@ -6,6 +6,7 @@ import * as stationLabels from '../node_modules/@motionstudies/three/station-lab
 import * as parisLabels from '../src/editions/paris-station-labels.ts'
 import * as mapCamera from '../node_modules/@motionstudies/three/map-camera.js'
 import { parisHeartFromWorld } from '../src/editions/paris-layout.ts'
+import { pickAirportTarget } from '../src/studies/airport-selection.ts'
 import { transformParisScale } from './paris-scale-renderer.ts'
 import { parisOverviewMix, parisTrainLabelBudget, parisStationLabelHeight } from '../src/editions/paris-scale.ts'
 
@@ -40,8 +41,8 @@ test.each([
   const stations = [...Array.from({ length: 100 }, (_, index) => ({ ...target, name: `Other ${index}`, labelRank: 1 })), target]
   let selected
   const scope = {
-    ...stationLabels, ...parisLabels, parisStationLabelHeight, THREE,
-    useThree: () => ({ camera, gl: { domElement: element } }),
+    ...stationLabels, ...parisLabels, parisStationLabelHeight, THREE, pickAirportTarget,
+    useThree: () => ({ camera, gl: { domElement: element }, scene: new THREE.Scene() }),
     useMemo: (factory) => factory(),
     useEffect: (setup) => setup(),
     stationCentre: (station) => new THREE.Vector3(station === target ? 0 : 1000, 0, 0),

@@ -4,6 +4,20 @@ AIR is an optional historical observation layer above the eight-line Paris railw
 
 The AIR button enables observed aircraft and short trails. Search accepts a callsign or ICAO address; selecting an aircraft moves the shared clock into its observed interval and follows it, with altitude and groundspeed shown. CDG, Orly and Le Bourget can be found by name or code. Selecting an airport enables AIR and focuses its approach envelope. **Couches → Isoler AIR** attenuates the railway; a rail selection or Escape releases aircraft selection. **24H** keeps aircraft and trains on the same Paris service clock.
 
+## Map selection
+
+CDG, ORY and LBG can be selected directly in the regional map, even before AIR
+is enabled. Clicking the rendered airport label or its marker enables AIR and
+opens the same airport board as search. Marker targets remain 44 CSS pixels
+wide for a mouse and 56 for touch regardless of zoom; the complete visible
+label is also clickable, and desktop hover shows a pointer cursor.
+
+Adapted from All Change `b32d29e`. Airports take priority over nearby stations
+and aircraft. Selection waits for a completed tap; drags, pinches and cancelled
+pointers do not select an airport. Airport landmarks hidden in the heart view
+are not clickable. Tests cover marker margins, labels, all three airports,
+AIR isolation and the heart/region round trip in Chromium and touch WebKit.
+
 ## Evidence and limits
 
 - Positions come from [ADSB.lol historical observations](https://www.adsb.lol/docs/open-data/historical/), under [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). The source releases are `v2026.09.03-planes-readsb-prod-0` and `v2026.09.04-planes-readsb-prod-0` in [globe_history_2026](https://github.com/adsblol/globe_history_2026/releases). The preceding UTC evening supplies the start of the local civil day.
