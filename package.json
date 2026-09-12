@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Correspondances — a Motion Studies edition",
+  "description": "Correspondances \u2014 a Motion Studies edition",
   "engines": {
     "node": ">=24.0.0"
   },
@@ -47,9 +47,9 @@
     "data:paris:audit:tram:day": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope tram --output fixtures/idfm/correspondances-tram-day-audit.json --window-start 00:00:00 --window-end 24:00:00"
   },
   "dependencies": {
-    "@motionstudies/core": "0.1.0-alpha.5",
-    "@motionstudies/three": "0.1.0-alpha.5",
-    "@motionstudies/web": "0.1.0-alpha.5",
+    "@motionstudies/core": "0.1.0-alpha.7",
+    "@motionstudies/three": "0.1.0-alpha.7",
+    "@motionstudies/web": "0.1.0-alpha.7",
     "@react-three/fiber": "9.7.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -57,16 +57,16 @@
   },
   "devDependencies": {
     "@babel/parser": "7.29.8",
-    "@playwright/test": "1.62.1",
+    "@playwright/test": "1.63.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
     "@types/three": "0.185.4",
     "@vitejs/plugin-react": "6.1.1",
-    "oxlint": "1.81.0",
+    "oxlint": "1.82.0",
     "typescript": "7.0.2",
-    "vite": "8.2.2",
+    "vite": "8.3.0",
     "vitest": "5.0.0",
-    "@motionstudies/data": "0.1.0-alpha.5"
+    "@motionstudies/data": "0.1.0-alpha.7"
   },
   "packageManager": "npm@11.19.0"
 }
