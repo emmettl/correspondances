@@ -1,3 +1,5 @@
+import StationDeparturesCard from './StationDeparturesCard.tsx'
+import './station-hero.css'
 import { createActiveTimetableVehicleCounter } from './vehicle-counts.ts'
 import { AirportHeroCard } from '@motionstudies/web/components/AirportHeroCard'
 import '@motionstudies/web/airport-hero-card.css'
@@ -1019,7 +1021,11 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           onSelectFlight={selectAirTrack} onRetry={air.retry}
           note={<><a href="https://www.adsb.lol/docs/open-data/historical/">ADSB.lol</a> · ODbL · <a href="https://ourairports.com/data/">OurAirports</a> · {AIRPORT_NOTES['fr']}</>}
         />
-      ) : (
+      ) : selectedStation && network ? <div className="edition-station-hero"><div className="paris-status station-hero-summary"><strong>{activeTrainCount}</strong><span>trains en mouvement</span><span>{selectedStation.name}</span></div><StationDeparturesCard snapshot={network} name={selectedStation.name} time={time}
+        statusLabels={{cancelled:'Supprimé',adjusted:'Actualisé'}} labels={{station:'Gare',departures:'Départs',time:'Heure',destination:'Destination',platform:'Voie',expected:'Info',empty:'Aucun départ dans la fenêtre chargée.'}}
+        loading={dayStudy.loading} error={loadError || dayStudy.error ? 'Étude indisponible.' : undefined}
+        onSelect={train => { setSelectedTrain(train); setSelectedStation(undefined); setIsPlaying(false) }}
+        note="Horaires planifiés · données chargées · pas de temps réel" /></div> : (
       <section className={`paris-status${statusExpanded || !network || loadError || dayStudy.error ? ' is-expanded' : ''}`} aria-live="polite">
         {network && !loadError && !dayStudy.error && <>
           <div className="paris-status-count"><strong>{selectedAirTrackId ? (selectedAirPosition ? 1 : 0) : selectedAirport || airCategorySelected ? activeAircraftCount : activeTrainCount}</strong><span>{selectedAirTrackId || selectedAirport || airCategorySelected ? 'avions observés' : 'trains en mouvement'}</span><button className="paris-status-toggle" type="button" aria-label="Détails de l’étude" aria-expanded={statusExpanded} aria-controls="paris-status-details" onClick={() => setStatusExpanded((value) => !value)}>{statusExpanded ? '−' : 'Info'}</button></div>
