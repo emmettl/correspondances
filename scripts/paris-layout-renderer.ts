@@ -6,6 +6,8 @@ export function transformParisLayout(source: string): string {
     if (source.split(before).length !== count + 1) throw new Error(`Paris layout renderer hook needs review: ${before}`)
     source = source.replaceAll(before, after)
   }
+  // The authored morph changes label placement without replacing station data.
+  replace('lineMapMix, layoutTransitioning]);', 'lineMapMix, layoutTransitioning, spatialLayoutMix]);')
   // A geographic grid should recede as the plan's scale becomes variable.
   replace('function NationalGround({ quiet = false })', 'function NationalGround({ quiet = false, parisMix = 0 })')
   replace('_jsx(NationalGround, { quiet:', '_jsx(NationalGround, { parisMix: props.spatialLayoutMix ?? 0, quiet:')

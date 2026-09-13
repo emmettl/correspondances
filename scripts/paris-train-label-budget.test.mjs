@@ -7,7 +7,6 @@ import { stationLabelWorldHeight } from '../node_modules/@motionstudies/three/st
 import { LabelFrameBudget } from '../src/studies/label-frame-budget.ts'
 import { parisScaleRenderer } from './paris-scale-renderer.ts'
 import { parisTrainLabelBudget, parisTrainLabelHeight } from '../src/editions/paris-scale.ts'
-import { parisPerformanceRenderer } from './paris-performance-renderer.ts'
 import { parisCartographyRenderer } from './paris-cartography-renderer.ts'
 import { stationLabelBoxes, emptyLabelBoxes } from '../src/studies/map-cartography.ts'
 
@@ -60,8 +59,7 @@ it('bounds train searches while preserving movement, Paris zoom rules, palette a
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   let code = parisScaleRenderer().transform(readFileSync(`.${id}`, 'utf8'), id).code
   const extract = code => code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
-  const originalSource = extract(code)
-  code = parisPerformanceRenderer().transform(code, id).code
+  const originalSource = extract(code).replace(/const labelWork = labelFrameBudget\.update\([^;]+;/, "const labelWork = 'all';")
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 3, 0); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()
   const size = { width: 1280, height: 720 }
@@ -105,7 +103,7 @@ it('bounds train searches while preserving movement, Paris zoom rules, palette a
 it('reserves station space at close zoom and releases it while paused without losing focused services', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   let code = readFileSync(`.${id}`, 'utf8')
-  for (const plugin of [parisScaleRenderer(), parisPerformanceRenderer(), parisCartographyRenderer()]) code = plugin.transform(code, id).code
+  for (const plugin of [parisScaleRenderer(), parisCartographyRenderer()]) code = plugin.transform(code, id)?.code ?? code
   const source = code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 3, 1); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()

@@ -8,7 +8,7 @@ export function transformParisAirportLayer(source: string): string {
     ['const gap = 17;', 'const gap = name ? 17 : 0;'],
     ['ref: marker, position: position, renderOrder: 19,', 'ref: marker, position: position, renderOrder: 19, userData: { parisAirport: airport },'],
     ['ref: label, renderOrder: 20,', 'ref: label, renderOrder: 20, userData: { parisAirport: airport },'],
-    ['const aircraftRef = useRef(currentAircraft(snapshot, time, projection));', 'const { scene, camera, gl } = useThree();\n    const aircraftRef = useRef(currentAircraft(snapshot, time, projection));'],
+    ['const aircraftRef = useRef([]);', 'const { scene, camera, gl } = useThree();\n    const aircraftRef = useRef([]);'],
     ['onPointerDown: (event) => {\n                    if (event.instanceId === undefined)', 'onClick: (event) => {\n                    if (event.delta > 5 || pickAirportTarget(scene, camera, gl.domElement.getBoundingClientRect(), event.clientX, event.clientY, event.pointerType === "touch")) return;\n                    if (event.instanceId === undefined)'],
     ['map: labelTexture.texture, transparent: true, opacity: selected ? 1 : 0.92', 'map: labelTexture.texture, fog: false, transparent: true, opacity: selected ? 1 : 0.92'],
   ]
