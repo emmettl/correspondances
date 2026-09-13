@@ -64,7 +64,7 @@ it('preserves station sprites across settling, pan, zoom, resize, selection and 
   for (const plugin of [parisScaleRenderer()]) {
     code = plugin.transform(code, id)?.code ?? code
   }
-  const source = code.slice(code.indexOf('function StationLabels('), code.indexOf('function createTrainLabelTexture('))
+  const source = code.slice(code.indexOf('function StationLabels('), code.indexOf('function trainLabelText('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 18, 1)
   camera.lookAt(0, 0, 0)

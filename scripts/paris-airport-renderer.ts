@@ -1,21 +1,6 @@
 /** Paris abbreviates airport labels; picking and infrastructure use public APIs. */
-export function transformParisAirportLayer(source: string): string {
-  const hooks = [
-    ['const name = (airport.mapLabel ?? airport.city).toUpperCase();', 'const name = airport.mapLabel === code ? "" : (airport.mapLabel ?? airport.city).toUpperCase();'],
-    ['const gap = 17;', 'const gap = name ? 17 : 0;'],
-  ]
-  for (const [before, after] of hooks) {
-    if (source.split(before).length !== 2) throw new Error(`Paris airport renderer hook needs review: ${before}`)
-    source = source.replace(before, after)
-  }
-  return source
-}
-
 export function transformParisAirportScene(source: string): string {
   const hooks = [
-    // Keep GPU resources mounted through the authored heart morph; hidden landmarks cannot be picked.
-    ['props.mapStyle?.airports?.independent && props.airports?.map(airport => (_jsx(AirportMarker, { airport: airport, projection: projection, showLabel: true, selected: airport.id === props.selectedAirport?.id, style: props.mapStyle?.airports }, airport.id)))', 'props.mapStyle?.airports?.independent && _jsx("group", { visible: (props.spatialLayoutMix ?? 0) === 0, children: props.airports?.map(airport => (_jsx(AirportMarker, { airport: airport, projection: projection, showLabel: true, selected: airport.id === props.selectedAirport?.id, style: props.mapStyle?.airports }, airport.id))) })'],
-    ['showLabel: true, selected: airport.id === props.selectedAirport?.id', 'showLabel: props.trainLabelMode !== "off", selected: airport.id === props.selectedAirport?.id'],
     ['const { camera, gl } = useThree();', 'const { camera, gl, scene } = useThree();'],
     ['const rect = element.getBoundingClientRect();\n            const projected = new THREE.Vector3();', 'const rect = element.getBoundingClientRect();\n            if (pickAirportTarget(scene, camera, rect, event.clientX, event.clientY, start.pointerType === "touch")) return;\n            const projected = new THREE.Vector3();'],
     ['[camera, cameraFraming, gl, onSelectStation, projectedStops, rankedStations, spatialLayoutMix]', '[camera, cameraFraming, gl, scene, onSelectStation, projectedStops, rankedStations, spatialLayoutMix]'],

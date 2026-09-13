@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { parse } from '@babel/parser'
 import { expect, test } from 'vitest'
-import { transformParisAirportLayer } from './paris-airport-renderer.ts'
 import { transformParisScale } from './paris-scale-renderer.ts'
 import { parisMapStyle } from '../src/studies/paris-renderer-policy.ts'
 
@@ -11,15 +10,13 @@ test('regional airport infrastructure is independent of AIR and hidden during th
   const source = readFileSync('node_modules/@motionstudies/three/NationalNetworkScene.js', 'utf8')
   const transformed = transformParisScale(source)
   expect(() => parse(transformed, { sourceType: 'module' })).not.toThrow()
-  expect(transformed).toContain('_jsx("group", { visible: (props.spatialLayoutMix ?? 0) === 0, children: props.airports?.map(')
-  expect(() => transformParisScale(source.replace('props.airports?.map(', 'props.airports.map('))).toThrow('hook needs review')
+  expect(transformed).toContain('visible: props.mapStyle.airports.visible ?? true')
+  expect(readFileSync('src/studies/ParisNetworkScene.tsx', 'utf8')).toContain('visible: (props.spatialLayoutMix ?? 0) === 0')
 })
 
-test('only Paris label abbreviations rewrite the aircraft layer; public infrastructure prevents duplicates', () => {
+test('airport abbreviations and independent infrastructure use the published renderer directly', () => {
   const source = readFileSync('node_modules/@motionstudies/three/AirTrafficLayer.js', 'utf8')
-  const transformed = transformParisAirportLayer(source)
-  expect(() => parse(transformed, { sourceType: 'module' })).not.toThrow()
-  expect(transformed).toContain('!airportStyle?.independent && visibleAirports.map(')
-  expect(transformed).toContain('const gap = name ? 17 : 0;')
-  expect(() => transformParisAirportLayer(source.replace('const gap = 17;', 'const gap = 18;'))).toThrow('hook needs review')
+  expect(() => parse(source, { sourceType: 'module' })).not.toThrow()
+  expect(source).toContain('!airportStyle?.independent && visibleAirports.map(')
+  expect(source).toContain('airportLabelParts(airport)')
 })

@@ -1092,10 +1092,10 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       )}
 
       <aside className="paris-map-tools" aria-label="Contrôles de la carte">
-        <button type="button" aria-label="Zoom avant" onClick={() => moveCamera('zoom-in')}>+</button>
-        <button type="button" aria-label="Zoom arrière" onClick={() => moveCamera('zoom-out')}>−</button>
-        <button type="button" aria-label="Réinitialiser la carte" onClick={() => { clearSelection(); moveCamera('reset') }}>↺</button>
-        <button type="button" data-tooltip={trainLabelMode === 'off' ? 'Afficher automatiquement les libellés des véhicules selon le zoom' : 'Masquer les libellés des véhicules'} aria-label={`Libellés ${trainLabelMode}`} onClick={() => setTrainLabelMode((value) => value === 'off' ? 'auto' : 'off')}>L·{trainLabelMode === 'off' ? '0' : 'A'}</button>
+        <button className="ms-control" type="button" aria-label="Zoom avant" onClick={() => moveCamera('zoom-in')}>+</button>
+        <button className="ms-control" type="button" aria-label="Zoom arrière" onClick={() => moveCamera('zoom-out')}>−</button>
+        <button className="ms-control" type="button" aria-label="Réinitialiser la carte" onClick={() => { clearSelection(); moveCamera('reset') }}>↺</button>
+        <button className="ms-control" type="button" data-tooltip={trainLabelMode === 'off' ? 'Afficher automatiquement les libellés des véhicules selon le zoom' : 'Masquer les libellés des véhicules'} aria-label={`Libellés ${trainLabelMode}`} onClick={() => setTrainLabelMode((value) => value === 'off' ? 'auto' : 'off')}>L·{trainLabelMode === 'off' ? '0' : 'A'}</button>
       </aside>
 
       {network && (
@@ -1103,10 +1103,10 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           <div><span>{formatWindowBoundary(network.metadata.windowStart)}</span><strong>{formatServiceTime(time)}</strong><span>{formatWindowBoundary(network.metadata.windowEnd)}</span></div>
           <label><span className="sr-only">Heure</span><input type="range" min={network.metadata.windowStart} max={network.metadata.windowEnd} step="10" value={time} onChange={(event) => setTime(Number(event.target.value))} /></label>
           <aside>
-            <button type="button" aria-label={isPlaying ? 'Pause' : 'Lecture'} onClick={() => setIsPlaying((value) => !value)}>{isPlaying ? 'Ⅱ' : '▶'}</button>
-            <select aria-label="Vitesse" value={playbackRate} onChange={(event) => setPlaybackRate(Number(event.target.value))}>{PLAYBACK_RATES.map((rate) => <option key={rate.value} value={rate.value}>{rate.label}</option>)}</select>
-            <button type="button" data-tooltip={limitedChrome ? 'Rétablir les panneaux et les commandes' : 'Masquer les panneaux pour se concentrer sur la carte'} aria-label={limitedChrome ? 'Afficher les commandes' : 'Plein écran'} aria-pressed={limitedChrome} onClick={() => setLimitedChrome((value) => !value)}>{limitedChrome ? '×' : '⛶'}</button>
-            {hasSelection && <button type="button" data-tooltip="Effacer la sélection et arrêter le suivi pour explorer librement la carte" onClick={clearSelection}>Libérer</button>}
+            <button className="ms-control" type="button" aria-label={isPlaying ? 'Pause' : 'Lecture'} onClick={() => setIsPlaying((value) => !value)}>{isPlaying ? 'Ⅱ' : '▶'}</button>
+            <select className="ms-control" aria-label="Vitesse" value={playbackRate} onChange={(event) => setPlaybackRate(Number(event.target.value))}>{PLAYBACK_RATES.map((rate) => <option key={rate.value} value={rate.value}>{rate.label}</option>)}</select>
+            <button className="ms-control" type="button" data-tooltip={limitedChrome ? 'Rétablir les panneaux et les commandes' : 'Masquer les panneaux pour se concentrer sur la carte'} aria-label={limitedChrome ? 'Afficher les commandes' : 'Plein écran'} aria-pressed={limitedChrome} onClick={() => setLimitedChrome((value) => !value)}>{limitedChrome ? '×' : '⛶'}</button>
+            {hasSelection && <button className="ms-control" type="button" data-tooltip="Effacer la sélection et arrêter le suivi pour explorer librement la carte" onClick={clearSelection}>Libérer</button>}
           </aside>
         </section>
       )}

@@ -16,5 +16,5 @@ function ParisArcs() {
 }
 
 export function ParisNetworkScene(props: NationalNetworkSceneProps & ParisAirportSelectionProps) {
-  return <NationalNetworkScene {...props} mapStyle={parisMapStyle} extensions={parisSceneExtensions}><ParisArcs /><ParisAirportSelection onSelectAirport={props.onSelectAirport} enabled={(props.spatialLayoutMix ?? 0) === 0} />{props.children}</NationalNetworkScene>
+  return <NationalNetworkScene {...props} mapStyle={{ ...parisMapStyle, airports: { ...parisMapStyle.airports, visible: (props.spatialLayoutMix ?? 0) === 0, showLabels: props.trainLabelMode !== 'off' } }} extensions={parisSceneExtensions}><ParisArcs /><ParisAirportSelection onSelectAirport={props.onSelectAirport} enabled={(props.spatialLayoutMix ?? 0) === 0} />{props.children}</NationalNetworkScene>
 }

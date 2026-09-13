@@ -197,10 +197,7 @@
 }
 
 .paris-search form > button,
-.paris-map-tools button,
-.paris-routes button,
-.paris-transport button,
-.paris-transport select {
+.paris-routes button {
   border: 1px solid rgba(225, 193, 255, 0.19);
   border-radius: 0;
   background: rgba(13, 6, 20, 0.86);
@@ -871,4 +868,12 @@
 .edition-airport-card { --ms-panel-width: 620px; }
 @media (max-width: 760px) {
   .correspondances-experience { --ms-layout-top: calc(180px + env(safe-area-inset-top)); --ms-layout-bottom: calc(170px + env(safe-area-inset-bottom)); --ms-layout-gutter: calc(12px + env(safe-area-inset-left)); --ms-layout-end: calc(60px + env(safe-area-inset-right)); }
+}
+
+.paris-map-tools, .paris-transport {
+  --ms-control-size: 44px;
+  --ms-control-border: rgba(225, 193, 255, 0.19);
+  --ms-control-radius: 0;
+  --ms-control-surface: rgba(13, 6, 20, 0.86);
+  --ms-control-ink: var(--ink);
 }

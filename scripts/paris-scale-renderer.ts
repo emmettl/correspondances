@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite'
 import { transformParisLayout } from './paris-layout-renderer.ts'
-import { transformParisAirportLayer, transformParisAirportScene } from './paris-airport-renderer.ts'
+import { transformParisAirportScene } from './paris-airport-renderer.ts'
 
 /** Edition-only camera, morph and label policies not yet covered by public options.
  * Keep the installed renderer intact and reject changed hooks on upgrades.
@@ -61,7 +61,6 @@ export function parisScaleRenderer(): Plugin {
     enforce: 'pre',
     transform(source, id) {
       const moduleId = id.split('?')[0].replaceAll('\\', '/')
-      if (moduleId.endsWith('/@motionstudies/three/AirTrafficLayer.js')) return { code: transformParisAirportLayer(source), map: null }
       if (!moduleId.endsWith('/@motionstudies/three/NationalNetworkScene.js')) return
       return { code: transformParisScale(source), map: null }
     },
