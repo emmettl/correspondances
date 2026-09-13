@@ -1,4 +1,3 @@
-import StationDeparturesCard from './StationDeparturesCard.tsx'
 import './station-hero.css'
 import { createActiveTimetableVehicleCounter } from './vehicle-counts.ts'
 import { AirportHeroCard } from '@motionstudies/web/components/AirportHeroCard'
@@ -53,6 +52,7 @@ import type { TrainLabelMode } from '@motionstudies/three/train-labels'
 import { foldSearchText } from '@motionstudies/core/search-text'
 import { useProgressiveNetworkDay } from '@motionstudies/web/use-progressive-network-day'
 
+const StationDeparturesCard = lazy(() => import('./StationDeparturesCard.tsx'))
 const VehicleJourneyCard = lazy(() => import('./VehicleJourneyCard.tsx'))
 
 const NationalNetworkScene = lazy(() =>
@@ -857,7 +857,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
 
   return (
     <main
-      className={`experience view-network correspondances-experience${hasSelection ? ' has-selection' : ''}${limitedChrome ? ' is-limited-chrome' : ''}`}
+      data-ms-chrome={limitedChrome ? 'hidden' : undefined}
+      className={`experience view-network correspondances-experience ms-study-layout${hasSelection ? ' has-selection' : ''}${limitedChrome ? ' is-limited-chrome' : ''}`}
       data-limited-chrome={limitedChrome}
       data-scale-view={scaleView}
       data-layout-mix={heart.mix.toFixed(3)}
@@ -1009,7 +1010,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       </section>
 
       {selectedAirport ? (
-        <AirportHeroCard key={selectedAirport.id} className="edition-airport-card"
+        <AirportHeroCard key={selectedAirport.id} className="edition-airport-card ms-study-panel" density="compact"
           airport={selectedAirport} departures={airportMovements.departures} arrivals={airportMovements.arrivals}
           study={{ time: time, windowStart: Math.max(network?.metadata.windowStart ?? 0, air.snapshot?.metadata.windowStart ?? 0), windowEnd: Math.min(network?.metadata.windowEnd ?? 86400, air.snapshot?.metadata.windowEnd ?? 86400) }}
           maxRows={4} dateLabel="04.09.2026" labels={AIRPORT_LABELS['fr']}
@@ -1017,13 +1018,13 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           onSelectFlight={selectAirTrack} onRetry={air.retry}
           note={<><a href="https://www.adsb.lol/docs/open-data/historical/">ADSB.lol</a> · ODbL · <a href="https://ourairports.com/data/">OurAirports</a> · {AIRPORT_NOTES['fr']}</>}
         />
-      ) : selectedTrain && network ? <div className="edition-vehicle-hero"><button type="button" aria-label="Fermer le véhicule" onClick={() => setSelectedTrain(undefined)}>×</button><Suspense fallback={null}><VehicleJourneyCard snapshot={network} train={selectedTrain} time={time} presentation="uk-rail"
+      ) : selectedTrain && network ? <div className="edition-vehicle-hero ms-study-panel"><button className="ms-control ms-panel-dismiss" type="button" aria-label="Fermer le véhicule" onClick={() => setSelectedTrain(undefined)}>×</button><Suspense fallback={null}><VehicleJourneyCard snapshot={network} train={selectedTrain} time={time} presentation="uk-rail"
         atStopLabel="À l’arrêt" labels={{rail:'Train',bus:'Bus',destination:'Destination',destinationUnknown:'Destination indisponible',nextStop:'Prochain arrêt',callingAt:'Arrêts suivants',terminus:'Terminus',platform:'Voie',empty:'Aucun autre arrêt dans les données chargées.'}}
-        note="Horaires planifiés · données chargées · pas de temps réel" /></Suspense></div> : selectedStation && network ? <div className="edition-station-hero"><div className="paris-status station-hero-summary"><strong>{activeTrainCount}</strong><span>trains en mouvement</span><span>{selectedStation.name}</span></div><StationDeparturesCard snapshot={network} name={selectedStation.name} time={time}
+        note="Horaires planifiés · données chargées · pas de temps réel" /></Suspense></div> : selectedStation && network ? <div className="edition-station-hero ms-study-panel"><div className="paris-status station-hero-summary"><strong>{activeTrainCount}</strong><span>trains en mouvement</span><span>{selectedStation.name}</span></div><Suspense fallback={null}><StationDeparturesCard snapshot={network} name={selectedStation.name} time={time}
         statusLabels={{cancelled:'Supprimé',adjusted:'Actualisé'}} labels={{station:'Gare',departures:'Départs',time:'Heure',destination:'Destination',platform:'Voie',expected:'Info',empty:'Aucun départ dans la fenêtre chargée.'}}
         loading={dayStudy.loading} error={loadError || dayStudy.error ? 'Étude indisponible.' : undefined}
         onSelect={train => { setSelectedTrain(train); setSelectedStation(undefined); setIsPlaying(false) }}
-        note="Horaires planifiés · données chargées · pas de temps réel" /></div> : (
+        note="Horaires planifiés · données chargées · pas de temps réel" /></Suspense></div> : (
       <section className={`paris-status${statusExpanded || !network || loadError || dayStudy.error ? ' is-expanded' : ''}`} aria-live="polite">
         {network && !loadError && !dayStudy.error && <>
           <div className="paris-status-count"><strong>{selectedAirTrackId ? (selectedAirPosition ? 1 : 0) : selectedAirport || airCategorySelected ? activeAircraftCount : activeTrainCount}</strong><span>{selectedAirTrackId || selectedAirport || airCategorySelected ? 'avions observés' : 'trains en mouvement'}</span><button className="paris-status-toggle" type="button" aria-label="Détails de l’étude" aria-expanded={statusExpanded} aria-controls="paris-status-details" onClick={() => setStatusExpanded((value) => !value)}>{statusExpanded ? '−' : 'Info'}</button></div>

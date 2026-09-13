@@ -1,6 +1,4 @@
-.edition-station-hero { position: absolute; z-index: 6; left: clamp(24px, 4vw, 58px); top: clamp(180px, 25vh, 240px); width: min(560px, calc(100vw - 100px)); max-height: calc(100svh - 350px); overflow: auto; box-sizing: border-box; }
-.is-limited-chrome .edition-station-hero { opacity: 0; pointer-events: none; }
-@media (max-width: 760px) { .edition-station-hero { left: 12px; top: 180px; width: calc(100vw - 72px); max-height: calc(100svh - 365px); } }
+.edition-station-hero { --ms-panel-width: 560px; }
 
 .paris-status.station-hero-summary { position:static; display:flex; align-items:baseline; gap:10px; width:auto; max-height:none; margin:0; padding:8px 16px; background:#10151d; border:0; }
 .paris-status.station-hero-summary strong { font-size:20px; }
