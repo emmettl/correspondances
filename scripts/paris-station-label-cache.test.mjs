@@ -1,3 +1,4 @@
+import { stationLabelBoxes, emptyLabelBoxes } from '@motionstudies/three/render-performance'
 import { readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
 import * as THREE from 'three'
@@ -21,7 +22,7 @@ function harness(source, camera, size) {
     return slots[index].value
   }
   const bindings = {
-    ...labelFunctions, THREE, StationLabelFrame, parisStationLabels, parisStationLabelEligible, parisStationLabelHeight,
+    stationLabelBoxes, emptyLabelBoxes, ...labelFunctions, THREE, StationLabelFrame, parisStationLabels, parisStationLabelEligible, parisStationLabelHeight,
     _Fragment: 'fragment', STATION_SURFACE_Y: 0.08, MAP_LAYER: { stationLabel: 19 },
     useThree: () => ({ camera, size }),
     useMemo: memo,

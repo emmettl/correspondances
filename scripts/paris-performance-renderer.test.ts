@@ -2,10 +2,9 @@ import { readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
 import { parse } from '@babel/parser'
 import { parisScaleRenderer } from './paris-scale-renderer.ts'
-import { parisCartographyRenderer } from './paris-cartography-renderer.ts'
 
 it('composes edition adapters with the shared optimized renderer', () => {
-  const plugins = [parisScaleRenderer(), parisCartographyRenderer()]
+  const plugins = [parisScaleRenderer()]
   for (const module of ['NationalNetworkScene', 'HubPulseScene', 'AirTrafficLayer', 'RoadTrafficLayer', 'air-labels', 'train-labels', 'network-paths']) {
     const id = `/node_modules/@motionstudies/three/${module}.js`
     let code = readFileSync(`.${id}`, 'utf8')

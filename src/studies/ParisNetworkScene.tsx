@@ -1,3 +1,4 @@
+import { FLAT_NETWORK_MAP_STYLE } from '@motionstudies/three/scene-style'
 import type { ComponentType } from 'react'
 import { NationalNetworkScene, type NationalNetworkSceneProps } from '@motionstudies/three/NationalNetworkScene'
 import { useNetworkScene } from '@motionstudies/three/scene-extensions'
@@ -18,5 +19,5 @@ function ParisArcs() {
 }
 
 export function ParisNetworkScene(props: NationalNetworkSceneProps & ParisAirportSelectionProps) {
-  return <Scene {...props}><ParisArcs />{props.children}</Scene>
+  return <Scene {...props} mapStyle={FLAT_NETWORK_MAP_STYLE}><ParisArcs />{props.children}</Scene>
 }

@@ -1,3 +1,5 @@
+import { FLAT_NETWORK_MAP_STYLE, trainLabelCollisionBox } from '@motionstudies/three/scene-style'
+const mapStyle = FLAT_NETWORK_MAP_STYLE
 import { readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
 import * as THREE from 'three'
@@ -7,10 +9,9 @@ import { stationLabelWorldHeight } from '../node_modules/@motionstudies/three/st
 import { LabelFrameBudget } from '../src/studies/label-frame-budget.ts'
 import { parisScaleRenderer } from './paris-scale-renderer.ts'
 import { parisTrainLabelBudget, parisTrainLabelHeight } from '../src/editions/paris-scale.ts'
-import { parisCartographyRenderer } from './paris-cartography-renderer.ts'
 import { stationLabelBoxes, emptyLabelBoxes } from '../src/studies/map-cartography.ts'
 
-// Run the installed TrainLabels callback after both Paris transforms. Use real
+// Run the installed TrainLabels callback after the Paris transform. Use real
 // sprites/projection/collisions; stub React lifecycle and text rasterization.
 function harness(source, camera, size) {
   let cursor = 0, effects = [], frame, searches = 0, samples = 0
@@ -28,6 +29,7 @@ function harness(source, camera, size) {
     useEffect: (effect, deps) => memo(() => { effects.push(effect) }, deps),
     useFrame: callback => { frame = callback },
     trainsNearTime: index => { searches++; return index },
+    useMapStyle: () => mapStyle, trainLabelCollisionBox,
     useProjectedTrainPosition: () => bindings.projectedTrainPosition,
     projectedTrainPosition: (train, time, stops) => {
       samples++
@@ -39,7 +41,7 @@ function harness(source, camera, size) {
       const texture = new THREE.Texture(); texture.name = `${text}:${color}`
       return { texture, aspect: 2 }
     },
-    _Fragment: 'fragment', MAP_LAYER: { trainLabel: 20 },
+    _Fragment: 'fragment', MAP_LAYER: { trainLabel: 16, stationLabel: 20 },
     _jsx: (type, props, key) => {
       if (type === 'sprite') {
         const sprite = sprites[key] ??= new THREE.Sprite(new THREE.SpriteMaterial())
@@ -104,7 +106,7 @@ it('bounds train searches while preserving movement, Paris zoom rules, palette a
 it('reserves station space at close zoom and releases it while paused without losing focused services', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   let code = readFileSync(`.${id}`, 'utf8')
-  for (const plugin of [parisScaleRenderer(), parisCartographyRenderer()]) code = plugin.transform(code, id)?.code ?? code
+  for (const plugin of [parisScaleRenderer()]) code = plugin.transform(code, id)?.code ?? code
   const source = code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 3, 1); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()
