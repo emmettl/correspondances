@@ -28,6 +28,7 @@ function harness(source, camera, size) {
     useEffect: (effect, deps) => memo(() => { effects.push(effect) }, deps),
     useFrame: callback => { frame = callback },
     trainsNearTime: index => { searches++; return index },
+    useProjectedTrainPosition: () => bindings.projectedTrainPosition,
     projectedTrainPosition: (train, time, stops) => {
       samples++
       return time < train.start || time > train.end ? undefined : [stops[0][0] + train.x + time * 0.001, 0.085, train.z]

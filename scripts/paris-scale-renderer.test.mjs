@@ -41,6 +41,8 @@ test.each([
   const stations = [...Array.from({ length: 100 }, (_, index) => ({ ...target, name: `Other ${index}`, labelRank: 1 })), target]
   let selected
   const scope = {
+    useProjectedTrainPosition: () => scope.projectedTrainPosition,
+    useNetworkScene: () => ({ props: {} }),
     ...stationLabels, ...parisLabels, parisStationLabelHeight, THREE, pickAirportTarget,
     useThree: () => ({ camera, gl: { domElement: element }, scene: new THREE.Scene() }),
     useMemo: (factory) => factory(),
@@ -88,6 +90,8 @@ test('a station selected during a morph stays centred until a direct gesture rel
     return slots[index].value
   }
   const scope = {
+    useProjectedTrainPosition: () => scope.projectedTrainPosition,
+    useNetworkScene: () => ({ props: {} }),
     ...mapCamera, THREE, parisHeartFromWorld,
     window: { matchMedia: () => ({ matches: true }) },
     useMemo: memo, useRef: (value) => memo(() => ({ current: value }), []),

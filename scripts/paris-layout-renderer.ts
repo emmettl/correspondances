@@ -44,7 +44,6 @@ export function transformParisLayout(source: string): string {
   replace('_jsx(StationTapTarget, { stations:', '_jsx(StationTapTarget, { spatialLayoutMix: props.spatialLayoutMix, stations:')
   replace('const semanticHeight = stationLabelCameraHeight(camera.position.y, cameraFraming);', 'const semanticHeight = stationLabelCameraHeight(camera.position.y, cameraFraming) * (1 - spatialLayoutMix * 0.62);', 2)
   replace('[camera, cameraFraming, gl, onSelectStation, projectedStops, rankedStations]);', '[camera, cameraFraming, gl, onSelectStation, projectedStops, rankedStations, spatialLayoutMix]);')
-  replace('_jsx(VehicleTrails, { ...props,', '_jsx(ParisArcLayer, { snapshot: props.snapshot, projectedPaths, mix: props.spatialLayoutMix ?? 0, subdued: Boolean(props.selectedTrain || props.selectedRoute || props.selectedStation || props.airCategorySelected) }), _jsx(VehicleTrails, { ...props,')
 
   // Geographic focus commands (including the correspondence director) must
   // follow the same morph. Direct gestures release the authored focus.
@@ -62,5 +61,5 @@ export function transformParisLayout(source: string): string {
         } else if (parisStationFocus.current) {
             mapTarget.current.copy(stationCentre(parisStationFocus.current, projectedStops));
         }`)
-  return 'import { blendParisLayout, parisHeartFromWorld } from "/src/editions/paris-layout.ts";\nimport { useParisGeometryMorph } from "/src/studies/use-paris-geometry-morph.ts";\nimport { ParisArcLayer } from "/src/studies/ParisArcLayer.tsx";\n' + source
+  return 'import { blendParisLayout, parisHeartFromWorld } from "/src/editions/paris-layout.ts";\nimport { useParisGeometryMorph } from "/src/studies/use-paris-geometry-morph.ts";\n' + source
 }

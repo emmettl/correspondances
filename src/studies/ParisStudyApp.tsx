@@ -13,7 +13,6 @@ import {
   useMemo,
   useState,
   type KeyboardEvent,
-  type ComponentType,
 } from 'react'
 import {
   buildRouteIndex,
@@ -47,7 +46,6 @@ import {
   type ParisEdition,
 } from '../editions/paris.ts'
 import type {
-  NationalNetworkSceneProps,
   MapCameraAction,
   MapCameraCommand,
 } from '@motionstudies/three/NationalNetworkScene'
@@ -55,12 +53,8 @@ import type { TrainLabelMode } from '@motionstudies/three/train-labels'
 import { foldSearchText } from '@motionstudies/core/search-text'
 import { useProgressiveNetworkDay } from '@motionstudies/web/use-progressive-network-day'
 
-import type { ParisAirportSelectionProps } from './ParisAirportSelection.tsx'
-
 const NationalNetworkScene = lazy(() =>
-  import('@motionstudies/three/NationalNetworkScene').then(
-    ({ NationalNetworkScene: Scene }) => ({ default: Scene as ComponentType<NationalNetworkSceneProps & ParisAirportSelectionProps> }),
-  ),
+  import('./ParisNetworkScene.tsx').then(({ ParisNetworkScene }) => ({ default: ParisNetworkScene })),
 )
 
 const PLAYBACK_RATES = [
