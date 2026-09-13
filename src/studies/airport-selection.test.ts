@@ -1,3 +1,4 @@
+import { setScenePickMetadata } from '@motionstudies/three/scene-picking'
 import { describe, expect, it } from 'vitest'
 import * as THREE from 'three'
 import { MapTapGesture, pickAirportTarget } from './airport-selection.ts'
@@ -18,7 +19,7 @@ function setup() {
 it('keeps airport click and touch targets generous across zoom and pan', () => {
   const { scene, camera, screen } = setup()
   const airport = PARIS_AIRPORTS[0], marker = new THREE.Group()
-  marker.userData.parisAirport = airport
+  setScenePickMetadata(marker, { target: { kind: 'airport', value: airport } })
   scene.add(marker); scene.updateMatrixWorld()
   for (const height of [30, 10, 2]) {
     camera.position.set(1, height, height * 0.6); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()
@@ -34,7 +35,7 @@ it('keeps airport click and touch targets generous across zoom and pan', () => {
 it('makes the full visible airport label clickable and ignores hidden labels', () => {
   const { scene, camera, screen } = setup(), airport = PARIS_AIRPORTS[0]
   const label = new THREE.Sprite(new THREE.SpriteMaterial())
-  label.userData.parisAirport = airport
+  setScenePickMetadata(label, { target: { kind: 'airport', value: airport } })
   label.position.set(3, 1, 0); label.scale.set(5, 1, 1)
   scene.add(label); scene.updateMatrixWorld()
   const [x, y] = screen(4.5, 1, 0)
@@ -69,7 +70,7 @@ describe('map tap gestures', () => {
 it('ignores airports hidden by the heart layout, clips targets and prefers visible labels', () => {
   const { scene, camera, screen } = setup()
   const group = new THREE.Group(), marker = new THREE.Group()
-  marker.userData.parisAirport = PARIS_AIRPORTS[0]
+  setScenePickMetadata(marker, { target: { kind: 'airport', value: PARIS_AIRPORTS[0] } })
   group.add(marker); scene.add(group); scene.updateMatrixWorld()
   const point = screen(0, 0, 0)
   expect(pickAirportTarget(scene, camera, rect, ...point, false)).toBe(PARIS_AIRPORTS[0])
@@ -78,7 +79,7 @@ it('ignores airports hidden by the heart layout, clips targets and prefers visib
   group.visible = true
   expect(pickAirportTarget(scene, camera, rect, 0, 0, false)).toBeUndefined()
   const label = new THREE.Sprite(new THREE.SpriteMaterial())
-  label.userData.parisAirport = PARIS_AIRPORTS[1]
+  setScenePickMetadata(label, { target: { kind: 'airport', value: PARIS_AIRPORTS[1] } })
   label.scale.set(4, 2, 1); scene.add(label); scene.updateMatrixWorld()
   expect(pickAirportTarget(scene, camera, rect, ...point, false)).toBe(PARIS_AIRPORTS[1])
   label.visible = false

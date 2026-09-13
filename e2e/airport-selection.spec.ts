@@ -41,7 +41,7 @@ test('marker margins select airports while AIR is already isolated', async ({ pa
   await expect(page.locator('.ms-airport-hero')).toBeVisible()
 })
 
-test('airport drags and hidden heart landmarks cannot select an airport', async ({ page }) => {
+test('airport drags and hidden heart landmarks cannot select an airport', async ({ page, isMobile }) => {
   await page.mouse.move(757, 248)
   await page.mouse.down()
   await page.mouse.move(797, 288, { steps: 8 })
@@ -56,6 +56,12 @@ test('airport drags and hidden heart landmarks cannot select an airport', async 
   await expect(page.locator('main')).toHaveAttribute('data-air-enabled', 'false')
   await page.getByRole('button', { name: 'Réinitialiser la carte' }).click()
   await expect(page.locator('main')).toHaveAttribute('data-layout-mix', '0.000')
-  await page.mouse.click(625, 483)
+  // Returning to geography remounts the airport landmarks; let their world
+  // matrices and label frame callbacks settle before testing the new target.
+  await page.evaluate(async () => {
+    for (let i = 0; i < 3; i++) await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+  })
+  if (isMobile) await page.touchscreen.tap(625, 483)
+  else await page.mouse.click(625, 483)
   await expect(page.locator('main')).toHaveAttribute('data-selected-airport', 'orly')
 })

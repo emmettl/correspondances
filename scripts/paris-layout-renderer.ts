@@ -16,13 +16,14 @@ export function transformParisLayout(source: string): string {
   // Keep geographic detours stable too; selections/moving trains use the layout.
   replace('const lakeAvoidingPaths = useMemo(() => {\n        if ((props.spatialLayoutMix ?? 0) > 0)', 'const geographicDetours = useMemo(() => createLakeAvoidingPathMap(props.snapshot.edges, props.snapshot.edgePaths, geographicStops, projectedLakeRings), [props.snapshot, geographicStops, projectedLakeRings]);\n    const lakeAvoidingPaths = useMemo(() => {\n        if ((props.spatialLayoutMix ?? 0) > 0)')
   replace('return createLakeAvoidingPathMap(props.snapshot.edges, props.snapshot.edgePaths, projectedStops, projectedLakeRings);', 'return geographicDetours;')
-  replace('_jsx(RailGraph, { snapshot: props.snapshot, projectedStops: projectedStops, projectedPaths: projectedPaths,', '_jsx(RailGraph, { snapshot: props.snapshot, projectedStops: geographicStops, projectedPaths: geographicPaths, parisProjection: projection, parisMix: props.spatialLayoutMix ?? 0,')
+  replace('_jsx(RailGraph, { snapshot: props.snapshot, infrastructureSnapshot: props.infrastructureSnapshot, projectedStops: projectedStops, projectedPaths: projectedPaths,', '_jsx(RailGraph, { snapshot: props.snapshot, infrastructureSnapshot: props.infrastructureSnapshot, projectedStops: geographicStops, projectedPaths: geographicPaths, parisProjection: projection, parisMix: props.spatialLayoutMix ?? 0,')
   replace('cameraFraming: props.cameraFraming, lakeAvoidingPaths: lakeAvoidingPaths, subdued:', 'cameraFraming: props.cameraFraming, lakeAvoidingPaths: geographicDetours, subdued:')
   replace('function RailGraph({ snapshot,', 'function RailGraph({ parisProjection, parisMix = 0, snapshot,')
   replace('useEffect(() => () => {\n        stationTexture.dispose();', 'const morphGeometry = useMemo(() => ({ railGeometry, stationGeometry, diagramStationGeometries }), [railGeometry, stationGeometry, diagramStationGeometries]);\n    useParisGeometryMorph(morphGeometry, parisProjection, parisMix);\n    useEffect(() => () => stationGeometry.dispose(), [stationGeometry]);\n    useEffect(() => () => {\n        stationTexture.dispose();')
   for (const name of ['RouteIdentityLayer', 'TrafficFlowLayer']) {
     replace(`function ${name}({ snapshot,`, `function ${name}({ parisProjection, parisMix = 0, snapshot,`)
-    replace(`_jsx(${name}, { snapshot: snapshot,`, `_jsx(${name}, { parisProjection, parisMix, snapshot: snapshot,`)
+    const reference = name === 'RouteIdentityLayer' ? 'infrastructureSnapshot' : 'snapshot'
+    replace(`_jsx(${name}, { snapshot: ${reference},`, `_jsx(${name}, { parisProjection, parisMix, snapshot: ${reference},`)
   }
   replace('useEffect(() => () => routes.forEach(({ geometry, casing, core }) => {', 'useParisGeometryMorph(routes, parisProjection, parisMix);\n    useEffect(() => () => routes.forEach(({ geometry, casing, core }) => {')
   replace('useEffect(() => () => {\n        geometries.weighted.dispose();', 'useParisGeometryMorph(geometries, parisProjection, parisMix);\n    useEffect(() => () => {\n        geometries.weighted.dispose();')

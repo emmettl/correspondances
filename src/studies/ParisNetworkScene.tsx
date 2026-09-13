@@ -1,12 +1,9 @@
-import { FLAT_NETWORK_MAP_STYLE } from '@motionstudies/three/scene-style'
-import type { ComponentType } from 'react'
+import { parisMapStyle, parisSceneExtensions, parisAirportLandmarks } from './paris-renderer-policy.ts'
 import { NationalNetworkScene, type NationalNetworkSceneProps } from '@motionstudies/three/NationalNetworkScene'
 import { useNetworkScene } from '@motionstudies/three/scene-extensions'
 import { ParisArcLayer } from './ParisArcLayer.tsx'
-import type { ParisAirportSelectionProps } from './ParisAirportSelection.tsx'
+import { ParisAirportSelection, type ParisAirportSelectionProps } from './ParisAirportSelection.tsx'
 
-// Airport picking remains supplied by the edition's visual adapter.
-const Scene = NationalNetworkScene as ComponentType<NationalNetworkSceneProps & ParisAirportSelectionProps>
 
 function ParisArcs() {
   const { props, projectedPaths } = useNetworkScene()
@@ -19,5 +16,5 @@ function ParisArcs() {
 }
 
 export function ParisNetworkScene(props: NationalNetworkSceneProps & ParisAirportSelectionProps) {
-  return <Scene {...props} mapStyle={FLAT_NETWORK_MAP_STYLE}><ParisArcs />{props.children}</Scene>
+  return <NationalNetworkScene {...props} airports={parisAirportLandmarks(props.airports, props.spatialLayoutMix)} mapStyle={parisMapStyle} extensions={parisSceneExtensions}><ParisArcs /><ParisAirportSelection onSelectAirport={props.onSelectAirport} enabled={(props.spatialLayoutMix ?? 0) === 0} />{props.children}</NationalNetworkScene>
 }

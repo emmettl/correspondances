@@ -4,6 +4,7 @@ test('station departures fit narrow cards and select their study train', async (
  await page.emulateMedia({ reducedMotion: 'reduce' })
  await page.goto('/')
  await expect(page.locator('canvas').first()).toBeVisible()
+ expect(await page.evaluate(() => performance.getEntriesByType('resource').some(entry => entry.name.includes('VehicleJourneyCard')))).toBe(false)
  const search = page.getByRole('searchbox')
  await search.fill('chatelet')
  await page.getByRole('option').first().click()
@@ -15,7 +16,9 @@ test('station departures fit narrow cards and select their study train', async (
    await expect.poll(() => card.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
  }
  await page.screenshot({ path: 'test-results/station-hero.png' })
+ const vehicleResponse = page.waitForResponse(response => response.url().includes('VehicleJourneyCard'))
  await card.locator('tbody button').first().click()
+ expect((await vehicleResponse).ok()).toBe(true)
  await expect(card).toHaveCount(0)
   const vehicle = page.locator('.ms-vehicle-hero')
   await expect(vehicle).toBeVisible()

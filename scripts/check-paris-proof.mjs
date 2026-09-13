@@ -234,6 +234,7 @@ const entry = Object.entries(manifest).find(
   ([key, chunk]) => chunk.isEntry && key === 'index.html',
 )
 if (!entry) throw new Error('Vite manifest has no Correspondances entry')
+const vehicleCardKey = 'src/studies/VehicleJourneyCard.tsx'
 const scripts = new Set()
 const styles = new Set()
 const visited = new Set()
@@ -245,7 +246,7 @@ const visit = (key) => {
   if (chunk.file.endsWith('.js')) scripts.add(chunk.file)
   for (const cssFile of chunk.css ?? []) styles.add(cssFile)
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
-  for (const importedKey of chunk.dynamicImports ?? []) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (importedKey !== vehicleCardKey) visit(importedKey)
 }
 visit(entry[0])
 const totalGzipSize = async (files) => {
@@ -255,6 +256,23 @@ const totalGzipSize = async (files) => {
   }
   return total
 }
+// The selected vehicle card loads only after interaction. Count its complete
+// static dependency closure separately, retaining shared opening assets above.
+if (!manifest[vehicleCardKey]?.isDynamicEntry || visited.has(vehicleCardKey)) throw new Error('Vehicle card must remain lazy')
+const optionalScripts = new Set(), optionalStyles = new Set(), optionalVisited = new Set()
+function visitVehicle(key) {
+  if (visited.has(key) || optionalVisited.has(key)) return
+  optionalVisited.add(key)
+  const chunk = manifest[key]
+  if (!chunk || chunk.dynamicImports?.length) throw new Error('Unbudgeted vehicle card dependency')
+  optionalScripts.add(chunk.file)
+  for (const file of chunk.css ?? []) if (!styles.has(file)) optionalStyles.add(file)
+  for (const dependency of chunk.imports ?? []) visitVehicle(dependency)
+}
+visitVehicle(vehicleCardKey)
+const vehicleJavaScript = await totalGzipSize(optionalScripts), vehicleCss = await totalGzipSize(optionalStyles)
+if (vehicleJavaScript > 4 * 1024 || vehicleCss > 3 * 1024) throw new Error('Optional vehicle card exceeds its 4 KiB JS / 3 KiB CSS budget')
+console.log(`Optional vehicle card: ${vehicleJavaScript} JS / ${vehicleCss} CSS bytes gzip`)
 const javaScriptGzip = await totalGzipSize(scripts)
 const cssGzip = await totalGzipSize(styles)
 const baseViewGzip =

@@ -2,40 +2,23 @@ import { readFileSync } from 'node:fs'
 import { parse } from '@babel/parser'
 import { expect, test } from 'vitest'
 import { transformParisAirportLayer } from './paris-airport-renderer.ts'
-import { transformParisScale } from './paris-scale-renderer.ts'
+import { parisAirportLandmarks, parisMapStyle } from '../src/studies/paris-renderer-policy.ts'
 
-test('regional airport landmarks render without AIR data and survive a heart round trip', () => {
-  const source = transformParisScale(readFileSync('node_modules/@motionstudies/three/NationalNetworkScene.js', 'utf8'))
-  let group
-  const visit = (node) => {
-    if (!node || typeof node !== 'object') return
-    if (node.type === 'CallExpression' && node.callee.name === '_jsx' && node.arguments[0]?.value === 'group'
-      && node.arguments[1]?.properties.some((property) => property.key.name === 'name' && property.value.value === 'paris-airport-landmarks')) group = node
-    for (const value of Object.values(node)) {
-      if (Array.isArray(value)) value.forEach(visit)
-      else if (value && typeof value === 'object') visit(value)
-    }
+test('regional airport infrastructure is independent of AIR and hidden during the heart morph', () => {
+  const airports = ['cdg', 'orly', 'le-bourget'].map(id => ({ id }))
+  expect(parisMapStyle.airports.independent).toBe(true)
+  expect(parisMapStyle.airports.fog).toBe(false)
+  for (const mix of [0, 0.5, 1, 0.5, 0]) {
+    expect(parisAirportLandmarks(airports, mix)).toEqual(mix === 0 ? airports : undefined)
   }
-  visit(parse(source, { sourceType: 'module' }))
-  expect(group).toBeDefined()
-  const render = new Function('props', 'projection', 'AirportMarker', '_jsx', `return ${source.slice(group.start, group.end)}`)
-  const airports = ['cdg', 'orly', 'le-bourget'].map((id) => ({ id }))
-  for (const airSnapshot of [undefined, { tracks: [] }]) {
-    for (const spatialLayoutMix of [0, 0.5, 1, 0.5, 0]) {
-      const result = render({ airports, airSnapshot, spatialLayoutMix, selectedAirport: airports[0] }, {}, 'marker', (type, props) => ({ type, ...props }))
-      expect(result.visible).toBe(spatialLayoutMix === 0)
-      expect(result.children.map(({ airport }) => airport.id)).toEqual(['cdg', 'orly', 'le-bourget'])
-      expect(result.children.map(({ selected }) => selected)).toEqual([true, false, false])
-      expect(result.children.every(({ showLabel }) => showLabel)).toBe(true)
-    }
-  }
+  expect(parisAirportLandmarks(undefined)).toBeUndefined()
 })
 
-test('the pinned aircraft layer exposes its marker and does not render duplicates', () => {
+test('only Paris label abbreviations rewrite the aircraft layer; public infrastructure prevents duplicates', () => {
   const source = readFileSync('node_modules/@motionstudies/three/AirTrafficLayer.js', 'utf8')
   const transformed = transformParisAirportLayer(source)
   expect(() => parse(transformed, { sourceType: 'module' })).not.toThrow()
-  expect(transformed).toContain('export function AirportMarker(')
-  expect(transformed).toContain('false && visibleAirports.map(')
-  expect(() => transformParisAirportLayer(source.replace('function AirportMarker({', 'function RenamedMarker({'))).toThrow('hook needs review')
+  expect(transformed).toContain('!airportStyle?.independent && visibleAirports.map(')
+  expect(transformed).toContain('const gap = name ? 17 : 0;')
+  expect(() => transformParisAirportLayer(source.replace('const gap = 17;', 'const gap = 18;'))).toThrow('hook needs review')
 })

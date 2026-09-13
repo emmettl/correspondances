@@ -15,7 +15,7 @@ const renderer = readFileSync('node_modules/@motionstudies/three/NationalNetwork
 test('Paris density hooks fit the pinned renderer and reject changed upstream hooks', () => {
   expect(() => parse(transformParisScale(renderer), { sourceType: 'module' })).not.toThrow()
   expect(() => transformParisScale(renderer.replace('const lastCommand = useRef(0);', 'const lastCommand = useRef(-1);'))).toThrow('hook needs review')
-  for (const hook of ['const rankLimit = stationLabelRankLimit(semanticHeight);', 'stationLabelWithinTier(label.station.labelRank, tierLimit)']) {
+  for (const hook of ['stationLabelWithinTier(label.station.labelRank, tierLimit)']) {
     expect(() => transformParisScale(renderer.replace(hook, 'changedHook'))).toThrow('hook needs review')
   }
 })

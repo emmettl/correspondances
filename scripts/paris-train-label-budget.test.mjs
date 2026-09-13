@@ -1,5 +1,6 @@
-import { FLAT_NETWORK_MAP_STYLE, trainLabelCollisionBox } from '@motionstudies/three/scene-style'
-const mapStyle = FLAT_NETWORK_MAP_STYLE
+import { setScenePickMetadata } from '@motionstudies/three/scene-picking'
+import { parisMapStyle } from '../src/studies/paris-renderer-policy.ts'
+import { trainLabelCollisionBox } from '@motionstudies/three/scene-style'
 import { readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
 import * as THREE from 'three'
@@ -22,6 +23,7 @@ function harness(source, camera, size) {
     return slots[i].value
   }
   const bindings = {
+    setScenePickMetadata, useMapStyle: () => parisMapStyle,
     ...labels, ...lod, THREE, parisTrainLabelBudget, parisTrainLabelHeight, LabelFrameBudget, stationLabelWorldHeight, stationLabelBoxes, emptyLabelBoxes,
     LakeAvoidingPathsContext: {}, useContext: () => undefined,
     useThree: () => ({ camera, size }), useMemo: memo,
@@ -29,7 +31,7 @@ function harness(source, camera, size) {
     useEffect: (effect, deps) => memo(() => { effects.push(effect) }, deps),
     useFrame: callback => { frame = callback },
     trainsNearTime: index => { searches++; return index },
-    useMapStyle: () => mapStyle, trainLabelCollisionBox,
+    trainLabelCollisionBox,
     useProjectedTrainPosition: () => bindings.projectedTrainPosition,
     projectedTrainPosition: (train, time, stops) => {
       samples++

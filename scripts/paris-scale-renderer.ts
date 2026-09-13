@@ -2,7 +2,7 @@ import type { Plugin } from 'vite'
 import { transformParisLayout } from './paris-layout-renderer.ts'
 import { transformParisAirportLayer, transformParisAirportScene } from './paris-airport-renderer.ts'
 
-/** Edition-only adapter for alpha.2's missing camera-driven density settings.
+/** Edition-only camera, morph and label policies not yet covered by public options.
  * Keep the installed renderer intact and reject changed hooks on upgrades.
  */
 export function transformParisScale(source: string): string {
@@ -17,7 +17,6 @@ export function transformParisScale(source: string): string {
   replace('const ranked = rankStationsForLabels(stations);', 'const ranked = parisStationLabels(rankStationsForLabels(stations));')
   // Admission is by Paris group and zoom, not the first N stations across the
   // whole region. Keep the existing on-screen budgets and collision handling.
-  replace('const rankLimit = stationLabelRankLimit(semanticHeight);', 'const rankLimit = Infinity;')
   // Match tap targets to the label policy, retaining original array indexes
   // through flatMap so a tap still resolves to the correct station object.
   replace('const rankedStations = useMemo(() => rankStationsForLabels(stations), [stations]);', 'const rankedStations = useMemo(() => parisStationLabels(rankStationsForLabels(stations)), [stations]);')

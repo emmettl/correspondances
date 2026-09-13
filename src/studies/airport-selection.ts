@@ -1,3 +1,4 @@
+import { scenePickMetadata } from '@motionstudies/three/scene-picking'
 import * as THREE from 'three'
 import type { StudyAirport } from '@motionstudies/core/domain/airport'
 
@@ -13,7 +14,8 @@ export function pickAirportTarget(scene: THREE.Scene, camera: THREE.Camera,
   let label: { airport: StudyAirport; order: number } | undefined
   let marker: StudyAirport | undefined, nearest = touch ? 28 : 22
   scene.traverseVisible(object => {
-    const airport = object.userData.parisAirport as StudyAirport | undefined
+    const target = scenePickMetadata(object)?.target
+    const airport = target?.kind === 'airport' ? target.value : undefined
     if (!airport) return
     if (object instanceof THREE.Sprite) {
       if (!object.material.visible || object.material.opacity < 0.1) return
