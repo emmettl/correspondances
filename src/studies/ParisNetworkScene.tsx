@@ -1,4 +1,4 @@
-import { parisMapStyle, parisSceneExtensions, parisAirportLandmarks } from './paris-renderer-policy.ts'
+import { parisMapStyle, parisSceneExtensions } from './paris-renderer-policy.ts'
 import { NationalNetworkScene, type NationalNetworkSceneProps } from '@motionstudies/three/NationalNetworkScene'
 import { useNetworkScene } from '@motionstudies/three/scene-extensions'
 import { ParisArcLayer } from './ParisArcLayer.tsx'
@@ -16,5 +16,5 @@ function ParisArcs() {
 }
 
 export function ParisNetworkScene(props: NationalNetworkSceneProps & ParisAirportSelectionProps) {
-  return <NationalNetworkScene {...props} airports={parisAirportLandmarks(props.airports, props.spatialLayoutMix)} mapStyle={parisMapStyle} extensions={parisSceneExtensions}><ParisArcs /><ParisAirportSelection onSelectAirport={props.onSelectAirport} enabled={(props.spatialLayoutMix ?? 0) === 0} />{props.children}</NationalNetworkScene>
+  return <NationalNetworkScene {...props} mapStyle={parisMapStyle} extensions={parisSceneExtensions}><ParisArcs /><ParisAirportSelection onSelectAirport={props.onSelectAirport} enabled={(props.spatialLayoutMix ?? 0) === 0} />{props.children}</NationalNetworkScene>
 }

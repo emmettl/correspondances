@@ -13,6 +13,8 @@ export function transformParisAirportLayer(source: string): string {
 
 export function transformParisAirportScene(source: string): string {
   const hooks = [
+    // Keep GPU resources mounted through the authored heart morph; hidden landmarks cannot be picked.
+    ['props.mapStyle?.airports?.independent && props.airports?.map(airport => (_jsx(AirportMarker, { airport: airport, projection: projection, showLabel: true, selected: airport.id === props.selectedAirport?.id, style: props.mapStyle?.airports }, airport.id)))', 'props.mapStyle?.airports?.independent && _jsx("group", { visible: (props.spatialLayoutMix ?? 0) === 0, children: props.airports?.map(airport => (_jsx(AirportMarker, { airport: airport, projection: projection, showLabel: true, selected: airport.id === props.selectedAirport?.id, style: props.mapStyle?.airports }, airport.id))) })'],
     ['showLabel: true, selected: airport.id === props.selectedAirport?.id', 'showLabel: props.trainLabelMode !== "off", selected: airport.id === props.selectedAirport?.id'],
     ['const { camera, gl } = useThree();', 'const { camera, gl, scene } = useThree();'],
     ['const rect = element.getBoundingClientRect();\n            const projected = new THREE.Vector3();', 'const rect = element.getBoundingClientRect();\n            if (pickAirportTarget(scene, camera, rect, event.clientX, event.clientY, start.pointerType === "touch")) return;\n            const projected = new THREE.Vector3();'],

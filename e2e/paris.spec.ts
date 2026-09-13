@@ -50,6 +50,8 @@ test('can disable and restore the north–south layer', async ({ page }) => {
   const search = page.getByRole('searchbox', {
     name: 'Rechercher une station, ligne, mission, aéroport ou avion',
   })
+  // Park the pointer outside results so opening the list does not select a hovered mission.
+  await page.mouse.move(0, 0)
   await search.fill('Métro 14')
   await expect(page.getByRole('option', { name: /Métro 14/ })).toBeVisible()
   await search.press('Enter')
@@ -234,8 +236,8 @@ test('accent-insensitive station search and mission-code search are selectable',
   await search.fill('ZKAM31')
   await expect(page.getByRole('option', { name: /ZKAM31/ })).toBeVisible()
   await search.press('Enter')
-  await expect(page.locator('.paris-status')).toContainText('ZKAM31')
-  await expect(page.locator('.paris-status')).toContainText('Saint-Germain-en-Laye')
+  await expect(page.locator('.edition-vehicle-hero')).toContainText('ZKAM31')
+  await expect(page.locator('.edition-vehicle-hero')).toContainText('Saint-Germain-en-Laye')
 })
 
 test('typing in search does not activate global playback shortcuts', async ({ page }) => {
