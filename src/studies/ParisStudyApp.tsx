@@ -1,3 +1,4 @@
+import VehicleJourneyCard from './VehicleJourneyCard.tsx'
 import StationDeparturesCard from './StationDeparturesCard.tsx'
 import './station-hero.css'
 import { createActiveTimetableVehicleCounter } from './vehicle-counts.ts'
@@ -1015,7 +1016,9 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
           onSelectFlight={selectAirTrack} onRetry={air.retry}
           note={<><a href="https://www.adsb.lol/docs/open-data/historical/">ADSB.lol</a> · ODbL · <a href="https://ourairports.com/data/">OurAirports</a> · {AIRPORT_NOTES['fr']}</>}
         />
-      ) : selectedStation && network ? <div className="edition-station-hero"><div className="paris-status station-hero-summary"><strong>{activeTrainCount}</strong><span>trains en mouvement</span><span>{selectedStation.name}</span></div><StationDeparturesCard snapshot={network} name={selectedStation.name} time={time}
+      ) : selectedTrain && network ? <div className="edition-vehicle-hero"><button type="button" aria-label="Fermer le véhicule" onClick={() => setSelectedTrain(undefined)}>×</button><VehicleJourneyCard snapshot={network} train={selectedTrain} time={time} presentation="uk-rail"
+        atStopLabel="À l’arrêt" labels={{rail:'Train',bus:'Bus',destination:'Destination',destinationUnknown:'Destination indisponible',nextStop:'Prochain arrêt',callingAt:'Arrêts suivants',terminus:'Terminus',platform:'Voie',empty:'Aucun autre arrêt dans les données chargées.'}}
+        note="Horaires planifiés · données chargées · pas de temps réel" /></div> : selectedStation && network ? <div className="edition-station-hero"><div className="paris-status station-hero-summary"><strong>{activeTrainCount}</strong><span>trains en mouvement</span><span>{selectedStation.name}</span></div><StationDeparturesCard snapshot={network} name={selectedStation.name} time={time}
         statusLabels={{cancelled:'Supprimé',adjusted:'Actualisé'}} labels={{station:'Gare',departures:'Départs',time:'Heure',destination:'Destination',platform:'Voie',expected:'Info',empty:'Aucun départ dans la fenêtre chargée.'}}
         loading={dayStudy.loading} error={loadError || dayStudy.error ? 'Étude indisponible.' : undefined}
         onSelect={train => { setSelectedTrain(train); setSelectedStation(undefined); setIsPlaying(false) }}
