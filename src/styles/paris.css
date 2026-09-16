@@ -551,9 +551,6 @@
   align-items: center;
 }
 
-.paris-transport input[type='range'] {
-  width: 100%;
-}
 
 .paris-transport aside {
   display: flex;
@@ -877,3 +874,5 @@
   --ms-control-surface: rgba(13, 6, 20, 0.86);
   --ms-control-ink: var(--ink);
 }
+
+.paris-transport .ms-timeline-scrubber { flex: 1; --ms-timeline-accent: var(--cyan); }

@@ -1,3 +1,5 @@
+import { TimelineScrubber } from '@motionstudies/web/components/TimelineScrubber'
+import '@motionstudies/web/timeline-scrubber.css'
 import './station-hero.css'
 import { createActiveTimetableVehicleCounter } from './vehicle-counts.ts'
 import { AirportHeroCard } from '@motionstudies/web/components/AirportHeroCard'
@@ -1101,7 +1103,7 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
       {network && (
         <section className="paris-transport" aria-label="Lecture">
           <div><span>{formatWindowBoundary(network.metadata.windowStart)}</span><strong>{formatServiceTime(time)}</strong><span>{formatWindowBoundary(network.metadata.windowEnd)}</span></div>
-          <label><span className="sr-only">Heure</span><input type="range" min={network.metadata.windowStart} max={network.metadata.windowEnd} step="10" value={time} onChange={(event) => setTime(Number(event.target.value))} /></label>
+          <label><span className="sr-only">Heure</span><TimelineScrubber ariaLabel="Heure" ariaValueText={formatServiceTime(time)} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd} step={10} time={time} onSeek={setTime} /></label>
           <aside>
             <button className="ms-control" type="button" aria-label={isPlaying ? 'Pause' : 'Lecture'} onClick={() => setIsPlaying((value) => !value)}>{isPlaying ? 'Ⅱ' : '▶'}</button>
             <select className="ms-control" aria-label="Vitesse" value={playbackRate} onChange={(event) => setPlaybackRate(Number(event.target.value))}>{PLAYBACK_RATES.map((rate) => <option key={rate.value} value={rate.value}>{rate.label}</option>)}</select>
