@@ -1,3 +1,4 @@
+import { mapLabelBoxesOverlap } from '@motionstudies/core/map-labels'
 import { setScenePickMetadata } from '@motionstudies/three/scene-picking'
 import { parisMapStyle } from '../src/studies/paris-renderer-policy.ts'
 import { trainLabelCollisionBox } from '@motionstudies/three/scene-style'
@@ -43,6 +44,7 @@ function harness(source, camera, size) {
     return slots[i].value
   }
   const bindings = {
+    mapLabelBoxesOverlap,
     setScenePickMetadata, useMapStyle: () => parisMapStyle,
     ...labels, ...lod, THREE, parisTrainLabelBudget, parisTrainLabelHeight, LabelFrameBudget, stationLabelWorldHeight, stationLabelBoxes, emptyLabelBoxes,
     LakeAvoidingPathsContext: {}, useContext: () => undefined,

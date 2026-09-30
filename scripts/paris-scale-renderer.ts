@@ -24,7 +24,7 @@ export function transformParisScale(source: string): string {
   replace('.flatMap((station, index) => {\n                projected.copy(stationCentre(station, projectedStops)).project(camera);', '.flatMap((station, index) => {\n                if (!parisStationLabelEligible(station, semanticHeight)) return [];\n                projected.copy(stationCentre(station, projectedStops)).project(camera);')
   replace('const screenHeight = stationLabelScreenHeight(false, false);', 'const screenHeight = parisStationLabelHeight(rect.width, false, station.labelRank, semanticHeight);')
   // Avoid half a long terminus label hanging outside a narrow phone viewport.
-  replace('const overlaps = occupied.some((other) => box.left < other.right + 5', 'if (box.left < 8 || box.right > size.width - 8 || box.top < 8 || box.bottom > size.height - 8) continue;\n            const overlaps = occupied.some((other) => box.left < other.right + 5', 2)
+  replace('const overlaps = occupied.some((other) => mapLabelBoxesOverlap(box, other))', 'if (box.left < 8 || box.right > size.width - 8 || box.top < 8 || box.bottom > size.height - 8) continue;\n            const overlaps = occupied.some((other) => mapLabelBoxesOverlap(box, other))', 2)
 
   // The administrative outline stays mounted and fades with real camera height.
   replace('function CountryBorder({ boundary, projection, subdued, opacityScale = 1, }) {', `function CountryBorder({ boundary, projection, subdued, opacityScale = 1, }) {
