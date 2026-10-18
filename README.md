@@ -75,6 +75,8 @@ The [density review](docs/DENSITY.md) and [station-label hierarchy](docs/STATION
 
 ## Hosting and data
 
+The public study is served at [motionstudies.app/correspondances](https://motionstudies.app/correspondances/), with [GitHub Pages](https://emmettl.github.io/correspondances/) retained as a mirror. A separate Cloudflare workflow publishes the exact artifact from a successful main Pages workflow; failed checks do not publish. See [series hosting](https://github.com/emmettl/motionstudies/blob/main/docs/HOSTING.md) for the shared publication and rollback contract.
+
 GitHub Pages deploys automatically on every push to `main`, after the reusable **Check Correspondances** job passes its browser, build, source and payload checks. Pull requests run the same checks without deploying. **Deploy Pages** also retains a manual trigger. The site is served at https://emmettl.github.io/correspondances/.
 
 Data scripts preserve the explicit source dates and provenance from the original edition. CI uses the committed reviewed fixtures; refreshing source data is a separate deliberate operation.
