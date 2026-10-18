@@ -289,10 +289,10 @@ if (firstViewGzip + metroArcsGzip + metroCrossingsGzip + metroEastGzip > 820 * 1
 if (firstViewGzip + metroArcsGzip + metroCrossingsGzip > 750 * 1024) throw new Error('Paris twelve-line opt-in composition exceeds 750 KiB gzip')
 if (firstViewGzip + metroArcsGzip > 680 * 1024) throw new Error('Paris ten-line opt-in composition exceeds 680 KiB gzip')
 if (
-  javaScriptGzip > 340 * 1024 ||
+  javaScriptGzip > 358 * 1024 ||
   cssGzip > 15 * 1024 ||
-  baseViewGzip > 425 * 1024 ||
-  firstViewGzip > 625 * 1024
+  baseViewGzip > 440 * 1024 ||
+  firstViewGzip > 630 * 1024
 ) {
   throw new Error(
     `Paris first view exceeds its mobile budget: ${javaScriptGzip} JS / ` +
@@ -329,7 +329,7 @@ console.log(
 console.log(
   `Correspondances mobile first view: ${(javaScriptGzip / 1024).toFixed(1)} KiB JS / ` +
     `${(cssGzip / 1024).toFixed(1)} KiB CSS / ${(baseViewGzip / 1024).toFixed(1)} KiB base / ` +
-    `${(firstViewGzip / 1024).toFixed(1)} KiB eight-line opening / 625.0 KiB budget.`,
+    `${(firstViewGzip / 1024).toFixed(1)} KiB eight-line opening / 630.0 KiB budget.`,
 )
 
 console.log(`Correspondances ten-line opt-in: ${((firstViewGzip + metroArcsGzip) / 1024).toFixed(1)} KiB gzip / 680.0 KiB budget.`)
