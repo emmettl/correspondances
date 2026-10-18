@@ -14,6 +14,17 @@ test('station departures fit narrow cards and select their study train', async (
  const card = page.locator('.edition-station-hero')
  await expect(card.locator('.ms-dot-matrix-board')).toBeVisible()
  await expect(card.locator('tbody button').first()).toBeVisible()
+ const clock = page.getByRole('slider', { name: 'Heure', exact: true })
+ await expect(page.getByRole('button', { name: 'Lecture', exact: true })).toBeVisible()
+ const inspectedTime = await clock.inputValue()
+ const departure = await card.locator('tbody button').first().elementHandle()
+ // Let several playback frames elapse: inspecting a station must hold its targets still.
+ await page.waitForTimeout(600)
+ await expect(clock).toHaveValue(inspectedTime)
+ expect(await departure!.evaluate(element => element.isConnected)).toBe(true)
+ await page.getByRole('button', { name: 'Lecture', exact: true }).click()
+ await expect.poll(() => clock.inputValue()).not.toBe(inspectedTime)
+ await page.getByRole('button', { name: 'Pause', exact: true }).click()
  for (const width of [280, 360, 520]) {
    await card.evaluate((element, width) => { (element as HTMLElement).style.width = `${Math.min(width, innerWidth - 72)}px` }, width)
    await expect.poll(() => card.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true)

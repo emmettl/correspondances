@@ -24,7 +24,7 @@ test('paused Paris rail retain buffers through idle frames and redraw seeks and 
     for (let i = 0; i < 4; i++) await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
     return probe.vehicleUploads - before
   })
-  expect(await sample()).toBeGreaterThan(0)
+  await expect.poll(sample).toBeGreaterThan(0)
   await page.getByRole('button', { name: 'Pause', exact: true }).click()
   await expect.poll(sample).toBe(0)
   await reset()

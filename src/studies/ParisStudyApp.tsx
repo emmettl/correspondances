@@ -688,6 +688,8 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     clearAirSelection()
     setActiveHubStudyIndex(-1)
     setSelectedStation(station)
+    // Keep departure targets stable while the station is being inspected.
+    setIsPlaying(false)
     setSelectedRoute(undefined)
     setSelectedTrain(undefined)
     setSelectedConnection(undefined)
