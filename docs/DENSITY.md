@@ -1,5 +1,7 @@
 # Eight-line density review — 7 September 2026
 
+> Historical implementation and measurement record. The current edition consumes published alpha.31 packages and public renderer extension contracts; the compiled-source rewriting described below has been removed. See the [current README](../README.md) and [dependency adoption record](DEPENDENCIES-ALPHA-31.md).
+
 Scope: the pinned 4 September morning, all eight implemented lines, 977 scheduled journeys and 333 moving trains at 08:00. Reviewed at 1440 × 1000 in Chromium and the iPhone 13 viewport in WebKit, in both Région and Cœur. This is a composition review of the committed study, not a claim about passenger density.
 
 ## Findings and treatment

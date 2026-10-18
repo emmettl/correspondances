@@ -1,5 +1,7 @@
 # Cœur / Région — 8 September 2026
 
+> Historical implementation and measurement record. The current edition consumes published alpha.31 packages and public renderer extension contracts; the compiled-source rewriting described below has been removed. See the [current README](../README.md) and [dependency adoption record](DEPENDENCIES-ALPHA-31.md).
+
 Cœur is now a plan with variable scale. The transition expands the inner city around Châtelet, compresses distant branches and tilts the camera towards a plan view. Région restores the original geographic projection. Both views use the same loaded railway and playback clock.
 
 ## Spatial treatment
