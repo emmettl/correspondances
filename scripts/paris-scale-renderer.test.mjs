@@ -1,3 +1,4 @@
+import { createParisCameraDriver } from '../src/studies/paris-camera-policy.ts'
 import { parisMapStyle, parisSceneExtensions } from '../src/studies/paris-renderer-policy.ts'
 import { readFileSync } from 'node:fs'
 import { parse } from '@babel/parser'
@@ -16,7 +17,7 @@ const renderer = readFileSync('node_modules/@motionstudies/three/NationalNetwork
 
 test('Paris density hooks fit the pinned renderer and reject changed upstream hooks', () => {
   expect(() => parse(transformParisScale(renderer), { sourceType: 'module' })).not.toThrow()
-  expect(() => transformParisScale(renderer.replace('const lastCommand = useRef(0);', 'const lastCommand = useRef(-1);'))).toThrow('hook needs review')
+  expect(() => transformParisScale(renderer.replace('const pulseMaterial = useRef(null);', 'const pulseMaterial = useRef(-1);'))).toThrow('hook needs review')
 
 })
 
@@ -80,7 +81,7 @@ test('city scale keeps missions quiet, with bounded closer inspection on phone a
 })
 
 test('a station selected during a morph stays centred until a direct gesture releases it', () => {
-  const source = transformParisScale(renderer)
+  const source = renderer
   const node = parse(source, { sourceType: 'module' }).program.body.find((node) => node.type === 'FunctionDeclaration' && node.id.name === 'NetworkCamera')
   const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100)
   const handlers = new Map()
@@ -92,9 +93,15 @@ test('a station selected during a morph stays centred until a direct gesture rel
     if (!previous || deps.some((d, i) => !Object.is(d, previous.deps[i]))) slots[index] = { value: factory(), deps }
     return slots[index].value
   }
+  let resolvedTarget
+  const extensions = { ...parisSceneExtensions, createCameraDriver: context => {
+    const driver = createParisCameraDriver(context, { matches: true }), notify = driver.onCommand
+    driver.onCommand = (command, station, target) => { resolvedTarget = target.clone(); notify(command, station, target) }
+    return driver
+  } }
   const scope = {
     useProjectedTrainPosition: () => scope.projectedTrainPosition,
-    useNetworkScene: () => ({ props: {} }),
+    useNetworkScene: () => ({ props: { extensions } }),
     ...mapCamera, THREE, parisHeartFromWorld,
     window: { matchMedia: () => ({ matches: true }) },
     useMemo: memo, useRef: (value) => memo(() => ({ current: value }), []),
@@ -118,6 +125,7 @@ test('a station selected during a morph stays centred until a direct gesture rel
     frame({}, 1 / 60)
   }
   render(2, 0.2)
+  expect(resolvedTarget.toArray()).toEqual([2, 0, 0])
   expect(camera.position.x).toBe(2)
   render(12, 1)
   expect(camera.position.x).toBe(12)

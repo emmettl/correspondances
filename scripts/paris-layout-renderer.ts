@@ -37,21 +37,5 @@ export function transformParisLayout(source: string): string {
   replace('}), [projection, references.references]);', '}), [projection, references.references]);\n    useParisGeometryMorph(paths, projection, parisMix);')
   replace('}, [boundary.rings, projection]);', '}, [boundary.rings, projection]);\n    useParisGeometryMorph(tubes, projection, parisMix);')
 
-  // Geographic focus commands (including the correspondence director) must
-  // follow the same morph. Direct gestures release the authored focus.
-  replace('const lastCommand = useRef(0);', 'const lastCommand = useRef(0);\n    const parisFocus = useRef(undefined);\n    const parisStationFocus = useRef(undefined);\n    const parisMotion = useMemo(() => window.matchMedia("(prefers-reduced-motion: reduce)"), []);')
-  replace('camera.position.lerp(desiredPosition, damping);', 'camera.position.lerp(desiredPosition, parisMotion.matches ? 1 : damping);')
-  replace('currentTarget.lerp(desiredTarget, damping);', 'currentTarget.lerp(desiredTarget, parisMotion.matches ? 1 : damping);')
-  replace('lastCommand.current = cameraCommand.id;', 'lastCommand.current = cameraCommand.id;\n        parisFocus.current = cameraCommand.action === "focus-location" ? cameraCommand.focus : undefined;\n        parisStationFocus.current = cameraCommand.action === "reveal-station" ? selectedStation : undefined;')
-  replace('const onWheel = (event) => {', 'const onWheel = (event) => {\n            parisFocus.current = undefined;\n            parisStationFocus.current = undefined;')
-  replace('const onPointerDown = (event) => {\n            scaleJourney.current = 0;', 'const onPointerDown = (event) => {\n            parisFocus.current = undefined;\n            parisStationFocus.current = undefined;\n            scaleJourney.current = 0;')
-  replace('const diagramMix = THREE.MathUtils.clamp(spatialLayoutMix, 0, 1);', `const diagramMix = THREE.MathUtils.clamp(spatialLayoutMix, 0, 1);
-        if (parisFocus.current) {
-            const [x, , z] = projectCoordinate(parisFocus.current, airProjection);
-            const [heartX, heartZ] = parisHeartFromWorld(x, z, airProjection);
-            mapTarget.current.set(x + (heartX - x) * diagramMix, 0, z + (heartZ - z) * diagramMix);
-        } else if (parisStationFocus.current) {
-            mapTarget.current.copy(stationCentre(parisStationFocus.current, projectedStops));
-        }`)
-  return 'import { blendParisLayout, parisHeartFromWorld } from "/src/editions/paris-layout.ts";\nimport { useParisGeometryMorph } from "/src/studies/use-paris-geometry-morph.ts";\n' + source
+  return 'import { blendParisLayout } from "/src/editions/paris-layout.ts";\nimport { useParisGeometryMorph } from "/src/studies/use-paris-geometry-morph.ts";\n' + source
 }

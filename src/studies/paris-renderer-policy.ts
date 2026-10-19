@@ -1,3 +1,4 @@
+import { createParisCameraDriver } from './paris-camera-policy.ts'
 import { MathUtils } from 'three'
 import { parisStationLabels, parisStationLabelEligible } from '../editions/paris-station-labels.ts'
 import { parisStationLabelHeight, parisTrainLabelBudget, parisTrainLabelHeight } from '../editions/paris-scale.ts'
@@ -20,6 +21,7 @@ export const parisMapStyle: NetworkMapStyle = {
   airports: { independent: true, fog: false },
 }
 export const parisSceneExtensions: NetworkSceneExtensions = {
+  createCameraDriver: createParisCameraDriver,
   cameraViewport: ({ width, height, spatialLayoutMix: mix }) => ({
     zoom: width > 700 ? 1 - (MathUtils.clamp((810 - height) / 510, 0, 0.35)) * (1 - mix) : 1,
     offsetY: -Math.round(height * 0.13 * (1 - mix)),
