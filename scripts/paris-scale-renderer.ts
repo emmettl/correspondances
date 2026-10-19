@@ -10,8 +10,6 @@ export function transformParisScale(source: string): string {
     if (source.split(before).length !== count + 1) throw new Error(`Paris scale renderer hook needs review: ${before}`)
     source = source.replaceAll(before, after)
   }
-  replace('trainLabelBudget(semanticCameraHeight, trainLabelMode);', 'parisTrainLabelBudget(semanticCameraHeight, size.width, trainLabelMode);')
-  replace('trainLabelScreenHeight(size.width, candidate.selected, semanticCameraHeight)', 'parisTrainLabelHeight(size.width, candidate.selected)')
   // The administrative outline stays mounted and fades with real camera height.
   replace('function CountryBorder({ boundary, projection, subdued, opacityScale = 1, }) {', `function CountryBorder({ boundary, projection, subdued, opacityScale = 1, }) {
     const borderGroup = useRef(null);
@@ -38,7 +36,7 @@ export function transformParisScale(source: string): string {
   replace('const onWheel = (event) => {', 'const onWheel = (event) => {\n            scaleJourney.current = 0;')
   replace('const damping = 1 -', 'scaleJourney.current = Math.max(0, scaleJourney.current - delta);\n        const damping = 1 -')
   replace('mapCameraDampingRate(Boolean(trainPosition || airPosition), directTouch.current)', '(scaleJourney.current > 0 && !trainPosition && !airPosition ? 3.2 : mapCameraDampingRate(Boolean(trainPosition || airPosition), directTouch.current))')
-  return transformParisAirportScene(transformParisLayout('import { parisOverviewMix, parisTrainLabelBudget, parisTrainLabelHeight } from "/src/editions/paris-scale.ts";\n' + source))
+  return transformParisAirportScene(transformParisLayout('import { parisOverviewMix } from "/src/editions/paris-scale.ts";\n' + source))
 }
 
 export function parisScaleRenderer(): Plugin {

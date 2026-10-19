@@ -1,5 +1,5 @@
 import { parisStationLabels, parisStationLabelEligible } from '../editions/paris-station-labels.ts'
-import { parisStationLabelHeight } from '../editions/paris-scale.ts'
+import { parisStationLabelHeight, parisTrainLabelBudget, parisTrainLabelHeight } from '../editions/paris-scale.ts'
 import { FLAT_NETWORK_MAP_STYLE, type NetworkMapStyle } from '@motionstudies/three/scene-style'
 import type { NetworkSceneExtensions } from '@motionstudies/three/scene-extensions'
 import { pickAirportTarget } from './airport-selection.ts'
@@ -14,7 +14,8 @@ export const parisMapStyle: NetworkMapStyle = {
     screenHeight: parisStationLabelHeight,
     viewportPadding: 8,
   },
-  trainLabels: { ...FLAT_NETWORK_MAP_STYLE.trainLabels, viewportPadding: 8 },
+  trainLabels: { ...FLAT_NETWORK_MAP_STYLE.trainLabels, viewportPadding: 8,
+    budget: parisTrainLabelBudget, screenHeight: parisTrainLabelHeight },
   airports: { independent: true, fog: false },
 }
 export const parisSceneExtensions: NetworkSceneExtensions = {

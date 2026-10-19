@@ -5,6 +5,7 @@ import { expect, test } from 'vitest'
 import * as THREE from 'three'
 import * as stationLabels from '../node_modules/@motionstudies/three/station-labels.js'
 import * as parisLabels from '../src/editions/paris-station-labels.ts'
+import * as trainLabels from '../node_modules/@motionstudies/three/train-labels.js'
 import * as mapCamera from '../node_modules/@motionstudies/three/map-camera.js'
 import { parisHeartFromWorld } from '../src/editions/paris-layout.ts'
 import { pickAirportTarget } from '../src/studies/airport-selection.ts'
@@ -16,9 +17,7 @@ const renderer = readFileSync('node_modules/@motionstudies/three/NationalNetwork
 test('Paris density hooks fit the pinned renderer and reject changed upstream hooks', () => {
   expect(() => parse(transformParisScale(renderer), { sourceType: 'module' })).not.toThrow()
   expect(() => transformParisScale(renderer.replace('const lastCommand = useRef(0);', 'const lastCommand = useRef(-1);'))).toThrow('hook needs review')
-  for (const hook of ['trainLabelBudget(semanticCameraHeight, trainLabelMode);']) {
-    expect(() => transformParisScale(renderer.replace(hook, 'changedHook'))).toThrow('hook needs review')
-  }
+
 })
 
 test.each([
@@ -134,4 +133,16 @@ test('Paris leaves private station modules untransformed', async () => {
     const source = readFileSync(`.${id}`, 'utf8')
     expect(parisScaleRenderer().transform(source, id)).toBeUndefined()
   }
+})
+
+
+test('Paris train policies use the supported renderer with unchanged ambient density and focused sizing', () => {
+  for (const width of [390, 1440]) for (const height of [3, 6.6, 37]) for (const mode of ['off', 'auto', 'on']) {
+    expect(trainLabels.styledTrainLabelBudget(parisMapStyle.trainLabels, height, width, mode)).toBe(parisTrainLabelBudget(height, width, mode))
+    for (const selected of [false, true]) expect(trainLabels.styledTrainLabelScreenHeight(parisMapStyle.trainLabels, width, selected, height)).toBe(parisMapStyle.trainLabels.screenHeight(width, selected, height))
+  }
+  const transformed = transformParisScale(renderer)
+  expect(transformed).not.toContain('parisTrainLabelBudget')
+  expect(transformed).not.toContain('parisTrainLabelHeight')
+  expect(transformed).toContain('styledTrainLabelBudget(labelStyle, semanticCameraHeight, size.width, trainLabelMode)')
 })
