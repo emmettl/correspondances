@@ -1,13 +1,14 @@
 import { createParisCameraDriver } from './paris-camera-policy.ts'
 import { MathUtils } from 'three'
 import { parisStationLabels, parisStationLabelEligible } from '../editions/paris-station-labels.ts'
-import { parisStationLabelHeight, parisTrainLabelBudget, parisTrainLabelHeight } from '../editions/paris-scale.ts'
+import { parisOverviewMix, parisStationLabelHeight, parisTrainLabelBudget, parisTrainLabelHeight } from '../editions/paris-scale.ts'
 import { FLAT_NETWORK_MAP_STYLE, type NetworkMapStyle } from '@motionstudies/three/scene-style'
 import type { NetworkSceneExtensions } from '@motionstudies/three/scene-extensions'
 import { pickAirportTarget } from './airport-selection.ts'
 
 export const parisMapStyle: NetworkMapStyle = {
   ...FLAT_NETWORK_MAP_STYLE,
+  materials: { borderOpacityScale: parisOverviewMix, trafficFlowOverviewEmphasis: parisOverviewMix },
   stationLabels: {
     rankLimit: () => Infinity,
     orderStations: parisStationLabels,

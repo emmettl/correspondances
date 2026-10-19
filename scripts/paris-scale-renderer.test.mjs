@@ -17,7 +17,7 @@ const renderer = readFileSync('node_modules/@motionstudies/three/NationalNetwork
 
 test('Paris density hooks fit the pinned renderer and reject changed upstream hooks', () => {
   expect(() => parse(transformParisScale(renderer), { sourceType: 'module' })).not.toThrow()
-  expect(() => transformParisScale(renderer.replace('const pulseMaterial = useRef(null);', 'const pulseMaterial = useRef(-1);'))).toThrow('hook needs review')
+  expect(() => transformParisScale(renderer.replace('function NationalGround({ quiet = false })', 'function NationalGround({ quiet = true })'))).toThrow('hook needs review')
 
 })
 
@@ -169,4 +169,68 @@ test('supported viewport framing retains airport clearance across viewport and m
   expect(camera.zoom).toBe(1)
   expect(camera.view.enabled).toBe(false)
   expect(transformParisScale(renderer)).not.toContain('const regionalInset')
+})
+
+
+test('supported material policies update existing border and traffic materials and restore defaults', () => {
+  let style = parisMapStyle, frame, refs = [], cursor = 0
+  const scope = {
+    THREE,
+    useMapStyle: () => style,
+    useRef: () => refs[cursor++],
+    useMemo: factory => factory(),
+    useEffect() {},
+    useFrame: callback => { frame = callback },
+    edgeTrafficWeights: () => ({ strengths: [] }),
+    compactMapLines() {},
+    _jsx: (_type, props) => props,
+    _jsxs: (_type, props) => props,
+  }
+  const component = name => {
+    const node = parse(renderer, { sourceType: 'module' }).program.body.find(node => node.type === 'FunctionDeclaration' && node.id.name === name)
+    return new Function(...Object.keys(scope), `return (${renderer.slice(node.start, node.end)})`)(...Object.values(scope))
+  }
+  const border = component('CountryBorder'), traffic = component('TrafficFlowLayer')
+  const glow = new THREE.MeshBasicMaterial(), core = new THREE.MeshBasicMaterial()
+  const group = { visible: true, children: [{ children: [{ material: glow }, { material: core }] }] }
+  const camera = new THREE.PerspectiveCamera(), clock = { elapsedTime: 0 }
+  const renderBorder = subdued => {
+    refs = [{ current: group }]; cursor = 0
+    border({ boundary: { rings: [] }, projection: {}, subdued, opacityScale: 0.5 })
+  }
+  for (const subdued of [false, true]) {
+    style = parisMapStyle; renderBorder(subdued)
+    for (const height of [5, 21, 42]) {
+      camera.position.y = height; frame({ camera })
+      const mix = parisOverviewMix(height) * 0.5
+      expect(group.visible).toBe(mix > 0.001)
+      expect(glow.opacity).toBeCloseTo((subdued ? 0.018 : 0.12) * mix)
+      expect(core.opacity).toBeCloseTo((subdued ? 0.13 : 0.84) * mix)
+    }
+    style = {}; renderBorder(subdued); frame({ camera })
+    expect(group.visible).toBe(true)
+    expect(core.opacity).toBeCloseTo((subdued ? 0.13 : 0.84) * 0.5)
+  }
+  const weighted = new THREE.LineBasicMaterial(), pulse = new THREE.LineBasicMaterial()
+  const renderTraffic = (subdued, suppressAtIdentity = false, identityMix = 0.4) => {
+    refs = [{ current: weighted }, { current: pulse }]; cursor = 0
+    return traffic({ snapshot: { edges: [] }, projectedStops: [], projectedPaths: [], lakeAvoidingPaths: new Map(), subdued, identityMix, overviewEmphasis: 0.2, suppressAtIdentity })
+  }
+  for (const subdued of [false, true]) for (const suppress of [false, true]) {
+    style = parisMapStyle
+    const rendered = renderTraffic(subdued, suppress)
+    const geometry = rendered.children[0].geometry
+    for (const height of [5, 21, 42]) {
+      camera.position.y = height; frame({ camera, clock })
+      expect(weighted.opacity).toBeCloseTo((subdued ? 0.045 : 0.62) * (suppress ? 0.6 : 1 - 0.4 * 0.78) * (1 + parisOverviewMix(height) * 1.2))
+      expect(pulse.opacity).toBeCloseTo((subdued ? 0.018 : 0.16) * (suppress ? 0.6 : 1 - 0.4 * 0.72) * (1 + 0.2 * 1.15))
+      expect(rendered.children[0].geometry).toBe(geometry)
+    }
+    style = {}; renderTraffic(subdued, suppress); frame({ camera, clock })
+    expect(weighted.opacity).toBeCloseTo((subdued ? 0.045 : 0.62) * (suppress ? 0.6 : 1 - 0.4 * 0.78) * (1 + 0.2 * 1.2))
+  }
+  style = parisMapStyle; renderTraffic(false, true, 1); frame({ camera, clock })
+  expect(weighted.opacity).toBe(0)
+  expect(pulse.opacity).toBe(0)
+  expect(transformParisScale(renderer)).not.toContain('parisOverviewMix')
 })
