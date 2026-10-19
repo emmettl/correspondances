@@ -103,4 +103,4 @@ Paris supplies station ordering, morph-aware label admission and sizing, viewpor
 
 Viewport inset and zoom now use the supported `cameraViewport` scene extension. The airport-framing source transform is removed; camera journey timing and morph-following geographic/station focus use the public camera driver hooks. Border fade and weighted traffic emphasis use supported material callbacks; geometry morphing remains guarded.
 
-The alpha.40 adoption is prepared against checked local tarballs while trusted npm publication is pending. Final registry integrity verification is required before this adoption is pushed to main.
+The alpha.40 registry adoption passes an empty-cache install, all four lockfile integrity and installed-package comparisons, type/lint/boundary checks, 32 unit tests, production build and all payload/data gates. Its 18 Chromium/WebKit journeys exercised byte-identical package files before publication.
