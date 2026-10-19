@@ -7,7 +7,6 @@ export function transformParisLayout(source: string): string {
     source = source.replaceAll(before, after)
   }
   // The authored morph changes label placement without replacing station data.
-  replace('lineMapMix, layoutTransitioning]);', 'lineMapMix, layoutTransitioning, spatialLayoutMix]);')
   // A geographic grid should recede as the plan's scale becomes variable.
   replace('function NationalGround({ quiet = false })', 'function NationalGround({ quiet = false, parisMix = 0 })')
   replace('_jsx(NationalGround, { quiet:', '_jsx(NationalGround, { parisMix: props.spatialLayoutMix ?? 0, quiet:')
@@ -37,12 +36,6 @@ export function transformParisLayout(source: string): string {
   replace('}, [lakes.lakes, projection]);', '}, [lakes.lakes, projection]);\n    useParisGeometryMorph(geometry, projection, parisMix);')
   replace('}), [projection, references.references]);', '}), [projection, references.references]);\n    useParisGeometryMorph(paths, projection, parisMix);')
   replace('}, [boundary.rings, projection]);', '}, [boundary.rings, projection]);\n    useParisGeometryMorph(tubes, projection, parisMix);')
-
-  // The expanded centre has room for interchange names at overview framing.
-  replace('function StationLabels({ stations,', 'function StationLabels({ spatialLayoutMix = 0, stations,')
-  replace('_jsx(StationLabels, { stations:', '_jsx(StationLabels, { spatialLayoutMix: props.spatialLayoutMix, stations:')
-  replace('_jsx(StationTapTarget, { stations:', '_jsx(StationTapTarget, { spatialLayoutMix: props.spatialLayoutMix, stations:')
-  replace('const semanticHeight = stationLabelCameraHeight(camera.position.y, cameraFraming);', 'const semanticHeight = stationLabelCameraHeight(camera.position.y, cameraFraming) * (1 - spatialLayoutMix * 0.62);')
 
   // Geographic focus commands (including the correspondence director) must
   // follow the same morph. Direct gestures release the authored focus.

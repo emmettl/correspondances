@@ -1,3 +1,4 @@
+import { parisMapStyle, parisSceneExtensions } from '../src/studies/paris-renderer-policy.ts'
 import { readFileSync } from 'node:fs'
 import { parse } from '@babel/parser'
 import { expect, test } from 'vitest'
@@ -7,7 +8,7 @@ import * as parisLabels from '../src/editions/paris-station-labels.ts'
 import * as mapCamera from '../node_modules/@motionstudies/three/map-camera.js'
 import { parisHeartFromWorld } from '../src/editions/paris-layout.ts'
 import { pickAirportTarget } from '../src/studies/airport-selection.ts'
-import { transformParisScale, transformParisStationTap, transformParisStationPicking } from './paris-scale-renderer.ts'
+import { transformParisScale } from './paris-scale-renderer.ts'
 import { parisOverviewMix, parisTrainLabelBudget, parisStationLabelHeight } from '../src/editions/paris-scale.ts'
 
 const renderer = readFileSync('node_modules/@motionstudies/three/NationalNetworkScene.js', 'utf8')
@@ -15,7 +16,7 @@ const renderer = readFileSync('node_modules/@motionstudies/three/NationalNetwork
 test('Paris density hooks fit the pinned renderer and reject changed upstream hooks', () => {
   expect(() => parse(transformParisScale(renderer), { sourceType: 'module' })).not.toThrow()
   expect(() => transformParisScale(renderer.replace('const lastCommand = useRef(0);', 'const lastCommand = useRef(-1);'))).toThrow('hook needs review')
-  for (const hook of ['stationLabelWithinTier(label.station.labelRank, tierLimit)']) {
+  for (const hook of ['trainLabelBudget(semanticCameraHeight, trainLabelMode);']) {
     expect(() => transformParisScale(renderer.replace(hook, 'changedHook'))).toThrow('hook needs review')
   }
 })
@@ -24,8 +25,8 @@ test.each([
   ["Gare d'Austerlitz", 37],
   ['Unlisted local stop', 14.9],
 ])('visible station %s remains selectable beyond the old global cutoff', (name, height) => {
-  const source = transformParisStationTap(readFileSync('node_modules/@motionstudies/three/StationTapTarget.js', 'utf8'))
-  const picking = transformParisStationPicking(readFileSync('node_modules/@motionstudies/three/station-picking.js', 'utf8'))
+  const source = readFileSync('node_modules/@motionstudies/three/StationTapTarget.js', 'utf8')
+  const picking = readFileSync('node_modules/@motionstudies/three/station-picking.js', 'utf8')
   const installerNode = parse(picking, { sourceType: 'module' }).program.body.find(node => node.type === 'ExportNamedDeclaration' && node.declaration?.id?.name === 'installStationTapTarget').declaration
   const node = parse(source, { sourceType: 'module' }).program.body.find(node => node.type === 'ExportNamedDeclaration' && node.declaration?.id?.name === 'StationTapTarget').declaration
   const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100)
@@ -55,7 +56,7 @@ test.each([
   // and world positions supplied by the test. This catches cutoff/index drift.
   scope.installStationTapTarget = new Function(...Object.keys(scope), `return (${picking.slice(installerNode.start, installerNode.end)})`)(...Object.values(scope))
   const tapTarget = new Function(...Object.keys(scope), `return (${source.slice(node.start, node.end)})`)(...Object.values(scope))
-  tapTarget({ stations, projectedStops: [], cameraFraming: {}, onSelectStation: (station) => { selected = station } })
+  tapTarget({ style: parisMapStyle.stationLabels, accepts: parisSceneExtensions.acceptsStationPick, stations, projectedStops: [], cameraFraming: {}, onSelectStation: (station) => { selected = station } })
   const event = { pointerId: 1, pointerType: 'mouse', button: 0, clientX: 500, clientY: 500 }
   handlers.get('pointerdown')(event)
   handlers.get('pointerup')(event)
@@ -126,11 +127,11 @@ test('a station selected during a morph stays centred until a direct gesture rel
   expect(camera.position.x).toBe(12)
 })
 
-test.each([
-  ['StationTapTarget', transformParisStationTap, 'rankStationsForLabels(stations)'],
-  ['station-picking', transformParisStationPicking, 'stationLabelScreenHeight(false, false)'],
-])('Paris station hooks reject drift in %s', (name, transform, hook) => {
-  const source = readFileSync(`node_modules/@motionstudies/three/${name}.js`, 'utf8')
-  expect(() => parse(transform(source), { sourceType: 'module' })).not.toThrow()
-  expect(() => transform(source.replace(hook, 'changedHook'))).toThrow('hook needs review')
+test('Paris leaves private station modules untransformed', async () => {
+  const { parisScaleRenderer } = await import('./paris-scale-renderer.ts')
+  for (const name of ['StationTapTarget', 'station-picking']) {
+    const id = `/node_modules/@motionstudies/three/${name}.js`
+    const source = readFileSync(`.${id}`, 'utf8')
+    expect(parisScaleRenderer().transform(source, id)).toBeUndefined()
+  }
 })
