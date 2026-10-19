@@ -1,6 +1,5 @@
 import type { Plugin } from 'vite'
 import { transformParisLayout } from './paris-layout-renderer.ts'
-import { transformParisAirportScene } from './paris-airport-renderer.ts'
 
 /** Edition-only camera, morph and label policies not yet covered by public options.
  * Keep the installed renderer intact and reject changed hooks on upgrades.
@@ -36,7 +35,7 @@ export function transformParisScale(source: string): string {
   replace('const onWheel = (event) => {', 'const onWheel = (event) => {\n            scaleJourney.current = 0;')
   replace('const damping = 1 -', 'scaleJourney.current = Math.max(0, scaleJourney.current - delta);\n        const damping = 1 -')
   replace('mapCameraDampingRate(Boolean(trainPosition || airPosition), directTouch.current)', '(scaleJourney.current > 0 && !trainPosition && !airPosition ? 3.2 : mapCameraDampingRate(Boolean(trainPosition || airPosition), directTouch.current))')
-  return transformParisAirportScene(transformParisLayout('import { parisOverviewMix } from "/src/editions/paris-scale.ts";\n' + source))
+  return transformParisLayout('import { parisOverviewMix } from "/src/editions/paris-scale.ts";\n' + source)
 }
 
 export function parisScaleRenderer(): Plugin {

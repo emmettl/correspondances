@@ -146,3 +146,19 @@ test('Paris train policies use the supported renderer with unchanged ambient den
   expect(transformed).not.toContain('parisTrainLabelHeight')
   expect(transformed).toContain('styledTrainLabelBudget(labelStyle, semanticCameraHeight, size.width, trainLabelMode)')
 })
+
+
+test('supported viewport framing retains airport clearance across viewport and morph changes', () => {
+  const camera = new THREE.PerspectiveCamera(), framing = mapCamera.createCameraViewportFraming(camera)
+  for (const width of [390, 700, 701, 1440]) for (const height of [600, 844, 1000]) for (const mix of [0, 0.5, 1]) {
+    const frame = parisSceneExtensions.cameraViewport({ width, height, spatialLayoutMix: mix })
+    framing(frame, { width, height })
+    const regionalZoom = width > 700 ? Math.min(1, Math.max(0.65, (height - 300) / 510)) : 1
+    expect(camera.zoom).toBeCloseTo(regionalZoom + (1 - regionalZoom) * mix, 14)
+    expect(camera.view.offsetY).toBe(-Math.round(height * 0.13 * (1 - mix)))
+  }
+  framing()
+  expect(camera.zoom).toBe(1)
+  expect(camera.view.enabled).toBe(false)
+  expect(transformParisScale(renderer)).not.toContain('const regionalInset')
+})
