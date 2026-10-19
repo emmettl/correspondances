@@ -7,7 +7,7 @@ import * as parisLabels from '../src/editions/paris-station-labels.ts'
 import * as mapCamera from '../node_modules/@motionstudies/three/map-camera.js'
 import { parisHeartFromWorld } from '../src/editions/paris-layout.ts'
 import { pickAirportTarget } from '../src/studies/airport-selection.ts'
-import { transformParisScale } from './paris-scale-renderer.ts'
+import { transformParisScale, transformParisStationTap, transformParisStationPicking } from './paris-scale-renderer.ts'
 import { parisOverviewMix, parisTrainLabelBudget, parisStationLabelHeight } from '../src/editions/paris-scale.ts'
 
 const renderer = readFileSync('node_modules/@motionstudies/three/NationalNetworkScene.js', 'utf8')
@@ -24,8 +24,10 @@ test.each([
   ["Gare d'Austerlitz", 37],
   ['Unlisted local stop', 14.9],
 ])('visible station %s remains selectable beyond the old global cutoff', (name, height) => {
-  const source = transformParisScale(renderer)
-  const node = parse(source, { sourceType: 'module' }).program.body.find((node) => node.type === 'FunctionDeclaration' && node.id.name === 'StationTapTarget')
+  const source = transformParisStationTap(readFileSync('node_modules/@motionstudies/three/StationTapTarget.js', 'utf8'))
+  const picking = transformParisStationPicking(readFileSync('node_modules/@motionstudies/three/station-picking.js', 'utf8'))
+  const installerNode = parse(picking, { sourceType: 'module' }).program.body.find(node => node.type === 'ExportNamedDeclaration' && node.declaration?.id?.name === 'installStationTapTarget').declaration
+  const node = parse(source, { sourceType: 'module' }).program.body.find(node => node.type === 'ExportNamedDeclaration' && node.declaration?.id?.name === 'StationTapTarget').declaration
   const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100)
   camera.position.set(0, height, 0)
   camera.lookAt(0, 0, 0)
@@ -51,6 +53,7 @@ test.each([
   }
   // Execute the actual transformed pointer handler, with only React lifecycle
   // and world positions supplied by the test. This catches cutoff/index drift.
+  scope.installStationTapTarget = new Function(...Object.keys(scope), `return (${picking.slice(installerNode.start, installerNode.end)})`)(...Object.values(scope))
   const tapTarget = new Function(...Object.keys(scope), `return (${source.slice(node.start, node.end)})`)(...Object.values(scope))
   tapTarget({ stations, projectedStops: [], cameraFraming: {}, onSelectStation: (station) => { selected = station } })
   const event = { pointerId: 1, pointerType: 'mouse', button: 0, clientX: 500, clientY: 500 }
@@ -121,4 +124,13 @@ test('a station selected during a morph stays centred until a direct gesture rel
   handlers.get('pointerdown')({ pointerType: 'mouse', button: 0, pointerId: 1, clientX: 500, clientY: 500 })
   render(18, 1)
   expect(camera.position.x).toBe(12)
+})
+
+test.each([
+  ['StationTapTarget', transformParisStationTap, 'rankStationsForLabels(stations)'],
+  ['station-picking', transformParisStationPicking, 'stationLabelScreenHeight(false, false)'],
+])('Paris station hooks reject drift in %s', (name, transform, hook) => {
+  const source = readFileSync(`node_modules/@motionstudies/three/${name}.js`, 'utf8')
+  expect(() => parse(transform(source), { sourceType: 'module' })).not.toThrow()
+  expect(() => transform(source.replace(hook, 'changedHook'))).toThrow('hook needs review')
 })

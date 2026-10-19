@@ -1,9 +1,6 @@
 /** Paris abbreviates airport labels; picking and infrastructure use public APIs. */
 export function transformParisAirportScene(source: string): string {
   const hooks = [
-    ['const { camera, gl } = useThree();', 'const { camera, gl, scene } = useThree();'],
-    ['const rect = element.getBoundingClientRect();\n            const projected = new THREE.Vector3();', 'const rect = element.getBoundingClientRect();\n            if (pickAirportTarget(scene, camera, rect, event.clientX, event.clientY, start.pointerType === "touch")) return;\n            const projected = new THREE.Vector3();'],
-    ['[camera, cameraFraming, gl, onSelectStation, projectedStops, rankedStations, spatialLayoutMix]', '[camera, cameraFraming, gl, scene, onSelectStation, projectedStops, rankedStations, spatialLayoutMix]'],
     ['camera.lookAt(currentTarget);', `// Leave the northern airports below the masthead and phone status panel.
         const regionalInset = Math.round(size.height * 0.13 * (1 - diagramMix));
         const regionalZoom = size.width > 700 ? Math.min(1, Math.max(0.65, (size.height - 300) / 510)) : 1;

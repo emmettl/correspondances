@@ -40,11 +40,9 @@ export function transformParisLayout(source: string): string {
 
   // The expanded centre has room for interchange names at overview framing.
   replace('function StationLabels({ stations,', 'function StationLabels({ spatialLayoutMix = 0, stations,')
-  replace('function StationTapTarget({ stations,', 'function StationTapTarget({ spatialLayoutMix = 0, stations,')
   replace('_jsx(StationLabels, { stations:', '_jsx(StationLabels, { spatialLayoutMix: props.spatialLayoutMix, stations:')
   replace('_jsx(StationTapTarget, { stations:', '_jsx(StationTapTarget, { spatialLayoutMix: props.spatialLayoutMix, stations:')
-  replace('const semanticHeight = stationLabelCameraHeight(camera.position.y, cameraFraming);', 'const semanticHeight = stationLabelCameraHeight(camera.position.y, cameraFraming) * (1 - spatialLayoutMix * 0.62);', 2)
-  replace('[camera, cameraFraming, gl, onSelectStation, projectedStops, rankedStations]);', '[camera, cameraFraming, gl, onSelectStation, projectedStops, rankedStations, spatialLayoutMix]);')
+  replace('const semanticHeight = stationLabelCameraHeight(camera.position.y, cameraFraming);', 'const semanticHeight = stationLabelCameraHeight(camera.position.y, cameraFraming) * (1 - spatialLayoutMix * 0.62);')
 
   // Geographic focus commands (including the correspondence director) must
   // follow the same morph. Direct gestures release the authored focus.
