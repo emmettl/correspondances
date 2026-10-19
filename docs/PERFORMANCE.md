@@ -1,6 +1,6 @@
 # Paris rendering and performance
 
-> Historical implementation and measurement record. The current edition consumes published alpha.31 packages and public renderer extension contracts; the compiled-source rewriting described below has been removed. See the [current README](../README.md) and [dependency adoption record](DEPENDENCIES-ALPHA-31.md).
+> Historical implementation and measurement record. The current edition consumes pinned npm packages and public renderer extension contracts. Its alpha.41 adoption removes the remaining geometry/scale rewriting; the implementation below is historical. See the [current README](../README.md) and [dependency adoption record](DEPENDENCIES-ALPHA-31.md).
 
 This ports the relevant September 8 improvements from All Change and Gleislicht
 onto the pinned `@motionstudies/three@0.1.0-alpha.5` renderer. The existing Paris

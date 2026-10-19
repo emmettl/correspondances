@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { parisScaleRenderer } from './scripts/paris-scale-renderer.ts'
 export default defineConfig({
-  plugins: [parisScaleRenderer(), react()],
+  plugins: [react()],
   optimizeDeps: {
     exclude: ['@motionstudies/three'],
     include: ['@react-three/fiber', 'three'],

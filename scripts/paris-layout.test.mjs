@@ -2,11 +2,9 @@ import { readFileSync } from 'node:fs'
 import { expect, test } from 'vitest'
 import * as THREE from 'three'
 import { mergeNetworkLayers } from '@motionstudies/core/domain/network-layers'
-import { spatialLayoutCoverage } from '@motionstudies/core/domain/spatial-layout'
-import { projectSpatialLayout } from '../node_modules/@motionstudies/three/spatial-layout.js'
 import { prepareProjectedPath, pointAlongProjectedPath } from '../node_modules/@motionstudies/three/network-paths.js'
-import { PARIS_HEART, parisHeartCoordinate, parisHeartFromWorld, buildParisHeartLayout, blendParisLayout } from '../src/editions/paris-layout.ts'
-import { prepareParisGeometryMorph, updateParisGeometryMorph } from '../src/studies/use-paris-geometry-morph.ts'
+import { PARIS_HEART, parisHeartCoordinate, parisHeartFromWorld } from '../src/editions/paris-layout.ts'
+import { projectSpatialMorph, blendSpatialMorph, prepareGeometryMorph } from '@motionstudies/three/spatial-morph'
 
 const groups = ['', 'central-cross-', 'regional-rer-', 'metro-arcs-', 'metro-crossings-', 'metro-east-', 'metro-boulevards-', 'metro-west-', 'metro-local-', 'transilien-north-', 'transilien-saint-lazare-', 'transilien-southwest-', 'transilien-east-']
 const read = (group, suffix) => JSON.parse(readFileSync(`fixtures/idfm/correspondances-${group}${suffix}.json`, 'utf8'))
@@ -30,17 +28,18 @@ test('the lens preserves radial order, direction and a finite regional envelope'
 test('all 30 lines and full-day source paths are covered without changing service data', () => {
   const before = JSON.stringify(morning)
   const network = mergeNetworkLayers(morning)
-  const layout = buildParisHeartLayout(network)
   expect(new Set(network.trains.map(t => t.route)).size).toBe(30)
-  expect(spatialLayoutCoverage(network, layout)).toEqual({
-    matchedStops: network.stops.length, totalStops: network.stops.length,
-    matchedPaths: network.paths.length, totalPaths: network.paths.length,
-  })
   for (const snapshot of [...morning, ...groups.map(g => ({ ...read(g, 'day-manifest'), trains: [] }))]) {
-    const target = buildParisHeartLayout(snapshot)
-    expect(target.paths.map(p => p.length)).toEqual(snapshot.paths.map(p => p.length))
-    for (const p of target.paths.flat()) expect(p.every(Number.isFinite)).toBe(true)
-    snapshot.stops.forEach((stop, index) => expect(target.stops[index].slice(1)).toEqual(parisHeartCoordinate(stop)))
+    const projection = { centreLongitude: 0, centreLatitude: 0, longitudeScale: 1, scale: 1 }
+    const stops = snapshot.stops.map(([lon, lat]) => [lon, 0, -lat])
+    const paths = snapshot.paths.map(path => prepareProjectedPath(path.map(([lon, lat]) => [lon, 0, -lat])))
+    const target = projectSpatialMorph(stops, paths, projection, parisHeartFromWorld)
+    expect(target.paths.map(p => p.points.length)).toEqual(snapshot.paths.map(p => p.length))
+    for (const p of target.paths.flatMap(p => p.points)) expect(p.every(Number.isFinite)).toBe(true)
+    snapshot.stops.forEach((stop, index) => {
+      const [x, y] = parisHeartCoordinate(stop)
+      expect(target.stops[index]).toEqual([x, 0, -y])
+    })
   }
   expect(JSON.stringify(morning)).toBe(before)
 })
@@ -54,16 +53,16 @@ test('rails, train paths and context agree throughout the morph and reuse the sa
   const project = ([lon, lat]) => [(lon - projection.centreLongitude) * projection.longitudeScale * projection.scale, 0, -(lat - projection.centreLatitude) * projection.scale]
   const stops = network.stops.map(project)
   const paths = network.paths.map(path => prepareProjectedPath(path.map(project)))
-  const alternate = projectSpatialLayout(network, buildParisHeartLayout(network), stops, paths)
+  const alternate = projectSpatialMorph(stops, paths, projection, parisHeartFromWorld)
   const index = paths.findIndex(p => p.points.length > 32)
   expect(index).toBeGreaterThanOrEqual(0)
   const geometry = new THREE.BufferGeometry().setFromPoints(paths[index].points.map(p => new THREE.Vector3(...p)))
   const attribute = geometry.getAttribute('position')
   const original = Array.from(attribute.array)
-  const records = prepareParisGeometryMorph({ geometry }, projection)
+  const records = prepareGeometryMorph({ geometry }, projection, parisHeartFromWorld)
   for (const mix of [0, 0.2, 0.5, 1, 0.7, 0]) {
-    updateParisGeometryMorph(records, mix)
-    const blended = blendParisLayout(stops, paths, alternate, mix)
+    records.update(mix)
+    const blended = blendSpatialMorph(stops, paths, alternate, mix)
     expect(blended.paths[index].points.length).toBe(paths[index].points.length)
     blended.paths[index].points.forEach((point, j) => point.forEach((v, axis) => expect(attribute.array[j * 3 + axis]).toBeCloseTo(v, 4)))
     // A moving train remains on a rendered segment, including long source paths.

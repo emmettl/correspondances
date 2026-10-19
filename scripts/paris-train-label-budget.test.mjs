@@ -9,7 +9,6 @@ import * as labels from '../node_modules/@motionstudies/three/train-labels.js'
 import * as lod from '../node_modules/@motionstudies/three/regional-lod.js'
 import { stationLabelWorldHeight } from '../node_modules/@motionstudies/three/station-labels.js'
 import { LabelFrameBudget } from '../src/studies/label-frame-budget.ts'
-import { parisScaleRenderer } from './paris-scale-renderer.ts'
 import { parisTrainLabelBudget, parisTrainLabelHeight } from '../src/editions/paris-scale.ts'
 import { stationLabelBoxes, emptyLabelBoxes } from '../src/studies/map-cartography.ts'
 
@@ -89,7 +88,7 @@ function harness(source, camera, size) {
 
 it('bounds train searches while preserving movement, Paris zoom rules, palette and invalidation', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
-  let code = parisScaleRenderer().transform(readFileSync(`.${id}`, 'utf8'), id).code
+  let code = readFileSync(`.${id}`, 'utf8')
   const extract = code => code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
   const originalSource = extract(code).replace(/const labelWork = labelFrameBudget\.update\([^;]+;/, "const labelWork = 'all';")
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
@@ -133,7 +132,6 @@ it('bounds train searches while preserving movement, Paris zoom rules, palette a
 it('reserves station space at close zoom and releases it while paused without losing focused services', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   let code = readFileSync(`.${id}`, 'utf8')
-  for (const plugin of [parisScaleRenderer()]) code = plugin.transform(code, id)?.code ?? code
   const source = code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 3, 1); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()

@@ -10,16 +10,9 @@ import * as trainLabels from '../node_modules/@motionstudies/three/train-labels.
 import * as mapCamera from '../node_modules/@motionstudies/three/map-camera.js'
 import { parisHeartFromWorld } from '../src/editions/paris-layout.ts'
 import { pickAirportTarget } from '../src/studies/airport-selection.ts'
-import { transformParisScale } from './paris-scale-renderer.ts'
 import { parisOverviewMix, parisTrainLabelBudget, parisStationLabelHeight } from '../src/editions/paris-scale.ts'
 
 const renderer = readFileSync('node_modules/@motionstudies/three/NationalNetworkScene.js', 'utf8')
-
-test('Paris density hooks fit the pinned renderer and reject changed upstream hooks', () => {
-  expect(() => parse(transformParisScale(renderer), { sourceType: 'module' })).not.toThrow()
-  expect(() => transformParisScale(renderer.replace('function NationalGround({ quiet = false })', 'function NationalGround({ quiet = true })'))).toThrow('hook needs review')
-
-})
 
 test.each([
   ["Gare d'Austerlitz", 37],
@@ -134,22 +127,12 @@ test('a station selected during a morph stays centred until a direct gesture rel
   expect(camera.position.x).toBe(12)
 })
 
-test('Paris leaves private station modules untransformed', async () => {
-  const { parisScaleRenderer } = await import('./paris-scale-renderer.ts')
-  for (const name of ['StationTapTarget', 'station-picking']) {
-    const id = `/node_modules/@motionstudies/three/${name}.js`
-    const source = readFileSync(`.${id}`, 'utf8')
-    expect(parisScaleRenderer().transform(source, id)).toBeUndefined()
-  }
-})
-
-
 test('Paris train policies use the supported renderer with unchanged ambient density and focused sizing', () => {
   for (const width of [390, 1440]) for (const height of [3, 6.6, 37]) for (const mode of ['off', 'auto', 'on']) {
     expect(trainLabels.styledTrainLabelBudget(parisMapStyle.trainLabels, height, width, mode)).toBe(parisTrainLabelBudget(height, width, mode))
     for (const selected of [false, true]) expect(trainLabels.styledTrainLabelScreenHeight(parisMapStyle.trainLabels, width, selected, height)).toBe(parisMapStyle.trainLabels.screenHeight(width, selected, height))
   }
-  const transformed = transformParisScale(renderer)
+  const transformed = renderer
   expect(transformed).not.toContain('parisTrainLabelBudget')
   expect(transformed).not.toContain('parisTrainLabelHeight')
   expect(transformed).toContain('styledTrainLabelBudget(labelStyle, semanticCameraHeight, size.width, trainLabelMode)')
@@ -168,7 +151,7 @@ test('supported viewport framing retains airport clearance across viewport and m
   framing()
   expect(camera.zoom).toBe(1)
   expect(camera.view.enabled).toBe(false)
-  expect(transformParisScale(renderer)).not.toContain('const regionalInset')
+  expect(renderer).not.toContain('const regionalInset')
 })
 
 
@@ -183,6 +166,7 @@ test('supported material policies update existing border and traffic materials a
     useFrame: callback => { frame = callback },
     edgeTrafficWeights: () => ({ strengths: [] }),
     compactMapLines() {},
+    useSpatialGeometryMorph() {},
     _jsx: (_type, props) => props,
     _jsxs: (_type, props) => props,
   }
@@ -232,5 +216,5 @@ test('supported material policies update existing border and traffic materials a
   style = parisMapStyle; renderTraffic(false, true, 1); frame({ camera, clock })
   expect(weighted.opacity).toBe(0)
   expect(pulse.opacity).toBe(0)
-  expect(transformParisScale(renderer)).not.toContain('parisOverviewMix')
+  expect(renderer).not.toContain('parisOverviewMix')
 })

@@ -32,7 +32,6 @@ import { PARIS_AIRPORTS } from '../editions/paris-airports.ts'
 import { useParisAir } from './use-paris-air.ts'
 import { useParisRailLayer } from './use-paris-rail-layer.ts'
 import { useParisLayout } from './use-paris-layout.ts'
-import { buildParisHeartLayout } from '../editions/paris-layout.ts'
 import { mergeNetworkLayers } from '@motionstudies/core/domain/network-layers'
 import { motionStudyMark } from '../editions/catalogue.ts'
 import { editionDataUrl } from '../editions/data-url.ts'
@@ -394,7 +393,6 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
     ? centralCrossDayStudy.loading
     : centralCrossLoading
   const centralCrossLayerError = centralCrossError || centralCrossDayStudy.error
-  const heartLayout = useMemo(() => network ? buildParisHeartLayout(network) : undefined, [network])
 
   const regionalRerLayerLoading = studyWindow === 'day'
     ? regionalRerDayStudy.loading
@@ -897,7 +895,6 @@ export function ParisStudyApp({ edition }: { readonly edition: ParisEdition }) {
               referencePaths={references}
               snapshot={network}
               referenceSnapshot={network}
-              spatialLayout={heartLayout}
               spatialLayoutMix={heart.mix}
               layoutTransitioning={heart.transitioning}
               stations={stations}

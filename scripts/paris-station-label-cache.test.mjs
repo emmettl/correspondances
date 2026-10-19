@@ -9,7 +9,6 @@ import * as labelFunctions from '../node_modules/@motionstudies/three/station-la
 import { StationLabelFrame } from '../src/studies/station-label-frame.ts'
 import { parisStationLabels, parisStationLabelEligible } from '../src/editions/paris-station-labels.ts'
 import { parisStationLabelHeight } from '../src/editions/paris-scale.ts'
-import { parisScaleRenderer } from './paris-scale-renderer.ts'
 
 // Exercise the installed layout algorithm and real Three sprites. Only React's
 // lifecycle and canvas text rasterization are stubbed; compare visible output
@@ -63,9 +62,6 @@ function harness(source, camera, size) {
 it('preserves station sprites across settling, pan, zoom, resize, selection and layout changes', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   let code = readFileSync(`.${id}`, 'utf8')
-  for (const plugin of [parisScaleRenderer()]) {
-    code = plugin.transform(code, id)?.code ?? code
-  }
   const source = code.slice(code.indexOf('function StationLabels('), code.indexOf('function trainLabelText('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 18, 1)

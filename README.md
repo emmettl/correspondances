@@ -4,7 +4,7 @@
 
 [Study brief](https://github.com/emmettl/motionstudies/blob/main/docs/PARIS.md) · [Project goals](https://github.com/emmettl/motionstudies/blob/main/docs/VISION.md) · [Roadmap](https://github.com/emmettl/motionstudies/blob/main/ROADMAP.md)
 
-An independent Motion Studies edition. This repository owns its application, style, authored fixtures, source-specific data compilers and browser/provenance checks. Shared code comes from the four exact `@motionstudies/*` npm releases at `0.1.0-alpha.40`.
+An independent Motion Studies edition. This repository owns its application, style, authored fixtures, source-specific data compilers and browser/provenance checks. Shared code comes from the four exact `@motionstudies/*` npm releases at `0.1.0-alpha.41`.
 
 ## Opening study
 
@@ -87,11 +87,11 @@ Extracted from [Gleislicht 5c65186](https://github.com/emmettl/gleislicht/commit
 
 ## Standard selection labels
 
-The shared `@motionstudies/three` alpha.40 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
+The shared `@motionstudies/three` alpha.41 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
 
 ### Airport movement boards
 
-Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.1.0-alpha.40. Departures/arrivals follow the study clock, looking 10 minutes behind and 60 minutes ahead within the active study window. Loading and empty messages use the split-flap columns; new rows settle in 675 ms with staggered characters.
+Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.1.0-alpha.41. Departures/arrivals follow the study clock, looking 10 minutes behind and 60 minutes ahead within the active study window. Loading and empty messages use the split-flap columns; new rows settle in 675 ms with staggered characters.
 
 The 4 September 2026 air fixtures include optional origin/destination evidence from cached global ADSB.lol heatmaps and the public-domain [OurAirports reference](https://ourairports.com/data/). These are inferred observed movements, not schedules or confirmed flight plans. Unknown routes remain blank. Full-day manifest entries and playback chunks carry the same evidence; metadata records the input hashes, reference source, and local UTC offset (2 hours for this service date).
 
@@ -99,8 +99,8 @@ After ingesting the base air study, regenerate the enrichment with `npm run data
 
 Rendering and performance changes, source comparisons and measurements are documented in [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 
-Paris supplies station ordering, morph-aware label admission and sizing, viewport padding and airport-priority picking through the supported alpha.40 policies. The corresponding private station-module transforms have been removed; train-label density and sizing also use supported callbacks; geometry morphing remains guarded.
+Paris supplies station ordering, morph-aware label admission and sizing, viewport padding and airport-priority picking through the supported alpha.41 policies. The corresponding private station-module transforms have been removed; train-label density and sizing also use supported callbacks; geometry morphing uses the supported spatial morph API.
 
-Viewport inset and zoom now use the supported `cameraViewport` scene extension. The airport-framing source transform is removed; camera journey timing and morph-following geographic/station focus use the public camera driver hooks. Border fade and weighted traffic emphasis use supported material callbacks; geometry morphing remains guarded.
+Viewport inset and zoom now use the supported `cameraViewport` scene extension. The airport-framing source transform is removed; camera journey timing and morph-following geographic/station focus use the public camera driver hooks. Border fade and weighted traffic emphasis use supported material callbacks; geometry morphing uses the supported spatial morph API.
 
-The alpha.40 registry adoption passes an empty-cache install, all four lockfile integrity and installed-package comparisons, type/lint/boundary checks, 32 unit tests, production build and all payload/data gates. Its 18 Chromium/WebKit journeys exercised byte-identical package files before publication.
+The alpha.41 adoption removes the Vite renderer rewrite plugin and the local geometry/blending implementation. The authored Paris lens stays edition-owned; the shared renderer updates persistent geometry, preserves source vertices and restores buffers when a projection is replaced or removed. Final registry verification is pending publication.
