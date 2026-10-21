@@ -1,6 +1,6 @@
 import { createParisCameraDriver } from '../src/studies/paris-camera-policy.ts'
 import { parisMapStyle, parisSceneExtensions } from '../src/studies/paris-renderer-policy.ts'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { parse } from '@babel/parser'
 import { expect, test } from 'vitest'
 import * as THREE from 'three'
@@ -171,8 +171,13 @@ test('supported material policies update existing border and traffic materials a
     _jsxs: (_type, props) => props,
   }
   const component = name => {
-    const node = parse(renderer, { sourceType: 'module' }).program.body.find(node => node.type === 'FunctionDeclaration' && node.id.name === name)
-    return new Function(...Object.keys(scope), `return (${renderer.slice(node.start, node.end)})`)(...Object.values(scope))
+    const module = name === 'CountryBorder' ? 'scene-context-layers' : 'scene-rail-layers'
+    const path = `node_modules/@motionstudies/three/${module}.js`
+    const source = existsSync(path) ? readFileSync(path, 'utf8') : renderer
+    const node = parse(source, { sourceType: 'module' }).program.body
+      .map(node => node.type === 'ExportNamedDeclaration' ? node.declaration : node)
+      .find(node => node?.type === 'FunctionDeclaration' && node.id.name === name)
+    return new Function(...Object.keys(scope), `return (${source.slice(node.start, node.end)})`)(...Object.values(scope))
   }
   const border = component('CountryBorder'), traffic = component('TrafficFlowLayer')
   const glow = new THREE.MeshBasicMaterial(), core = new THREE.MeshBasicMaterial()
