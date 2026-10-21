@@ -4,7 +4,7 @@
 
 [Study brief](https://github.com/emmettl/motionstudies/blob/main/docs/PARIS.md) · [Project goals](https://github.com/emmettl/motionstudies/blob/main/docs/VISION.md) · [Roadmap](https://github.com/emmettl/motionstudies/blob/main/ROADMAP.md)
 
-An independent Motion Studies edition. This repository owns its application, style, authored fixtures, source-specific data compilers and browser/provenance checks. Shared code comes from the four exact `@motionstudies/*` npm releases at `0.1.0-alpha.41`.
+An independent Motion Studies edition. This repository owns its application, style, authored fixtures, source-specific data compilers and browser/provenance checks. Shared code comes from the four exact `@motionstudies/*` npm releases at `0.1.0-alpha.42`.
 
 ## Opening study
 
@@ -87,11 +87,11 @@ Extracted from [Gleislicht 5c65186](https://github.com/emmettl/gleislicht/commit
 
 ## Standard selection labels
 
-The shared `@motionstudies/three` alpha.41 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
+The shared `@motionstudies/three` alpha.42 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
 
 ### Airport movement boards
 
-Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.1.0-alpha.41. Departures/arrivals follow the study clock, looking 10 minutes behind and 60 minutes ahead within the active study window. Loading and empty messages use the split-flap columns; new rows settle in 675 ms with staggered characters.
+Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.1.0-alpha.42. Departures/arrivals follow the study clock, looking 10 minutes behind and 60 minutes ahead within the active study window. Loading and empty messages use the split-flap columns; new rows settle in 675 ms with staggered characters.
 
 The 4 September 2026 air fixtures include optional origin/destination evidence from cached global ADSB.lol heatmaps and the public-domain [OurAirports reference](https://ourairports.com/data/). These are inferred observed movements, not schedules or confirmed flight plans. Unknown routes remain blank. Full-day manifest entries and playback chunks carry the same evidence; metadata records the input hashes, reference source, and local UTC offset (2 hours for this service date).
 
@@ -104,3 +104,5 @@ Paris supplies station ordering, morph-aware label admission and sizing, viewpor
 Viewport inset and zoom now use the supported `cameraViewport` scene extension. The airport-framing source transform is removed; camera journey timing and morph-following geographic/station focus use the public camera driver hooks. Border fade and weighted traffic emphasis use supported material callbacks; geometry morphing uses the supported spatial morph API.
 
 The alpha.41 adoption removes the Vite renderer rewrite plugin and the local geometry/blending implementation. The authored Paris lens stays edition-owned; the shared renderer updates persistent geometry, preserves source vertices and restores buffers when a projection is replaced or removed. All four alpha.41 registry artifacts match the checked packages. An empty-cache install passes lockfile integrity and installed-file comparisons, type/lint/boundary checks, 29 unit tests, production build and every payload/data gate. The full Chromium/WebKit suite passes 238 cases with two existing skips, including draw-call and paused-buffer checks.
+
+The alpha.42 adoption includes the private rail/context extraction behind the same renderer API. Edition behaviour and payload limits are unchanged.
