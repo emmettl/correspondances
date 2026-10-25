@@ -1,3 +1,4 @@
+import { mapSurfaceY } from '../node_modules/@motionstudies/three/scene-surface.js'
 import { mapLabelBoxesOverlap } from '@motionstudies/core/map-labels'
 import { setScenePickMetadata } from '@motionstudies/three/scene-picking'
 import { parisMapStyle } from '../src/studies/paris-renderer-policy.ts'
@@ -43,7 +44,7 @@ function harness(source, camera, size) {
     return slots[i].value
   }
   const bindings = {
-    mapLabelBoxesOverlap,
+    mapSurfaceY, mapLabelBoxesOverlap,
     setScenePickMetadata, useMapStyle: () => parisMapStyle,
     ...labels, ...lod, THREE, parisTrainLabelBudget, parisTrainLabelHeight, LabelFrameBudget, stationLabelWorldHeight, stationLabelBoxes, emptyLabelBoxes,
     LakeAvoidingPathsContext: {}, useContext: () => undefined,
@@ -87,9 +88,9 @@ function harness(source, camera, size) {
 }
 
 it('bounds train searches while preserving movement, Paris zoom rules, palette and invalidation', () => {
-  const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
+  const id = '/node_modules/@motionstudies/three/scene-labels.js'
   let code = readFileSync(`.${id}`, 'utf8')
-  const extract = code => code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
+  const extract = code => code.slice(code.indexOf('function TrainLabels('))
   const originalSource = extract(code).replace(/const labelWork = labelFrameBudget\.update\([^;]+;/, "const labelWork = 'all';")
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 3, 0); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()
@@ -130,9 +131,9 @@ it('bounds train searches while preserving movement, Paris zoom rules, palette a
 })
 
 it('reserves station space at close zoom and releases it while paused without losing focused services', () => {
-  const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
+  const id = '/node_modules/@motionstudies/three/scene-labels.js'
   let code = readFileSync(`.${id}`, 'utf8')
-  const source = code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
+  const source = code.slice(code.indexOf('function TrainLabels('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 3, 1); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()
   const current = harness(source, camera, { width: 1280, height: 720 })

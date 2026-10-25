@@ -235,6 +235,7 @@ const entry = Object.entries(manifest).find(
 )
 if (!entry) throw new Error('Vite manifest has no Correspondances entry')
 const optionalCards = new Map([['src/studies/VehicleJourneyCard.tsx', [4, 3]], ['src/studies/StationDeparturesCard.tsx', [8, 5]]])
+const sharedRoadKey = 'node_modules/@motionstudies/three/RoadTrafficLayer.js'
 const scripts = new Set()
 const styles = new Set()
 const visited = new Set()
@@ -246,7 +247,7 @@ const visit = (key) => {
   if (chunk.file.endsWith('.js')) scripts.add(chunk.file)
   for (const cssFile of chunk.css ?? []) styles.add(cssFile)
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
-  for (const importedKey of chunk.dynamicImports ?? []) if (!optionalCards.has(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (!optionalCards.has(importedKey) && importedKey !== sharedRoadKey) visit(importedKey)
 }
 visit(entry[0])
 const totalGzipSize = async (files) => {
@@ -275,6 +276,23 @@ for (const [cardKey, [jsLimit, cssLimit]] of optionalCards) {
   if (javaScript > jsLimit * 1024 || css > cssLimit * 1024) throw new Error(`Optional ${cardKey} exceeds its ${jsLimit} KiB JS / ${cssLimit} KiB CSS budget: ${javaScript} / ${css}`)
   console.log(`Optional ${cardKey}: ${javaScript} JS / ${css} CSS bytes gzip`)
 }
+// The shared road renderer loads only after road mode supplies data. Count its
+// complete static closure separately; fail if it becomes an opening dependency.
+const sharedRoad = manifest[sharedRoadKey]
+if (!sharedRoad?.isDynamicEntry || visited.has(sharedRoadKey)) throw new Error('Shared road renderer must remain optional')
+const roadFiles = new Set(), roadVisited = new Set()
+function visitSharedRoad(key) {
+  if (visited.has(key) || roadVisited.has(key)) return
+  roadVisited.add(key)
+  const chunk = manifest[key]
+  if (!chunk || chunk.dynamicImports?.length) throw new Error('Unbudgeted shared road dependency')
+  roadFiles.add(chunk.file)
+  for (const dependency of chunk.imports ?? []) visitSharedRoad(dependency)
+}
+visitSharedRoad(sharedRoadKey)
+const roadBytes = await totalGzipSize(roadFiles)
+if (roadBytes > 5 * 1024) throw new Error(`Shared road renderer exceeds 5 KiB gzip: ${roadBytes}`)
+console.log(`Optional shared road renderer: ${roadBytes} bytes gzip / 5 KiB`)
 const javaScriptGzip = await totalGzipSize(scripts)
 const cssGzip = await totalGzipSize(styles)
 const baseViewGzip =

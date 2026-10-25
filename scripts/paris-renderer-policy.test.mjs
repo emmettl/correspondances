@@ -1,3 +1,4 @@
+import { mapSurfaceY } from '../node_modules/@motionstudies/three/scene-surface.js'
 import { createParisCameraDriver } from '../src/studies/paris-camera-policy.ts'
 import { parisMapStyle, parisSceneExtensions } from '../src/studies/paris-renderer-policy.ts'
 import { existsSync, readFileSync } from 'node:fs'
@@ -132,7 +133,7 @@ test('Paris train policies use the supported renderer with unchanged ambient den
     expect(trainLabels.styledTrainLabelBudget(parisMapStyle.trainLabels, height, width, mode)).toBe(parisTrainLabelBudget(height, width, mode))
     for (const selected of [false, true]) expect(trainLabels.styledTrainLabelScreenHeight(parisMapStyle.trainLabels, width, selected, height)).toBe(parisMapStyle.trainLabels.screenHeight(width, selected, height))
   }
-  const transformed = renderer
+  const transformed = readFileSync('node_modules/@motionstudies/three/scene-labels.js', 'utf8')
   expect(transformed).not.toContain('parisTrainLabelBudget')
   expect(transformed).not.toContain('parisTrainLabelHeight')
   expect(transformed).toContain('styledTrainLabelBudget(labelStyle, semanticCameraHeight, size.width, trainLabelMode)')
@@ -158,7 +159,7 @@ test('supported viewport framing retains airport clearance across viewport and m
 test('supported material policies update existing border and traffic materials and restore defaults', () => {
   let style = parisMapStyle, frame, refs = [], cursor = 0
   const scope = {
-    THREE,
+    mapSurfaceY, THREE,
     useMapStyle: () => style,
     useRef: () => refs[cursor++],
     useMemo: factory => factory(),
