@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent } from 'react'
-import { useThree } from '@react-three/fiber'
+import { useWebGLStudyState } from '@motionstudies/three/webgl-study'
+import { frameRenderer } from '@motionstudies/three/frame-state'
 import type { StudyAirport } from '@motionstudies/core/domain/airport'
 import { MapTapGesture, pickAirportTarget } from './airport-selection.ts'
 
@@ -8,13 +9,15 @@ export interface ParisAirportSelectionProps {
 }
 
 export function ParisAirportSelection({ onSelectAirport, enabled = true }: ParisAirportSelectionProps & { enabled?: boolean }) {
-  const { scene, camera, gl } = useThree()
+  const state = useWebGLStudyState()
+  const { scene, camera } = state
+  const renderer = frameRenderer(state)
   const selectable = enabled && Boolean(onSelectAirport)
   // Keep gestures intact when playback changes the consumer's callback.
   const select = useEffectEvent((airport: StudyAirport) => onSelectAirport?.(airport))
   useEffect(() => {
     if (!selectable) return
-    const canvas = gl.domElement, previousCursor = canvas.style.cursor
+    const canvas = renderer.domElement, previousCursor = canvas.style.cursor
     const gesture = new MapTapGesture()
     const airportAt = (event: PointerEvent) => pickAirportTarget(scene, camera,
       canvas.getBoundingClientRect(), event.clientX, event.clientY, event.pointerType === 'touch')
@@ -49,6 +52,6 @@ export function ParisAirportSelection({ onSelectAirport, enabled = true }: Paris
       canvas.removeEventListener('lostpointercapture', cancel)
       canvas.removeEventListener('pointerleave', leave)
     }
-  }, [camera, gl, scene, selectable])
+  }, [camera, renderer, scene, selectable])
   return null
 }
