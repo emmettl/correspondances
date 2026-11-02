@@ -8,3 +8,6 @@ not physical-device, thermal, memory-leak or author visual acceptance.
 Focused Chromium/WebKit checks passed 9 of 10 cases; the initial phone WebKit
 CDG label tap failed at its fixed coordinate. This existing failure is retained
 explicitly for comparison; no source change or assertion relaxation is included.
+
+Three unchanged phone WebKit repeats of the CDG label-tap case subsequently
+passed. This is recorded separately and does not erase the initial failure.
