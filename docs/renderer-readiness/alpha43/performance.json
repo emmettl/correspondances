@@ -131,5 +131,8 @@
         "RecalcStyleDuration": 2.91
       }
     }
-  ]
+  ],
+  "applicationCommit": "c274a00",
+  "profileToolSha256": "5f5a7bf5777271905b6475bc2e1a66ca3a7a95ea5b06300083bdf1f2a3529144",
+  "scope": "Short headless 390x844 DPR3 sequential diagnostic, not causal, physical-device, thermal or leak acceptance."
 }

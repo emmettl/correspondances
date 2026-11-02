@@ -1,0 +1,45 @@
+{
+  "sourceCommit": "4a1cd87cb461cd22093c61b51f244ee8fc1fe925",
+  "assets": [
+    {
+      "key": "_events-e51d7528.esm-C7IbmiRX.js",
+      "file": "assets/events-e51d7528.esm-C7IbmiRX.js",
+      "gzipBytes": 236565
+    },
+    {
+      "key": "index.html",
+      "file": "assets/index-KNFBsO4m.js",
+      "gzipBytes": 89445
+    },
+    {
+      "key": "node_modules/@motionstudies/three/AirTrafficLayer.js",
+      "file": "assets/AirTrafficLayer-D3RtDIiM.js",
+      "gzipBytes": 4282
+    },
+    {
+      "key": "node_modules/@motionstudies/three/RoadTrafficLayer.js",
+      "file": "assets/RoadTrafficLayer-Duv5Ue_f.js",
+      "gzipBytes": 3690
+    },
+    {
+      "key": "node_modules/@motionstudies/web/components/ButtonTooltips.js",
+      "file": "assets/ButtonTooltips-CK-eMyGC.js",
+      "gzipBytes": 1550
+    },
+    {
+      "key": "src/studies/ParisNetworkScene.tsx",
+      "file": "assets/ParisNetworkScene-D90VqrMk.js",
+      "gzipBytes": 32542
+    },
+    {
+      "key": "src/studies/StationDeparturesCard.tsx",
+      "file": "assets/StationDeparturesCard-B9nuT35q.js",
+      "gzipBytes": 5830
+    },
+    {
+      "key": "src/studies/VehicleJourneyCard.tsx",
+      "file": "assets/VehicleJourneyCard-C9HneDIv.js",
+      "gzipBytes": 1450
+    }
+  ]
+}
