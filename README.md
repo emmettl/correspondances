@@ -4,13 +4,13 @@
 
 [Study brief](https://github.com/emmettl/motionstudies/blob/main/docs/PARIS.md) · [Project goals](https://github.com/emmettl/motionstudies/blob/main/docs/VISION.md) · [Roadmap](https://github.com/emmettl/motionstudies/blob/main/ROADMAP.md)
 
-An independent Motion Studies edition. This repository owns its application, style, authored fixtures, source-specific data compilers and browser/provenance checks. Shared code comes from the four exact `@motionstudies/*` npm releases at `0.1.0-alpha.42`.
+An independent Motion Studies edition. This repository owns its application, style, authored fixtures, source-specific data compilers and browser/provenance checks. Shared code comes from the four exact `@motionstudies/*` npm releases at `0.1.0-alpha.50`.
 
 ## Opening study
 
 Fresh visits open the eight implemented lines: Métro 1, 4 and 14, plus RER A–E. Both additional layers are enabled in **Couches**, where either can be turned off. The 07:00–09:00 study starts at 08:00 with playback running in the regional view. The base can render while the independently fetched layers arrive; a failed layer can be retried without losing the base study.
 
-The opening budget counts both enabled layers: 625 KiB gzip in total, with a separate 425 KiB ceiling for the base application and geography. Full-day manifests and chunks remain on demand behind **24H**.
+The opening budget counts both enabled layers: 630 KiB gzip in total, with a separate 440 KiB ceiling for the base application and geography. Full-day manifests and chunks remain on demand behind **24H**.
 
 ## Arcs du Métro
 
@@ -106,3 +106,6 @@ Viewport inset and zoom now use the supported `cameraViewport` scene extension. 
 The alpha.41 adoption removes the Vite renderer rewrite plugin and the local geometry/blending implementation. The authored Paris lens stays edition-owned; the shared renderer updates persistent geometry, preserves source vertices and restores buffers when a projection is replaced or removed. All four alpha.41 registry artifacts match the checked packages. An empty-cache install passes lockfile integrity and installed-file comparisons, type/lint/boundary checks, 29 unit tests, production build and every payload/data gate. The full Chromium/WebKit suite passes 238 cases with two existing skips, including draw-call and paused-buffer checks.
 
 The alpha.42 adoption includes the private rail/context extraction behind the same renderer API. Edition behaviour and payload limits are unchanged.
+
+Stable Fiber 9 renderer API preparation and its validation are recorded in
+[the alpha.50 adoption notes](docs/RENDERER-ALPHA-50.md).

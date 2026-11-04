@@ -1,0 +1,47 @@
+{
+  "sourceCommit": "c274a00465629eeb5dd6d68b136e8fcb184e0a67",
+  "fixtureTree": "2268289372238d41c0678e6d4f22a5d0f143774a",
+  "packageLockSha256": "f4b51e5637087588548ad3bc2c8f1b89192d863c01b7feaab3e602dc54bccb02",
+  "assets": [
+    {
+      "key": "_events-e51d7528.esm-CWdbv3LN.js",
+      "file": "assets/events-e51d7528.esm-CWdbv3LN.js",
+      "gzipBytes": 237584
+    },
+    {
+      "key": "index.html",
+      "file": "assets/index-diJj-2Ba.js",
+      "gzipBytes": 89504
+    },
+    {
+      "key": "node_modules/@motionstudies/three/AirTrafficLayer.js",
+      "file": "assets/AirTrafficLayer-CKfvMkzn.js",
+      "gzipBytes": 4280
+    },
+    {
+      "key": "node_modules/@motionstudies/three/RoadTrafficLayer.js",
+      "file": "assets/RoadTrafficLayer-DADhoo_E.js",
+      "gzipBytes": 3685
+    },
+    {
+      "key": "node_modules/@motionstudies/web/components/ButtonTooltips.js",
+      "file": "assets/ButtonTooltips-CajEKRI5.js",
+      "gzipBytes": 1548
+    },
+    {
+      "key": "src/studies/ParisNetworkScene.tsx",
+      "file": "assets/ParisNetworkScene-BwyJpgQk.js",
+      "gzipBytes": 32275
+    },
+    {
+      "key": "src/studies/StationDeparturesCard.tsx",
+      "file": "assets/StationDeparturesCard-B5bV1oIr.js",
+      "gzipBytes": 5875
+    },
+    {
+      "key": "src/studies/VehicleJourneyCard.tsx",
+      "file": "assets/VehicleJourneyCard-BB7BVnL-.js",
+      "gzipBytes": 1450
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "capturedAt": "2026-11-02T19:00:43.933Z",
+  "platform": "darwin",
+  "browserVersion": "156.0.8078.4",
+  "settings": {
+    "width": 390,
+    "height": 844,
+    "dpr": 3,
+    "duration": 5000,
+    "fps": 60,
+    "channel": "chromium",
+    "headless": true,
+    "metroArcs": false,
+    "metroCrossings": false,
+    "metroEast": false,
+    "allMetro": false,
+    "transilien": false,
+    "tramMarechaux": false,
+    "metroBoulevards": false,
+    "metroWest": false,
+    "metroLocal": false
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "canvas": {
+      "width": 643,
+      "height": 1392
+    }
+  },
+  "scenarios": [
+    {
+      "name": "opening",
+      "frames": 131,
+      "meanFps": 24.87,
+      "p50Ms": 33.3,
+      "p95Ms": 33.5,
+      "p99Ms": 166.7,
+      "maxMs": 1183.3,
+      "overBudgetPercent": 90.08,
+      "overOneAndHalfBudgetsPercent": 70.23,
+      "mainThreadMilliseconds": {
+        "TaskDuration": 5430.4,
+        "ScriptDuration": 71.88,
+        "LayoutDuration": 1.78,
+        "RecalcStyleDuration": 2.18
+      }
+    },
+    {
+      "name": "search-open",
+      "frames": 28,
+      "meanFps": 5.54,
+      "p50Ms": 83.4,
+      "p95Ms": 216.6,
+      "p99Ms": 2466.6,
+      "maxMs": 2466.6,
+      "overBudgetPercent": 100,
+      "overOneAndHalfBudgetsPercent": 100,
+      "mainThreadMilliseconds": {
+        "TaskDuration": 5584.94,
+        "ScriptDuration": 25.06,
+        "LayoutDuration": 1.05,
+        "RecalcStyleDuration": 1.33
+      }
+    },
+    {
+      "name": "selected-search-closed",
+      "frames": 17,
+      "meanFps": 3.16,
+      "p50Ms": 150,
+      "p95Ms": 1866.6,
+      "p99Ms": 1866.6,
+      "maxMs": 1866.6,
+      "overBudgetPercent": 100,
+      "overOneAndHalfBudgetsPercent": 100,
+      "mainThreadMilliseconds": {
+        "TaskDuration": 5798.3,
+        "ScriptDuration": 16.69,
+        "LayoutDuration": 0.89,
+        "RecalcStyleDuration": 1.18
+      }
+    },
+    {
+      "name": "to-centre",
+      "frames": 31,
+      "meanFps": 6.1,
+      "p50Ms": 133.2,
+      "p95Ms": 416.6,
+      "p99Ms": 899.9,
+      "maxMs": 899.9,
+      "overBudgetPercent": 100,
+      "overOneAndHalfBudgetsPercent": 96.77,
+      "mainThreadMilliseconds": {
+        "TaskDuration": 5150.21,
+        "ScriptDuration": 56.5,
+        "LayoutDuration": 1.23,
+        "RecalcStyleDuration": 1.69
+      }
+    },
+    {
+      "name": "centre",
+      "frames": 189,
+      "meanFps": 37.55,
+      "p50Ms": 33.3,
+      "p95Ms": 33.4,
+      "p99Ms": 33.4,
+      "maxMs": 33.5,
+      "overBudgetPercent": 85.19,
+      "overOneAndHalfBudgetsPercent": 59.79,
+      "mainThreadMilliseconds": {
+        "TaskDuration": 5072.39,
+        "ScriptDuration": 87.27,
+        "LayoutDuration": 2.15,
+        "RecalcStyleDuration": 2.86
+      }
+    },
+    {
+      "name": "to-region",
+      "frames": 171,
+      "meanFps": 33.98,
+      "p50Ms": 33.3,
+      "p95Ms": 33.4,
+      "p99Ms": 33.4,
+      "maxMs": 50.1,
+      "overBudgetPercent": 89.47,
+      "overOneAndHalfBudgetsPercent": 76.02,
+      "mainThreadMilliseconds": {
+        "TaskDuration": 5075.86,
+        "ScriptDuration": 138.13,
+        "LayoutDuration": 2.02,
+        "RecalcStyleDuration": 2.91
+      }
+    }
+  ],
+  "applicationCommit": "c274a00",
+  "profileToolSha256": "5f5a7bf5777271905b6475bc2e1a66ca3a7a95ea5b06300083bdf1f2a3529144",
+  "scope": "Short headless 390x844 DPR3 sequential diagnostic, not causal, physical-device, thermal or leak acceptance."
+}

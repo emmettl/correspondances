@@ -1,8 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const runningInCi = Boolean(
-  (globalThis as { process?: { env?: { CI?: string } } }).process?.env?.CI,
-)
+const environment = (globalThis as { process?: { env?: { CI?: string; E2E_PREBUILT?: string } } }).process?.env
+const runningInCi = Boolean(environment?.CI)
 
 export default defineConfig({
   testDir: './e2e',
@@ -44,7 +43,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1 --port 4178 --strictPort',
+    command: `${environment?.E2E_PREBUILT === '1' ? '' : 'npm run build && '}npm run preview -- --host 127.0.0.1 --port 4178 --strictPort`,
     url: 'http://127.0.0.1:4178',
     reuseExistingServer: false,
     timeout: 120_000,

@@ -1,0 +1,72 @@
+{
+  "recordedAt": "2026-11-02T19:25:32.087451+00:00",
+  "sourceCommit": "4a1cd87",
+  "node": "v24.22.0",
+  "npm": "11.21.1",
+  "unitTestsPassed": 29,
+  "staticChecks": [
+    "boundary",
+    "typecheck",
+    "lint",
+    "unit",
+    "build",
+    "bundle"
+  ],
+  "browser": {
+    "scope": "Complete suite on a fresh production preview; one worker, zero retries, macOS desktop Chromium / phone WebKit.",
+    "stats": {
+      "startTime": "2026-11-02T19:11:25.100Z",
+      "duration": 725014.314,
+      "expected": 240,
+      "skipped": 2,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "projects": {
+      "desktop-chromium": {
+        "passed": 119,
+        "skipped": 2
+      },
+      "iphone-webkit": {
+        "passed": 121
+      }
+    },
+    "skips": [
+      {
+        "test": "phone chrome leaves room for the map with AIR and heart details available on demand",
+        "project": "desktop-chromium",
+        "reason": [
+          {
+            "type": "skip",
+            "description": "Phone layout",
+            "location": {
+              "file": "/private/tmp/correspondances-alpha50-adoption/e2e/paris.spec.ts",
+              "line": 253,
+              "column": 8
+            }
+          }
+        ]
+      },
+      {
+        "test": "iPhone chrome remains inside the viewport and reduces to the timeline",
+        "project": "desktop-chromium",
+        "reason": [
+          {
+            "type": "skip",
+            "description": "iPhone-only layout gate",
+            "location": {
+              "file": "/private/tmp/correspondances-alpha50-adoption/e2e/paris.spec.ts",
+              "line": 290,
+              "column": 8
+            }
+          }
+        ]
+      }
+    ],
+    "rawReportSha256": "3707ed107616c89b43760117d03e2b416575fa9224b55aff5e38db570d58229b",
+    "playwright": "1.64.1"
+  },
+  "renderer": "WebGL2",
+  "physicalDeviceAcceptance": "open",
+  "authorVisualAcceptance": "open"
+}

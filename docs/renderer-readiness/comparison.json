@@ -1,0 +1,38 @@
+{
+  "capturedAt": "2026-11-02T19:24:11.569Z",
+  "scope": "Paused production-build image diagnostic. Rendering session and ambient renderer-time phases can vary; not an author-acceptance gate.",
+  "comparison": [
+    {
+      "file": "desktop-geography.png",
+      "width": 1440,
+      "height": 1000,
+      "changedPixels": 647,
+      "changedPercent": 0.04493055555555556,
+      "maxChannelDelta": 113
+    },
+    {
+      "file": "desktop-diagram.png",
+      "width": 1440,
+      "height": 1000,
+      "changedPixels": 1507,
+      "changedPercent": 0.10465277777777778,
+      "maxChannelDelta": 2
+    },
+    {
+      "file": "phone-geography.png",
+      "width": 390,
+      "height": 844,
+      "changedPixels": 134,
+      "changedPercent": 0.04070968525944829,
+      "maxChannelDelta": 57
+    },
+    {
+      "file": "phone-diagram.png",
+      "width": 390,
+      "height": 844,
+      "changedPixels": 4619,
+      "changedPercent": 1.4032689269656093,
+      "maxChannelDelta": 92
+    }
+  ]
+}

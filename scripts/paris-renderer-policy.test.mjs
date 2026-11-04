@@ -12,6 +12,7 @@ import * as mapCamera from '../node_modules/@motionstudies/three/map-camera.js'
 import { parisHeartFromWorld } from '../src/editions/paris-layout.ts'
 import { pickAirportTarget } from '../src/studies/airport-selection.ts'
 import { parisOverviewMix, parisTrainLabelBudget, parisStationLabelHeight } from '../src/editions/paris-scale.ts'
+import { frameRenderer, frameElapsed } from '@motionstudies/three/frame-state'
 
 const renderer = readFileSync('node_modules/@motionstudies/three/NationalNetworkScene.js', 'utf8')
 
@@ -40,7 +41,7 @@ test.each([
   const scope = {
     useProjectedTrainPosition: () => scope.projectedTrainPosition,
     useNetworkScene: () => ({ props: {} }),
-    ...stationLabels, ...parisLabels, parisStationLabelHeight, THREE, pickAirportTarget,
+    ...stationLabels, ...parisLabels, parisStationLabelHeight, THREE, pickAirportTarget, frameRenderer,
     useThree: () => ({ camera, gl: { domElement: element }, scene: new THREE.Scene() }),
     useMemo: (factory) => factory(),
     useEffect: (setup) => setup(),
@@ -96,10 +97,11 @@ test('a station selected during a morph stays centred until a direct gesture rel
   const scope = {
     useProjectedTrainPosition: () => scope.projectedTrainPosition,
     useNetworkScene: () => ({ props: { extensions } }),
-    ...mapCamera, THREE, parisHeartFromWorld,
+    ...mapCamera, THREE, parisHeartFromWorld, frameRenderer,
     window: { matchMedia: () => ({ matches: true }) },
     useMemo: memo, useRef: (value) => memo(() => ({ current: value }), []),
     useEffect: (setup, deps) => memo(setup, deps), useFrame: (fn) => { frame = fn },
+    useCameraFrame: (fn) => { frame = fn },
     useThree: () => ({ camera, gl: { domElement }, size: { width: 1000, height: 1000 } }),
     useContext: () => new Map(), LakeAvoidingPathsContext: {},
     stationCentre: (station, stops) => new THREE.Vector3(...stops[station.stopIndexes[0]]),
@@ -159,7 +161,7 @@ test('supported viewport framing retains airport clearance across viewport and m
 test('supported material policies update existing border and traffic materials and restore defaults', () => {
   let style = parisMapStyle, frame, refs = [], cursor = 0
   const scope = {
-    mapSurfaceY, THREE,
+    mapSurfaceY, THREE, frameElapsed,
     useMapStyle: () => style,
     useRef: () => refs[cursor++],
     useMemo: factory => factory(),

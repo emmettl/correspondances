@@ -1,0 +1,44 @@
+{
+  "version": "0.1.0-alpha.43",
+  "unitTestsPassed": 29,
+  "staticChecks": [
+    "boundary",
+    "typecheck",
+    "lint",
+    "unit",
+    "build",
+    "bundle"
+  ],
+  "focusedBrowser": {
+    "stats": {
+      "startTime": "2026-11-02T18:52:13.223Z",
+      "duration": 51533.162,
+      "expected": 9,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "reportSha256": "842e0fb37c907b65ad8735c65341139c403ba7ef65881e75b6bfd2a67d85ecf8",
+    "failures": [
+      {
+        "test": "the full airport label enables AIR and opens its board",
+        "project": "iphone-webkit",
+        "status": "failed",
+        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveAttribute\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('main')\nExpected: \u001b[32m\"cdg\"\u001b[39m\nReceived: \u001b[31m\"\"\u001b[39m\nTimeout:  15000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveAttribute\" locator('main') with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for locator('main')\u001b[22m\n\u001b[2m    34 \u00d7 locator resolved to <main data-layout-mix=\"0.000\" data-scale-view=\"region\" data-air-enabled=\"false\" data-limited-chrome=\"false\" data-metro-arcs-enabled=\"false\" data-metro-east-enabled=\"false\" data-metro-west-enabled=\"false\" data-metro-local-enabled=\"false\" data-layout-transitioning=\"false\" data-tram-marechaux-enabled=\"false\" data-metro-crossings-enabled=\"false\" data-transilien-east-enabled=\"false\" data-metro-boulevards-enabled=\"false\" data-transilien-north-enabled=\"false\" data-transilien-southwest-enabled=\"false\" data-\u2026>\u2026</main>\u001b[22m\n\u001b[2m       - unexpected value \"null\"\u001b[22m\n"
+      }
+    ]
+  },
+  "scope": "Baseline before dependency/source changes. Chromium desktop and phone WebKit against the production build; no retry.",
+  "focusedAirportRepeat": {
+    "stats": {
+      "startTime": "2026-11-02T19:03:59.077Z",
+      "duration": 8100.888000000001,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "reportSha256": "f81bf2233a8b023a7b5a971cdf33869c357442e4b43d6c0c01683cf7f9867ce0",
+    "scope": "Three unchanged local WebKit repeats of the full CDG label tap passed; initial failure remains recorded."
+  }
+}

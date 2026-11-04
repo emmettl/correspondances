@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo } from 'react'
-import type {} from '@react-three/fiber'
+import { useRequireWebGL } from '@motionstudies/three/webgl-study'
 import { BufferAttribute, BufferGeometry, DoubleSide, Sphere, Vector3 } from 'three'
 import type { NetworkSnapshot } from '@motionstudies/core/domain/network'
 import { CORRESPONDANCES_ROUTE_COLORS } from '../editions/paris.ts'
@@ -14,6 +14,7 @@ export function ParisArcLayer({ snapshot, projectedPaths, mix, subdued }: {
   readonly mix: number
   readonly subdued: boolean
 }) {
+  useRequireWebGL('ParisArcLayer')
   const arcs = useMemo(() => ['Métro 2', 'Métro 6'].map((name) => {
     const paths = new Set<number>()
     snapshot.trains.filter((train) => train.route === name).forEach((train) => {
