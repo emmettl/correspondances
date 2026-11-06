@@ -2,7 +2,7 @@ import { mapSurfaceY } from '../node_modules/@motionstudies/three/scene-surface.
 import { createParisCameraDriver } from '../src/studies/paris-camera-policy.ts'
 import { parisMapStyle, parisSceneExtensions } from '../src/studies/paris-renderer-policy.ts'
 import { existsSync, readFileSync } from 'node:fs'
-import { parse } from '@babel/parser'
+import { parseRenderer } from './parse-renderer.mjs'
 import { expect, test } from 'vitest'
 import * as THREE from 'three'
 import * as stationLabels from '../node_modules/@motionstudies/three/station-labels.js'
@@ -22,8 +22,8 @@ test.each([
 ])('visible station %s remains selectable beyond the old global cutoff', (name, height) => {
   const source = readFileSync('node_modules/@motionstudies/three/StationTapTarget.js', 'utf8')
   const picking = readFileSync('node_modules/@motionstudies/three/station-picking.js', 'utf8')
-  const installerNode = parse(picking, { sourceType: 'module' }).program.body.find(node => node.type === 'ExportNamedDeclaration' && node.declaration?.id?.name === 'installStationTapTarget').declaration
-  const node = parse(source, { sourceType: 'module' }).program.body.find(node => node.type === 'ExportNamedDeclaration' && node.declaration?.id?.name === 'StationTapTarget').declaration
+  const installerNode = parseRenderer(picking).program.body.find(node => node.type === 'ExportNamedDeclaration' && node.declaration?.id?.name === 'installStationTapTarget').declaration
+  const node = parseRenderer(source).program.body.find(node => node.type === 'ExportNamedDeclaration' && node.declaration?.id?.name === 'StationTapTarget').declaration
   const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100)
   camera.position.set(0, height, 0)
   camera.lookAt(0, 0, 0)
@@ -77,7 +77,7 @@ test('city scale keeps missions quiet, with bounded closer inspection on phone a
 
 test('a station selected during a morph stays centred until a direct gesture releases it', () => {
   const source = renderer
-  const node = parse(source, { sourceType: 'module' }).program.body.find((node) => node.type === 'FunctionDeclaration' && node.id.name === 'NetworkCamera')
+  const node = parseRenderer(source).program.body.find((node) => node.type === 'FunctionDeclaration' && node.id.name === 'NetworkCamera')
   const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100)
   const handlers = new Map()
   const domElement = { addEventListener: (name, fn) => handlers.set(name, fn), removeEventListener: () => {}, setPointerCapture() {} }
@@ -177,7 +177,7 @@ test('supported material policies update existing border and traffic materials a
     const module = name === 'CountryBorder' ? 'scene-context-layers' : 'scene-rail-layers'
     const path = `node_modules/@motionstudies/three/${module}.js`
     const source = existsSync(path) ? readFileSync(path, 'utf8') : renderer
-    const node = parse(source, { sourceType: 'module' }).program.body
+    const node = parseRenderer(source).program.body
       .map(node => node.type === 'ExportNamedDeclaration' ? node.declaration : node)
       .find(node => node?.type === 'FunctionDeclaration' && node.id.name === name)
     return new Function(...Object.keys(scope), `return (${source.slice(node.start, node.end)})`)(...Object.values(scope))
