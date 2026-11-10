@@ -59,7 +59,7 @@ CDG, Orly and Le Bourget appear as geographic landmarks in Région, including wh
 
 ## Development
 
-Use Node 24 LTS (`nvm use`) and npm 11.21.1. Run `npm ci`, then `npm run dev`. `npm run build` stages only this edition's fixtures and builds the root entry point.
+Use Node 26 (`nvm use`) and npm 12.2.2. Run `npm ci`, then `npm run dev`. `npm run build` stages only this edition's fixtures and builds the root entry point.
 
 Validation: `npm run check:boundary`, `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run check:bundle`, and `npm run test:e2e:ci` (after `npx playwright install chromium webkit`). The boundary check rejects workspaces, linked sources, non-registry dependencies and unsupported package exports.
 
@@ -109,3 +109,5 @@ The alpha.42 adoption includes the private rail/context extraction behind the sa
 
 Stable Fiber 9 renderer API preparation and its validation are recorded in
 [the alpha.50 adoption notes](docs/RENDERER-ALPHA-50.md).
+
+Development targets Node 26 and npm 12.2.2. Shared Motion Studies packages are pinned to 1.0.0; `npm run check:stack` validates the adopted baseline through `@motionstudies/tooling`. Edition-specific data, boundary and publication checks remain local.

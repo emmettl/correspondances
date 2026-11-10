@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Correspondances \u2014 a Motion Studies edition",
+  "description": "Correspondances — a Motion Studies edition",
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=26.0.0"
   },
   "scripts": {
     "data:paris:proof": "node scripts/ingest-idfm-correspondances-proof.mjs --archive /tmp/IDFM-gtfs.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z",
@@ -44,29 +44,31 @@
     "data:air:routes": "node scripts/enrich-air-routes.mjs",
     "data:paris:tram-marechaux": "node scripts/ingest-idfm-correspondances-proof.mjs --study tram-marechaux --archive /tmp/IDFM-gtfs-current.zip --source-sha256 c29fa61247444191407dae7c1bcf33315e56785369112642e836cba9d100fe18 --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --window-start 00:00:00 --window-end 24:00:00 --focus 12:00:00 --output /tmp/correspondances-tram-marechaux-day.json && node scripts/chunk-network-snapshot.mjs --input /tmp/correspondances-tram-marechaux-day.json --manifest fixtures/idfm/correspondances-tram-marechaux-day-manifest.json --opening fixtures/idfm/correspondances-tram-marechaux-morning.json --chunk-hours 2 --opening-start 07:00 --opening-end 09:00 --focus 08:00",
     "data:paris:audit:tram": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope tram --output fixtures/idfm/correspondances-tram-audit.json",
-    "data:paris:audit:tram:day": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope tram --output fixtures/idfm/correspondances-tram-day-audit.json --window-start 00:00:00 --window-end 24:00:00"
+    "data:paris:audit:tram:day": "node scripts/audit-idfm-paris-scope.mjs --archive /tmp/IDFM-gtfs-current.zip --service-date 2026-09-04 --retrieved-at 2026-09-06T11:41:37.000Z --scope tram --output fixtures/idfm/correspondances-tram-day-audit.json --window-start 00:00:00 --window-end 24:00:00",
+    "check:stack": "node scripts/check-stack.mjs"
   },
   "dependencies": {
-    "@motionstudies/core": "0.1.0-alpha.51",
-    "@motionstudies/three": "0.1.0-alpha.51",
-    "@motionstudies/web": "0.1.0-alpha.51",
+    "@motionstudies/core": "1.0.0",
+    "@motionstudies/three": "1.0.0",
+    "@motionstudies/web": "1.0.0",
     "@react-three/fiber": "9.8.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "three": "0.186.1"
+    "three": "0.187.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.64.1",
+    "@playwright/test": "1.65.0",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@types/three": "0.186.0",
-    "@vitejs/plugin-react": "6.1.2",
-    "oxlint": "1.88.0",
+    "@types/three": "0.187.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "oxlint": "1.93.0",
     "typescript": "7.0.2",
-    "vite": "8.3.4",
-    "vitest": "5.0.5",
-    "@motionstudies/data": "0.1.0-alpha.51",
-    "oxc-parser": "0.156.0"
+    "vite": "8.3.7",
+    "vitest": "5.1.0",
+    "@motionstudies/data": "1.0.0",
+    "oxc-parser": "0.156.0",
+    "@motionstudies/tooling": "1.0.0"
   },
-  "packageManager": "npm@11.21.1"
+  "packageManager": "npm@12.2.2"
 }
