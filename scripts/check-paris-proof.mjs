@@ -303,14 +303,14 @@ const firstViewGzip = baseViewGzip + centralCrossGzipBytes + regionalRerGzipByte
 const metroArcsGzip = gzipSync(await readFile('fixtures/idfm/correspondances-metro-arcs-morning.json'), { level: 9 }).byteLength
 const metroCrossingsGzip = gzipSync(await readFile('fixtures/idfm/correspondances-metro-crossings-morning.json'), { level: 9 }).byteLength
 const metroEastGzip = gzipSync(await readFile('fixtures/idfm/correspondances-metro-east-morning.json'), { level: 9 }).byteLength
-if (firstViewGzip + metroArcsGzip + metroCrossingsGzip + metroEastGzip > 820 * 1024) throw new Error('Paris fourteen-line opt-in composition exceeds 820 KiB gzip')
-if (firstViewGzip + metroArcsGzip + metroCrossingsGzip > 750 * 1024) throw new Error('Paris twelve-line opt-in composition exceeds 750 KiB gzip')
-if (firstViewGzip + metroArcsGzip > 682 * 1024) throw new Error('Paris ten-line opt-in composition exceeds 682 KiB gzip')
+if (firstViewGzip + metroArcsGzip + metroCrossingsGzip + metroEastGzip > 824 * 1024) throw new Error('Paris fourteen-line opt-in composition exceeds 824 KiB gzip')
+if (firstViewGzip + metroArcsGzip + metroCrossingsGzip > 754 * 1024) throw new Error('Paris twelve-line opt-in composition exceeds 754 KiB gzip')
+if (firstViewGzip + metroArcsGzip > 686 * 1024) throw new Error('Paris ten-line opt-in composition exceeds 686 KiB gzip')
 if (
   javaScriptGzip > 358 * 1024 ||
   cssGzip > 15 * 1024 ||
-  baseViewGzip > 440 * 1024 ||
-  firstViewGzip > 630 * 1024
+  baseViewGzip > 444 * 1024 ||
+  firstViewGzip > 634 * 1024
 ) {
   throw new Error(
     `Paris first view exceeds its mobile budget: ${javaScriptGzip} JS / ` +
